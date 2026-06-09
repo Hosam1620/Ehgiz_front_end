@@ -1,0 +1,96 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold fs-4" routerLink="/dashboard">Ehgiz</a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#mainNav"
+      aria-controls="mainNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      @if (isLoggedIn()) {
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/tools" routerLinkActive="active">Tools</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/bookings" routerLinkActive="active">Bookings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/reviews" routerLinkActive="active">Reviews</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/messages" routerLinkActive="active">Messages</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              AI
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/ai/classification">Classification</a></li>
+              <li><a class="dropdown-item" routerLink="/ai/image-analysis">Image Analysis</a></li>
+              <li><a class="dropdown-item" routerLink="/ai/image-search">Image Search</a></li>
+              <li><a class="dropdown-item" routerLink="/ai/rag-search">RAG Search</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link position-relative" routerLink="/notifications" routerLinkActive="active">
+              Notifications
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <span
+                class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center fw-bold"
+                style="width: 32px; height: 32px; font-size: 0.8rem;"
+              >
+                {{ userName() ? userName()[0].toUpperCase() : 'U' }}
+              </span>
+              <span class="d-none d-lg-inline">{{ userName() || 'Account' }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" routerLink="/profile">My Profile</a></li>
+              <li><a class="dropdown-item" routerLink="/payments/initiate">Payments</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <button class="dropdown-item text-danger" type="button" (click)="logoutClicked.emit()">
+                  Logout
+                </button>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      } @else {
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-outline-light btn-sm px-3" routerLink="/register">Register</a>
+          </li>
+        </ul>
+      }
+    </div>
+  </div>
+</nav>

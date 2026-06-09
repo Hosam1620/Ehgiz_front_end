@@ -1,0 +1,17 @@
+<div class="d-inline-flex gap-1" [attr.aria-label]="'Rating: ' + rating() + ' out of ' + maxStars()">
+  @for (star of stars(); track star) {
+    <span
+      class="fs-4 lh-1 user-select-none"
+      [class.text-warning]="isFilled(star)"
+      [class.text-secondary]="!isFilled(star)"
+      [style.cursor]="readonly() ? 'default' : 'pointer'"
+      (mouseover)="onHover(star)"
+      (mouseleave)="onLeave()"
+      (click)="onSelect(star)"
+      [attr.aria-label]="star + ' star' + (star !== 1 ? 's' : '')"
+      role="button"
+    >
+      {{ isFilled(star) ? '★' : '☆' }}
+    </span>
+  }
+</div>

@@ -1,1 +1,11 @@
-<router-outlet />
+<div class="d-flex flex-column min-vh-100">
+  <app-navbar
+    [isLoggedIn]="auth.isLoggedIn()"
+    [userName]="auth.currentUser()?.name ?? ''"
+    (logoutClicked)="auth.logout()"
+  />
+  <main class="flex-grow-1">
+    <router-outlet />
+  </main>
+  <app-footer />
+</div>
