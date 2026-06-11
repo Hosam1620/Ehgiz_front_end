@@ -1,0 +1,50 @@
+<div class="wallet-page">
+  <div class="container py-5">
+    <div class="return-card text-center">
+
+      <!-- Animated Checkmark -->
+      <div class="success-checkmark">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="checkmark-icon">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+
+      <h1 class="return-title">Payment Successful!</h1>
+      <p class="return-subtitle">Your wallet has been topped up successfully.</p>
+
+      <!-- Session Reference -->
+      @if (sessionId()) {
+        <div class="session-badge">
+          <span class="session-badge__label">Session ID</span>
+          <code class="session-badge__value">{{ sessionId() }}</code>
+        </div>
+      }
+
+      <!-- Updated Balance -->
+      @if (loading()) {
+        <div class="mt-4">
+          <div class="wallet-spinner wallet-spinner--sm"></div>
+          <p class="text-muted mt-2">Refreshing balance...</p>
+        </div>
+      }
+
+      @if (!loading() && wallet()) {
+        <div class="updated-balance-card mt-4">
+          <p class="updated-balance-card__label">Updated Balance</p>
+          <h2 class="updated-balance-card__value">${{ wallet()!.balance | number:'1.2-2' }}</h2>
+        </div>
+      }
+
+      <!-- Back to Wallet Button -->
+      <button class="btn btn-wallet-topup btn-lg mt-4" (click)="goToDashboard()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+        </svg>
+        Back to Wallet
+      </button>
+    </div>
+  </div>
+</div>

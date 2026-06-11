@@ -47,6 +47,11 @@ export const routes: Routes = [
   { path: 'ai/image-search',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        canActivate: [authGuard] },
   { path: 'ai/rag-search',     loadComponent: () => import('./features/ai/rag-search/rag-search.component').then(m => m.RagSearchComponent),              canActivate: [authGuard] },
 
+  // Wallet (no auth guard — testing mode)
+  { path: 'wallet',              loadComponent: () => import('./features/wallet/wallet-dashboard/wallet-dashboard.component').then(m => m.WalletDashboardComponent) },
+  { path: 'wallet/topup',        loadComponent: () => import('./features/wallet/wallet-topup/wallet-topup.component').then(m => m.WalletTopupComponent) },
+  { path: 'wallet/topup/return', loadComponent: () => import('./features/wallet/wallet-topup-return/wallet-topup-return.component').then(m => m.WalletTopupReturnComponent) },
+
   // Fallback
   { path: '**', loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent) },
 ];

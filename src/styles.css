@@ -1,0 +1,593 @@
+/* ===== Google Font ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ===== Wallet Design Tokens ===== */
+:root {
+  --w-bg: #0f1117;
+  --w-surface: #1a1d27;
+  --w-surface-hover: #22263a;
+  --w-border: rgba(255, 255, 255, 0.06);
+  --w-text: #e4e6f0;
+  --w-text-muted: #8b8fa3;
+  --w-accent-green: #00d68f;
+  --w-accent-green-glow: rgba(0, 214, 143, 0.15);
+  --w-accent-amber: #ffaa00;
+  --w-accent-amber-glow: rgba(255, 170, 0, 0.15);
+  --w-accent-blue: #5b8def;
+  --w-accent-blue-glow: rgba(91, 141, 239, 0.15);
+  --w-accent-purple: #a78bfa;
+  --w-accent-purple-glow: rgba(167, 139, 250, 0.15);
+  --w-danger: #f87171;
+  --w-radius: 16px;
+  --w-radius-sm: 10px;
+  --w-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --w-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Wallet Page Container ===== */
+.wallet-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--w-bg);
+  min-height: 100vh;
+  color: var(--w-text);
+}
+
+/* ===== Header ===== */
+.wallet-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.02em;
+}
+
+.wallet-subtitle {
+  color: var(--w-text-muted);
+  font-size: 0.95rem;
+}
+
+/* ===== Buttons ===== */
+.btn-wallet-topup {
+  background: linear-gradient(135deg, var(--w-accent-green), #00b876);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--w-radius-sm);
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--w-transition);
+  box-shadow: 0 4px 16px rgba(0, 214, 143, 0.25);
+}
+
+.btn-wallet-topup:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 214, 143, 0.35);
+  color: #fff;
+  background: linear-gradient(135deg, #00e69a, #00c980);
+}
+
+.btn-wallet-topup:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-wallet-refresh {
+  background: var(--w-surface);
+  color: var(--w-text);
+  border: 1px solid var(--w-border);
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--w-radius-sm);
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--w-transition);
+}
+
+.btn-wallet-refresh:hover:not(:disabled) {
+  background: var(--w-surface-hover);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.btn-wallet-back {
+  background: transparent;
+  color: var(--w-text-muted);
+  border: none;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--w-transition);
+}
+
+.btn-wallet-back:hover {
+  color: #fff;
+  transform: translateX(-4px);
+}
+
+/* ===== Spinner ===== */
+.wallet-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--w-border);
+  border-top-color: var(--w-accent-green);
+  border-radius: 50%;
+  animation: wallet-spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+.wallet-spinner--sm {
+  width: 28px;
+  height: 28px;
+  border-width: 2px;
+}
+
+@keyframes wallet-spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: wallet-spin 1s linear infinite;
+}
+
+/* ===== Error Card ===== */
+.wallet-error-card {
+  background: var(--w-surface);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--w-radius);
+  padding: 3rem;
+  text-align: center;
+  color: var(--w-danger);
+}
+
+/* ===== Balance Cards ===== */
+.balance-card {
+  background: var(--w-surface);
+  border: 1px solid var(--w-border);
+  border-radius: var(--w-radius);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: var(--w-transition);
+  box-shadow: var(--w-shadow);
+}
+
+.balance-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.balance-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.balance-card--available .balance-card__icon {
+  background: var(--w-accent-green-glow);
+  color: var(--w-accent-green);
+}
+
+.balance-card--held .balance-card__icon {
+  background: var(--w-accent-amber-glow);
+  color: var(--w-accent-amber);
+}
+
+.balance-card--total .balance-card__icon {
+  background: var(--w-accent-blue-glow);
+  color: var(--w-accent-blue);
+}
+
+.balance-card__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--w-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.35rem;
+}
+
+.balance-card__value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.balance-card__glow {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  top: -30px;
+  right: -30px;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.balance-card:hover .balance-card__glow {
+  opacity: 0.5;
+}
+
+.balance-card--available .balance-card__glow {
+  background: var(--w-accent-green);
+}
+
+.balance-card--held .balance-card__glow {
+  background: var(--w-accent-amber);
+}
+
+.balance-card--total .balance-card__glow {
+  background: var(--w-accent-blue);
+}
+
+/* ===== Transactions Section ===== */
+.transactions-section {
+  background: var(--w-surface);
+  border: 1px solid var(--w-border);
+  border-radius: var(--w-radius);
+  padding: 2rem;
+  box-shadow: var(--w-shadow);
+}
+
+.transactions-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.transactions-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--w-text-muted);
+}
+
+.wallet-table {
+  color: var(--w-text);
+  margin: 0;
+}
+
+.wallet-table thead th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--w-text-muted);
+  border-bottom: 1px solid var(--w-border);
+  padding: 0.75rem 1rem;
+  background: transparent;
+}
+
+.wallet-table tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--w-border);
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.wallet-table__row {
+  transition: background 0.15s ease;
+}
+
+.wallet-table__row:hover {
+  background: var(--w-surface-hover);
+}
+
+.badge-tx-type {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--w-text-muted);
+}
+
+.badge-tx-type--topup {
+  background: var(--w-accent-green-glow);
+  color: var(--w-accent-green);
+}
+
+.badge-tx-type--hold {
+  background: var(--w-accent-amber-glow);
+  color: var(--w-accent-amber);
+}
+
+.badge-tx-type--release {
+  background: var(--w-accent-blue-glow);
+  color: var(--w-accent-blue);
+}
+
+.tx-reference {
+  font-size: 0.8rem;
+  color: var(--w-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.text-success {
+  color: var(--w-accent-green) !important;
+}
+
+.text-danger {
+  color: var(--w-danger) !important;
+}
+
+/* ===== Top-Up Form Card ===== */
+.topup-form-card {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--w-surface);
+  border: 1px solid var(--w-border);
+  border-radius: var(--w-radius);
+  overflow: hidden;
+  box-shadow: var(--w-shadow);
+}
+
+.topup-form-card__header {
+  padding: 2.5rem 2rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(0, 214, 143, 0.06) 0%, transparent 100%);
+}
+
+.topup-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: var(--w-accent-green-glow);
+  color: var(--w-accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.topup-form-card__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.topup-form-card__subtitle {
+  color: var(--w-text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.topup-form-card__body {
+  padding: 1.5rem 2rem 2.5rem;
+}
+
+.topup-form-card__body .form-label {
+  color: var(--w-text);
+  font-size: 0.88rem;
+}
+
+.topup-input-group .input-group-text {
+  background: var(--w-surface-hover);
+  border: 1px solid var(--w-border);
+  color: var(--w-accent-green);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.topup-input-group .form-control {
+  background: var(--w-surface-hover);
+  border: 1px solid var(--w-border);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.topup-input-group .form-control:focus {
+  background: var(--w-surface-hover);
+  border-color: var(--w-accent-green);
+  box-shadow: 0 0 0 3px var(--w-accent-green-glow);
+  color: #fff;
+}
+
+.topup-select {
+  background-color: var(--w-surface-hover) !important;
+  border: 1px solid var(--w-border) !important;
+  color: #fff !important;
+}
+
+.topup-select:focus {
+  border-color: var(--w-accent-green) !important;
+  box-shadow: 0 0 0 3px var(--w-accent-green-glow) !important;
+}
+
+.btn-quick-amount {
+  background: var(--w-surface-hover);
+  border: 1px solid var(--w-border);
+  color: var(--w-text);
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--w-radius-sm);
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  transition: var(--w-transition);
+}
+
+.btn-quick-amount:hover {
+  background: rgba(0, 214, 143, 0.1);
+  border-color: var(--w-accent-green);
+  color: var(--w-accent-green);
+}
+
+.btn-quick-amount.active {
+  background: var(--w-accent-green-glow);
+  border-color: var(--w-accent-green);
+  color: var(--w-accent-green);
+}
+
+/* ===== Checkout Wrapper ===== */
+.checkout-wrapper {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.checkout-title {
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.checkout-container {
+  background: #fff;
+  border-radius: var(--w-radius);
+  min-height: 300px;
+  overflow: hidden;
+}
+
+/* ===== Loading Overlay ===== */
+.topup-loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 23, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  color: var(--w-text-muted);
+}
+
+/* ===== Return / Success Page ===== */
+.return-card {
+  max-width: 520px;
+  margin: 0 auto;
+  background: var(--w-surface);
+  border: 1px solid var(--w-border);
+  border-radius: var(--w-radius);
+  padding: 3rem 2rem;
+  box-shadow: var(--w-shadow);
+}
+
+.success-checkmark {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--w-accent-green-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  animation: checkmark-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.checkmark-icon {
+  color: var(--w-accent-green);
+  animation: checkmark-draw 0.8s ease 0.3s forwards;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+@keyframes checkmark-pop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes checkmark-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.return-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.return-subtitle {
+  color: var(--w-text-muted);
+  font-size: 1rem;
+}
+
+.session-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--w-border);
+  border-radius: var(--w-radius-sm);
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.session-badge__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--w-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.session-badge__value {
+  font-size: 0.82rem;
+  color: var(--w-accent-purple);
+  word-break: break-all;
+}
+
+.updated-balance-card {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(0, 214, 143, 0.08), rgba(91, 141, 239, 0.08));
+  border: 1px solid var(--w-border);
+  border-radius: var(--w-radius-sm);
+  padding: 1rem 2rem;
+}
+
+.updated-balance-card__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--w-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.updated-balance-card__value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--w-accent-green);
+  margin: 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .wallet-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+
+  .balance-card__value {
+    font-size: 1.5rem;
+  }
+
+  .topup-form-card__body {
+    padding: 1.25rem 1.25rem 2rem;
+  }
+}
