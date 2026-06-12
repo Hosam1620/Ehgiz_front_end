@@ -1,21 +1,25 @@
-import { User } from './user.model';
+import { UserProfile } from './user.model';
 
 export interface Message {
   id: string;
   conversationId: string;
   senderId: string;
-  sender?: User;
   content: string;
-  readAt?: string;
+  read: boolean;
   createdAt: string;
+  
+  // Relations
+  sender?: UserProfile;
 }
 
 export interface Conversation {
   id: string;
-  participants: User[];
+  participants: string[];
   lastMessage?: Message;
-  unreadCount: number;
   updatedAt: string;
+  
+  // Relations
+  otherParticipant?: UserProfile;
 }
 
 export interface SendMessageRequest {

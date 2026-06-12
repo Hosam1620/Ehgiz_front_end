@@ -124,7 +124,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .nav-btn-primary:hover { background: var(--green-dark); }
 
 /* ── PAGE WRAPPER ── */
-.page-body { padding-top: var(--nav-h); min-height: 100vh; }
+.page-body { padding-top: var(--nav-h); }
 
 /* ── BUTTONS ── */
 .btn {
@@ -184,6 +184,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 }
 .form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,.1); }
 .form-input::placeholder { color: var(--text-3); }
+.form-input.is-invalid { border-color: var(--red); }
+.form-input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(220,53,69,.1); }
+.invalid-feedback { display: block; color: var(--red); font-size: 11px; margin-top: 4px; }
 textarea.form-input { resize: vertical; min-height: 90px; }
 .form-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
 .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239A9A9A' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }

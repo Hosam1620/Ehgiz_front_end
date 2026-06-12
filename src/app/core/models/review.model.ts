@@ -1,17 +1,20 @@
-import { User } from './user.model';
+import { UserProfile } from './user.model';
 
 export interface Review {
   id: string;
+  bookingId: string;
   toolId: string;
-  userId: string;
-  user?: User;
-  rating: number;
+  reviewerId: string;
+  rating: number; // 1-5
   comment: string;
   createdAt: string;
-  updatedAt: string;
+  
+  // Relations
+  reviewer?: UserProfile;
 }
 
-export interface ReviewCreateRequest {
+export interface CreateReviewRequest {
+  bookingId: string;
   toolId: string;
   rating: number;
   comment: string;
