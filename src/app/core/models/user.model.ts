@@ -1,15 +1,9 @@
-export type UserRole = 'admin' | 'user' | 'provider';
-
-export interface User {
-  id: string;
+export interface RegisterRequest {
+  fullName: string;
   email: string;
-  name: string;
-  avatar?: string;
-  role: UserRole;
-  phone?: string;
-  bio?: string;
-  createdAt: string;
-  updatedAt: string;
+  phoneNumber: string;
+  city: string;
+  password: string;
 }
 
 export interface LoginRequest {
@@ -17,14 +11,19 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-  role?: UserRole;
+export interface LoginResponse {
+  accessToken: string;
+  expiresAt: string; // ISO 8601 UTC
 }
 
-export interface AuthResponse {
-  token: string;
-  user: User;
+export interface UserProfile {
+  id: number;
+  email: string;
+  fullName: string;
+  phoneNumber: string | null;
+  profileImageUrl: string | null;
+  address: string | null;
+  city: string | null;
+  createdAt: string; // ISO 8601
+  isActive: boolean;
 }

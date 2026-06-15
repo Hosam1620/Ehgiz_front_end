@@ -1,7 +1,16 @@
-import { User } from './user.model';
+import { UserProfile } from './user.model';
 import { Category } from './category.model';
+import { Review } from './review.model';
 
-export type ToolStatus = 'active' | 'inactive' | 'draft';
+export type ToolStatus = 'available' | 'rented' | 'maintenance' | 'unavailable';
+export type ToolCondition = 'new' | 'excellent' | 'good' | 'fair';
+
+export interface ToolLocation {
+  lat: number;
+  lng: number;
+  address: string;
+  city: string;
+}
 
 export interface Tool {
   id: string;
@@ -10,29 +19,42 @@ export interface Tool {
   categoryId: string;
   category?: Category;
   ownerId: string;
-  owner?: User;
-  price: number;
-  currency: string;
+  owner?: UserProfile;
+  dailyRate: number;
+  hourlyRate?: number;
+  depositAmount: number;
+  images: string[];
+  status: ToolStatus;
+  condition: ToolCondition;
+  location: ToolLocation;
+  brand?: string;
+  model?: string;
+  features: string[];
+  rules: string[];
   rating: number;
   reviewCount: number;
-  imageUrl?: string;
-  tags: string[];
-  status: ToolStatus;
+  reviews?: Review[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ToolCreateRequest {
+export interface CreateToolRequest {
   name: string;
   description: string;
   categoryId: string;
-  price: number;
-  currency?: string;
-  imageUrl?: string;
-  tags?: string[];
+  dailyRate: number;
+  hourlyRate?: number;
+  depositAmount: number;
+  images: string[]; // base64 or pre-uploaded URLs
+  condition: ToolCondition;
+  location: ToolLocation;
+  brand?: string;
+  model?: string;
+  features: string[];
+  rules: string[];
 }
 
-export interface ToolUpdateRequest extends Partial<ToolCreateRequest> {
+export interface ToolUpdateRequest extends Partial<CreateToolRequest> {
   status?: ToolStatus;
 }
 

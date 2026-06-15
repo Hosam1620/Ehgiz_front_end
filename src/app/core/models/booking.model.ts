@@ -1,27 +1,33 @@
 import { Tool } from './tool.model';
-import { User } from './user.model';
+import { UserProfile } from './user.model';
 
-export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+export type BookingStatus = 'pending' | 'accepted' | 'rejected' | 'active' | 'completed' | 'cancelled';
 
 export interface Booking {
   id: string;
   toolId: string;
-  tool?: Tool;
-  userId: string;
-  user?: User;
+  renterId: string;
+  ownerId: string;
   startDate: string;
   endDate: string;
-  status: BookingStatus;
   totalPrice: number;
-  currency: string;
-  notes?: string;
+  status: BookingStatus;
   createdAt: string;
   updatedAt: string;
+  
+  // Relations
+  tool?: Tool;
+  renter?: UserProfile;
+  owner?: UserProfile;
 }
 
-export interface BookingCreateRequest {
+export interface CreateBookingRequest {
   toolId: string;
   startDate: string;
   endDate: string;
-  notes?: string;
+}
+
+export interface BookingDetails extends Booking {
+  paymentStatus?: 'pending' | 'held' | 'released' | 'refunded';
+  reviewId?: string;
 }
