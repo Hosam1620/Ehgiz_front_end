@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { switchMap, throwError } from 'rxjs';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -30,14 +32,20 @@ export class LoginComponent {
     this.isSubmitting = true;
     this.errorMessage = '';
 
-    this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
+    this.authService.login(this.loginForm.getRawValue()).pipe(
+      switchMap(res => {
         if (res.succeeded) {
-          this.router.navigate(['/']);
+          return this.authService.fetchMe();
+        }
+        return throwError(() => ({ error: { message: res.message || 'Login failed' } }));
+      })
+    ).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        if (this.authService.isAdmin()) {
+          this.router.navigate(['/admin']);
         } else {
-          this.errorMessage = res.message || 'Login failed';
-          this.cdr.detectChanges();
+          this.router.navigate(['/dashboard']);
         }
       },
       error: (err) => {

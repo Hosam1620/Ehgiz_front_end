@@ -1,0 +1,52 @@
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px;">
+      <div style="font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">Admin panel</div>
+      <div style="font-size:14px;font-weight:600;color:white;">Ehgiz Platform</div>
+    </div>
+    <div class="admin-sidebar-item active"><i class="fas fa-chart-pie" style="width:16px;"></i> Dashboard</div>
+    <div class="admin-sidebar-item"><i class="fas fa-users" style="width:16px;"></i> Users</div>
+    <div class="admin-sidebar-item"><i class="fas fa-toolbox" style="width:16px;"></i> Listings</div>
+    <div class="admin-sidebar-item"><i class="fas fa-calendar-check" style="width:16px;"></i> Bookings</div>
+    <div class="admin-sidebar-item"><i class="fas fa-coins" style="width:16px;"></i> Payments</div>
+    <div class="admin-sidebar-item"><i class="fas fa-folder" style="width:16px;"></i> Categories</div>
+    <div class="admin-sidebar-item"><i class="fas fa-flag" style="width:16px;"></i> Issue reports <span style="margin-left:auto;background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:var(--radius-full);">3</span></div>
+  </div>
+  
+  <div class="admin-content">
+    <div style="margin-bottom:24px;">
+      <h2 style="font-size:22px;margin-bottom:4px;">Platform overview</h2>
+      <p style="font-size:13px;color:var(--text-2);">Real-time stats</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total users</div><div class="stat-value">2,418</div><div class="stat-delta">↑ 42 this week</div></div>
+      <div class="stat-card"><div class="stat-label">Active listings</div><div class="stat-value">891</div><div class="stat-delta">↑ 18 today</div></div>
+      <div class="stat-card"><div class="stat-label">Bookings this month</div><div class="stat-value">347</div><div class="stat-delta" style="color:var(--orange);">EGP 84,200 value</div></div>
+      <div class="stat-card"><div class="stat-label">Open issues</div><div class="stat-value" style="color:var(--red);">3</div><div class="stat-delta" style="color:var(--red);">Needs attention</div></div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Recent users</div>
+        <table class="data-table" style="width: 100%;">
+          <thead><tr><th>User</th><th>City</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:30px;height:30px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--green);">AM</div>Ahmed M.</div></td><td>Cairo</td><td style="font-size:11px;color:var(--text-3);">Today</td><td><span class="chip chip-green">Active</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:30px;height:30px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);">SA</div>Sara A.</div></td><td>Giza</td><td style="font-size:11px;color:var(--text-3);">Yesterday</td><td><span class="chip chip-green">Active</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px;"><div style="width:30px;height:30px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red);">XY</div>Unknown U.</div></td><td>Cairo</td><td style="font-size:11px;color:var(--text-3);">2d ago</td><td><span class="chip chip-red">Flagged</span></td><td><div style="display:flex;gap:4px;"><button class="btn btn-sm btn-secondary">View</button><button class="btn btn-sm btn-danger">Ban</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:16px;">Tools by category</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>Power Tools</span><span style="font-weight:600;">312</span></div><div class="progress" style="height: 6px; background: #eee; border-radius: 4px; overflow: hidden;"><div class="progress-bar" style="width:70%; background: var(--green); height: 100%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>Construction</span><span style="font-weight:600;">198</span></div><div class="progress" style="height: 6px; background: #eee; border-radius: 4px; overflow: hidden;"><div class="progress-bar" style="width:44%; background: var(--green); height: 100%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>Photography</span><span style="font-weight:600;">143</span></div><div class="progress" style="height: 6px; background: #eee; border-radius: 4px; overflow: hidden;"><div class="progress-bar" style="width:32%; background: var(--green); height: 100%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>Electrical</span><span style="font-weight:600;">128</span></div><div class="progress" style="height: 6px; background: #eee; border-radius: 4px; overflow: hidden;"><div class="progress-bar" style="width:29%; background: var(--green); height: 100%;"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span>Garden</span><span style="font-weight:600;">110</span></div><div class="progress" style="height: 6px; background: #eee; border-radius: 4px; overflow: hidden;"><div class="progress-bar" style="width:25%; background: var(--green); height: 100%;"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

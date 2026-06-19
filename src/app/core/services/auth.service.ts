@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
-import { LoginRequest, RegisterRequest, LoginResponse } from '../models/user.model';
+import { LoginRequest, RegisterRequest, LoginResponse, UserProfile } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
 export interface VerifyEmailRequest {
@@ -27,6 +27,11 @@ export class AuthService {
   
   readonly isLoggedIn = computed(() => !!this._token());
   readonly token = computed(() => this._token());
+
+  currentUser = signal<UserProfile | null>(null);
+  roles = signal<string[]>([]);
+  isAdmin = computed(() => this.roles().includes('admin'));
+  isUser = computed(() => this.roles().includes('user'));
 
   login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {
     return this.http
@@ -56,6 +61,20 @@ export class AuthService {
     return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/resend-verification`, { email });
   }
 
+  fetchMe(): Observable<ApiResponse<UserProfile>> {
+    return this.http.get<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me`).pipe(
+      tap({
+        next: (res) => {
+          if (res.succeeded && res.data) {
+            this.currentUser.set(res.data);
+            this.roles.set(res.data.roles || []);
+          }
+        },
+        error: () => this.clearSession()
+      })
+    );
+  }
+
   refresh(): Observable<ApiResponse<LoginResponse>> {
     return this.http
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
@@ -78,6 +97,8 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.EXPIRES_KEY);
     this._token.set(null);
+    this.currentUser.set(null);
+    this.roles.set([]);
     this.router.navigate(['/login']);
   }
 

@@ -1,37 +1,45 @@
 <div class="d-flex flex-column min-vh-100">
   <app-navbar
     [isLoggedIn]="auth.isLoggedIn()"
-    [userName]="userName()"
+    [userName]="auth.currentUser()?.fullName || ''"
     (logoutClicked)="auth.logout()"
   />
   
   <div class="page-body flex-grow-1 d-flex flex-column">
     <ng-container *ngIf="auth.isLoggedIn(); else publicContent">
-      <div class="dash-layout flex-grow-1">
-        <aside class="sidebar">
-          <div class="sidebar-section">
-            <div class="sidebar-label">Overview</div>
-            <a class="sidebar-item" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a class="sidebar-item" routerLink="/bookings" routerLinkActive="active"><i class="fas fa-calendar-check"></i> My bookings <span class="sidebar-badge">2</span></a>
-            <a class="sidebar-item" routerLink="/notifications" routerLinkActive="active"><i class="fas fa-bell"></i> Notifications <span class="sidebar-badge">5</span></a>
-            <a class="sidebar-item" routerLink="/messages" routerLinkActive="active"><i class="fas fa-comment-dots"></i> Messages <span class="sidebar-badge">3</span></a>
-          </div>
-          <div class="sidebar-section">
-            <div class="sidebar-label">Owner</div>
-            <a class="sidebar-item" routerLink="/tools" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="fas fa-toolbox"></i> My tools</a>
-            <a class="sidebar-item" routerLink="/tools/create" routerLinkActive="active"><i class="fas fa-plus-circle"></i> Add tool</a>
-          </div>
-          <div class="sidebar-section">
-            <div class="sidebar-label">Account</div>
-            <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
-            <a class="sidebar-item" style="cursor: pointer" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
-          </div>
-        </aside>
-        
-        <main class="dash-content">
+      <ng-container *ngIf="auth.isAdmin(); else userDash">
+        <main class="flex-grow-1 h-100">
           <router-outlet />
         </main>
-      </div>
+      </ng-container>
+
+      <ng-template #userDash>
+        <div class="dash-layout flex-grow-1">
+          <aside class="sidebar">
+            <div class="sidebar-section">
+              <div class="sidebar-label">Overview</div>
+              <a class="sidebar-item" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-th-large"></i> Dashboard</a>
+              <a class="sidebar-item" routerLink="/bookings" routerLinkActive="active"><i class="fas fa-calendar-check"></i> My bookings <span class="sidebar-badge">2</span></a>
+              <a class="sidebar-item" routerLink="/notifications" routerLinkActive="active"><i class="fas fa-bell"></i> Notifications <span class="sidebar-badge">5</span></a>
+              <a class="sidebar-item" routerLink="/messages" routerLinkActive="active"><i class="fas fa-comment-dots"></i> Messages <span class="sidebar-badge">3</span></a>
+            </div>
+            <div class="sidebar-section">
+              <div class="sidebar-label">Owner</div>
+              <a class="sidebar-item" routerLink="/tools" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="fas fa-toolbox"></i> My tools</a>
+              <a class="sidebar-item" routerLink="/tools/create" routerLinkActive="active"><i class="fas fa-plus-circle"></i> Add tool</a>
+            </div>
+            <div class="sidebar-section">
+              <div class="sidebar-label">Account</div>
+              <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
+              <a class="sidebar-item" style="cursor: pointer" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+          </aside>
+          
+          <main class="dash-content">
+            <router-outlet />
+          </main>
+        </div>
+      </ng-template>
     </ng-container>
 
     <ng-template #publicContent>

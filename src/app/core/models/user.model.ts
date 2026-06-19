@@ -26,4 +26,5 @@ export interface UserProfile {
   city: string | null;
   createdAt: string; // ISO 8601
   isActive: boolean;
+  roles: string[];
 }
