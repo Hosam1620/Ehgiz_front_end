@@ -8,8 +8,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        auth.logout();
+      // Do not trigger session clearing for auth endpoints (like login, which returns 401 for unverified email).
+      // Use clearSession() instead of logout() to avoid infinite 401 loops from the /logout API itself.
+      if (error.status === 401 && !req.url.includes('/api/auth/')) {
+        auth.clearSession();
       }
       return throwError(() => error);
     }),

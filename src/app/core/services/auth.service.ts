@@ -6,6 +6,15 @@ import { ApiResponse } from '../models/api-response.model';
 import { LoginRequest, RegisterRequest, LoginResponse } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
+export interface VerifyEmailRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -29,8 +38,22 @@ export class AuthService {
       }));
   }
 
+  /** Shared state: email waiting for OTP verification. Set on register, read on verify page. */
+  pendingVerificationEmail = signal<string>('');
+
+  /** When true the verify-email page will auto-trigger resend on init (set by login 401). */
+  autoResendOnVerifyPage = signal<boolean>(false);
+
   register(data: RegisterRequest): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/register`, data);
+  }
+
+  verifyEmail(email: string, code: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/verify-email`, { email, code });
+  }
+
+  resendVerification(email: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/resend-verification`, { email });
   }
 
   refresh(): Observable<ApiResponse<LoginResponse>> {

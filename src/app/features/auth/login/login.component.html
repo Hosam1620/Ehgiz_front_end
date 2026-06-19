@@ -3,7 +3,7 @@
     <div class="col-md-6 col-lg-4">
       <div class="card p-4">
         <h2 class="text-center mb-4 font-weight-bold" style="font-family: 'Fraunces', serif;">Login</h2>
-        
+
         <div *ngIf="errorMessage" class="alert alert-danger p-2" style="font-size: 13px;">
           {{ errorMessage }}
         </div>
@@ -11,7 +11,9 @@
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="form-group mb-3">
             <label class="form-label">Email</label>
-            <input type="email" class="form-input" [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" formControlName="email" placeholder="Enter your email" />
+            <input type="email" class="form-input"
+              [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+              formControlName="email" placeholder="Enter your email" />
             <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
               A valid email is required.
             </div>
@@ -19,13 +21,16 @@
 
           <div class="form-group mb-4">
             <label class="form-label">Password</label>
-            <input type="password" class="form-input" [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" formControlName="password" placeholder="Enter your password" />
+            <input type="password" class="form-input"
+              [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              formControlName="password" placeholder="Enter your password" />
             <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
               Password is required.
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 justify-content-center" [disabled]="loginForm.invalid || isSubmitting">
+          <button type="submit" class="btn btn-primary w-100 justify-content-center"
+            [disabled]="loginForm.invalid || isSubmitting">
             <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             Login
           </button>

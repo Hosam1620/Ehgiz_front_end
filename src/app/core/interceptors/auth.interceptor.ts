@@ -9,10 +9,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.token();
 
-  // Exclude login and register from Bearer token
+  // Exclude public auth endpoints from Bearer token
   const isAuthEndpoint = req.url.includes('/api/auth/login') || 
+                         req.url.includes('/api/auth/signup') ||
                          req.url.includes('/api/auth/register') || 
-                         req.url.includes('/api/auth/refresh');
+                         req.url.includes('/api/auth/refresh') ||
+                         req.url.includes('/api/auth/verify-email') ||
+                         req.url.includes('/api/auth/resend-verification');
 
   let authReq = req;
   if (token && !isAuthEndpoint) {

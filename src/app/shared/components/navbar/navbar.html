@@ -8,8 +8,8 @@
     <span class="ai-badge">AI</span>
   </div>
   <div class="nav-links d-flex align-items-center">
-    <button class="nav-link" routerLink="/browse">Browse</button>
     <ng-container *ngIf="isLoggedIn; else loggedOut">
+      <button class="nav-link" routerLink="/browse">Browse</button>
       <button class="nav-link" routerLink="/dashboard">Dashboard</button>
       <button class="nav-link" routerLink="/add-tool">List a tool</button>
       <button class="nav-icon-btn" routerLink="/messages" title="Messages">

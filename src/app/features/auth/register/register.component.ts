@@ -41,7 +41,9 @@ export class RegisterComponent {
         setTimeout(() => {
           this.isSubmitting = false;
           if (res.succeeded) {
-            this.router.navigate(['/login']);
+            // Save email to shared service state for the verify page
+            this.authService.pendingVerificationEmail.set(this.registerForm.value.email ?? '');
+            this.router.navigate(['/verify-email']);
           } else {
             this.errorMessage = res.message || 'Registration failed';
             this.validationErrors = res.errors || [];
