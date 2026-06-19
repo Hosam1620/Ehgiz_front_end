@@ -1,0 +1,159 @@
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+  <div>
+    <h2 style="font-size:22px;margin-bottom:4px;">Notifications</h2>
+    <div style="font-size:12px;color:var(--text-3);">
+      <span class="signalr-dot"></span>Real-time updates
+    </div>
+  </div>
+  <button
+    class="btn btn-secondary btn-sm"
+    [disabled]="unreadCount() === 0"
+    (click)="markAllRead()"
+  >
+    Mark all read
+  </button>
+</div>
+
+<!-- Search -->
+<div class="mb-3 position-relative">
+  <i
+    class="fas fa-search position-absolute"
+    style="left:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;pointer-events:none;"
+  ></i>
+  <input
+    type="text"
+    class="form-control"
+    style="padding-left:36px;font-size:13px;border-radius:8px;"
+    placeholder="Search notifications…"
+    [value]="searchQuery()"
+    (input)="onSearch($any($event.target).value)"
+  />
+</div>
+
+<!-- Type filter chips -->
+<div class="d-flex gap-2 flex-wrap mb-3">
+  @for (f of typeFilters; track f.value) {
+    <button
+      class="btn btn-sm"
+      [class.btn-success]="activeTypeFilter() === f.value"
+      [class.btn-outline-secondary]="activeTypeFilter() !== f.value"
+      style="font-size:12px;border-radius:20px;padding:4px 12px;"
+      (click)="setTypeFilter(f.value)"
+    >
+      <i class="{{ f.icon }} me-1" style="font-size:11px;"></i>{{ f.label }}
+    </button>
+  }
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div
+    class="tab"
+    [class.active]="activeTab() === 'all'"
+    (click)="switchTab('all')"
+  >
+    All ({{ notifications().length }})
+  </div>
+  <div
+    class="tab"
+    [class.active]="activeTab() === 'unread'"
+    (click)="switchTab('unread')"
+  >
+    Unread
+    @if (unreadCount() > 0) {
+      <span
+        class="sidebar-badge"
+        style="margin-left:6px;background:var(--orange);"
+      >{{ unreadCount() }}</span>
+    }
+  </div>
+</div>
+
+<!-- Initial loading state -->
+@if (isLoading() && notifications().length === 0) {
+  <div style="text-align:center;padding:40px 0;">
+    <div class="spinner-border text-success" role="status">
+      <span class="visually-hidden">Loading…</span>
+    </div>
+  </div>
+}
+
+<!-- Notification list -->
+@if (!isLoading() || notifications().length > 0) {
+  @if (filteredNotifications().length === 0) {
+    <!-- Empty state -->
+    <div style="text-align:center;padding:48px 24px;color:var(--text-3);" class="card">
+      <i class="fas fa-bell-slash" style="font-size:36px;margin-bottom:12px;display:block;"></i>
+      <div style="font-size:14px;font-weight:600;color:var(--text-2);margin-bottom:4px;">
+        No notifications
+      </div>
+      <div style="font-size:12px;">
+        @if (searchQuery()) {
+          No results for "{{ searchQuery() }}"
+        } @else if (activeTab() === 'unread') {
+          You're all caught up!
+        } @else {
+          You don't have any notifications yet.
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="card" style="padding:0;overflow:hidden;">
+      @for (notif of filteredNotifications(); track notif.id) {
+        <div
+          class="notif-item"
+          [class.unread]="!notif.isRead"
+          (click)="markAsRead(notif)"
+        >
+          <!-- Type icon -->
+          <div class="notif-icon" [ngStyle]="getTypeIconStyle(notif.type)">
+            <i [class]="getTypeIcon(notif.type)"></i>
+          </div>
+
+          <!-- Text -->
+          <div class="notif-text">
+            <strong>{{ notif.title }}</strong>
+            @if (notif.message) { — {{ notif.message }} }
+            @if (!notif.isRead) {
+              <span
+                style="
+                  display:inline-block;width:6px;height:6px;
+                  border-radius:50%;background:var(--green);
+                  margin-left:6px;vertical-align:middle;
+                "
+              ></span>
+            }
+          </div>
+
+          <!-- Timestamp -->
+          <div class="notif-time">{{ formatTime(notif.createdAt) }}</div>
+        </div>
+      }
+    </div>
+  }
+}
+
+<!-- Infinite scroll sentinel (always rendered) -->
+<div #scrollSentinel style="height:1px;"></div>
+
+<!-- Loading more indicator -->
+@if (isLoading() && notifications().length > 0) {
+  <div style="text-align:center;padding:20px 0;">
+    <div
+      class="spinner-border spinner-border-sm text-success"
+      role="status"
+      style="vertical-align:middle;"
+    >
+      <span class="visually-hidden">Loading more…</span>
+    </div>
+    <span style="font-size:12px;color:var(--text-3);margin-left:8px;">Loading more…</span>
+  </div>
+}
+
+<!-- All loaded message -->
+@if (!hasMore() && !isLoading() && notifications().length > 0) {
+  <div style="text-align:center;padding:16px;font-size:12px;color:var(--text-3);">
+    All notifications loaded
+  </div>
+}
