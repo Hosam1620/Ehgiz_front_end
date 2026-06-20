@@ -1,12 +1,17 @@
 export type NotificationType = 'booking' | 'review' | 'message' | 'payment' | 'system';
 
 export interface Notification {
-  id: string;
-  userId: string;
-  type: NotificationType;
+  id: number;
+  userId: number;
+  type: NotificationType | string;
   title: string;
-  body: string;
+  message: string;
   isRead: boolean;
-  relatedId?: string;
+  url: string | null;
   createdAt: string;
+}
+
+export interface NotificationHubEvent {
+  notification: Notification;
+  timestamp: string;
 }

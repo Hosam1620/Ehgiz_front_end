@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NotificationDropdownComponent],
   templateUrl: './navbar.html',
 })
 export class Navbar {
@@ -14,6 +15,7 @@ export class Navbar {
   
   @Input() isLoggedIn = false;
   @Input() userName = '';
+  @Input() unreadCount = 0;
   @Output() logoutClicked = new EventEmitter<void>();
 
   onLogout() {
