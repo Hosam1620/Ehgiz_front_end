@@ -15,7 +15,6 @@ export class Navbar {
   
   @Input() isLoggedIn = false;
   @Input() userName = '';
-  @Input() unreadCount = 0;
   @Output() logoutClicked = new EventEmitter<void>();
 
   onLogout() {

@@ -31,7 +31,7 @@ export class NotificationDropdownComponent {
   toggle() {
     const opening = !this.isOpen();
     this.isOpen.set(opening);
-    if (opening) {
+    if (opening && this.notifications().length === 0) {
       this.notifService.getNotifications().subscribe();
     }
   }

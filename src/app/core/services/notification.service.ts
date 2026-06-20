@@ -99,5 +99,6 @@ export class NotificationService {
 
   reset() {
     this.notifications.set([]);
+    this._unreadCount.set(0);
   }
 }

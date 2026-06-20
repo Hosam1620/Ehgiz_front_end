@@ -29,26 +29,12 @@ export class App {
       if (this.auth.isLoggedIn()) {
         this.fetchProfile();
         this.notifService.loadUnreadCount().subscribe();
-        const token = this.auth.token();
-        if (token) {
-          this.hubService.startConnection(token);
-        }
+        this.hubService.startConnection();
       } else {
         this.userName.set('');
         this.hubService.stopConnection();
       }
     });
-  }
-
-  ngOnInit() {
-    if (this.auth.isLoggedIn()) {
-      this.fetchProfile();
-      this.notifService.loadUnreadCount().subscribe();
-      const token = this.auth.token();
-      if (token) {
-        this.hubService.startConnection(token);
-      }
-    }
   }
 
   private fetchProfile() {
