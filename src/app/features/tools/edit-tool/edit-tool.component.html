@@ -1,0 +1,54 @@
+@if (isLoading()) {
+  <app-loading-spinner message="Loading listing..." />
+} @else {
+  <div>
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Edit listing</h2>
+        <p class="section-sub">{{ tool()?.name }}</p>
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger mb-3" style="font-size:13px;">{{ error() }}</div>
+    }
+
+    <div class="edit-layout" style="padding:0;grid-template-columns:1fr 340px;">
+      <app-tool-form
+        [tool]="tool()"
+        [isSubmitting]="isSubmitting()"
+        submitLabel="Save & publish"
+        (submitted)="onSubmit($event)"
+        (cancelled)="onCancel()"
+      />
+
+      @if (tool(); as item) {
+        <aside class="preview-panel">
+          <div class="live-preview-header"><span class="live-dot"></span> Live preview</div>
+          <div class="card-elevated" style="padding:16px;">
+            <div style="height:120px;background:var(--surface2);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;margin-bottom:12px;overflow:hidden;">
+              @if (item.imageUrls?.length) {
+                <img [src]="item.imageUrls![0]" [alt]="item.name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
+              } @else {
+                🔧
+              }
+            </div>
+            <div style="font-weight:700;font-size:15px;margin-bottom:8px;">{{ item.name }}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+              @if (item.categoryName) {
+                <span class="chip chip-gray">{{ item.categoryName }}</span>
+              }
+              @if (item.condition) {
+                <span class="chip chip-blue">{{ item.condition }}</span>
+              }
+              <span class="chip" [class.chip-green]="item.isAvailable" [class.chip-red]="!item.isAvailable">
+                {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+              </span>
+            </div>
+            <div class="tool-price">{{ item.pricePerDay }} EGP <span>/ day</span></div>
+          </div>
+        </aside>
+      }
+    </div>
+  </div>
+}

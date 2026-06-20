@@ -1,0 +1,69 @@
+<aside class="filter-panel">
+  <div class="filter-title">
+    Filters
+    <button type="button" class="btn btn-sm btn-secondary" style="padding:2px 8px;font-size:11px;" (click)="reset()">
+      Reset
+    </button>
+  </div>
+
+  <form [formGroup]="form">
+    <div class="filter-section">
+      <div class="filter-section-title">Search</div>
+      <input type="text" class="form-input" formControlName="searchTerm" placeholder="Search tools..." />
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Category</div>
+      <select class="form-input form-select" formControlName="categoryId">
+        <option value="">All categories</option>
+        @for (category of categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Location</div>
+      <input type="text" class="form-input" formControlName="location" placeholder="City or area" />
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Price per day (EGP)</div>
+      <div class="price-range">
+        <input type="number" class="range-input" formControlName="minPrice" placeholder="Min" min="0" />
+        <span style="color:var(--text-3);">–</span>
+        <input type="number" class="range-input" formControlName="maxPrice" placeholder="Max" min="0" />
+      </div>
+    </div>
+
+    <div class="filter-section" formGroupName="conditions">
+      <div class="filter-section-title">Condition</div>
+      @for (option of conditionOptions; track option) {
+        <label class="filter-check">
+          <input type="checkbox" [formControlName]="option" />
+          {{ option }}
+        </label>
+      }
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Availability</div>
+      <label class="filter-check">
+        <input type="checkbox" formControlName="availableOnly" />
+        Available now
+      </label>
+      <label class="filter-check">
+        <input type="checkbox" formControlName="includeUnavailable" />
+        Include unavailable
+      </label>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Insurance</div>
+      <label class="filter-check">
+        <input type="checkbox" formControlName="insuredOnly" />
+        Insured tools only
+      </label>
+    </div>
+  </form>
+</aside>

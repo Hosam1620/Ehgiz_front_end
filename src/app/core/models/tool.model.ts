@@ -1,69 +1,69 @@
-import { UserProfile } from './user.model';
-import { Category } from './category.model';
-import { Review } from './review.model';
-
-export type ToolStatus = 'available' | 'rented' | 'maintenance' | 'unavailable';
-export type ToolCondition = 'new' | 'excellent' | 'good' | 'fair';
-
-export interface ToolLocation {
-  lat: number;
-  lng: number;
-  address: string;
-  city: string;
-}
+export type ToolCondition = 'New' | 'Good' | 'Fair' | 'Poor';
 
 export interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  categoryId: string;
-  category?: Category;
-  ownerId: string;
-  owner?: UserProfile;
-  dailyRate: number;
-  hourlyRate?: number;
-  depositAmount: number;
-  images: string[];
-  status: ToolStatus;
-  condition: ToolCondition;
-  location: ToolLocation;
-  brand?: string;
-  model?: string;
-  features: string[];
-  rules: string[];
-  rating: number;
-  reviewCount: number;
-  reviews?: Review[];
+  id: number;
+  name: string | null;
+  description: string | null;
+  pricePerDay: number;
+  insurancePrice: number;
+  condition: string | null;
+  location: string | null;
+  isAvailable: boolean;
   createdAt: string;
-  updatedAt: string;
+  ownerId: number;
+  ownerName: string | null;
+  categoryId: number;
+  categoryName: string | null;
+  imageUrls: string[] | null;
 }
 
 export interface CreateToolRequest {
+  categoryId: number;
   name: string;
   description: string;
-  categoryId: string;
-  dailyRate: number;
-  hourlyRate?: number;
-  depositAmount: number;
-  images: string[]; // base64 or pre-uploaded URLs
-  condition: ToolCondition;
-  location: ToolLocation;
-  brand?: string;
-  model?: string;
-  features: string[];
-  rules: string[];
+  pricePerDay: number;
+  insurancePrice: number;
+  condition: string;
+  location: string;
+  isAvailable: boolean;
 }
 
-export interface ToolUpdateRequest extends Partial<CreateToolRequest> {
-  status?: ToolStatus;
+export interface UpdateToolRequest {
+  categoryId: number;
+  name: string;
+  description: string;
+  pricePerDay: number;
+  insurancePrice: number;
+  condition: string;
+  location: string;
+  isAvailable: boolean;
 }
 
-export interface ToolSearchParams {
-  query?: string;
-  categoryId?: string;
+export interface ToolFilterParams {
+  categoryId?: number;
+  location?: string;
   minPrice?: number;
   maxPrice?: number;
-  minRating?: number;
+  isAvailable?: boolean;
+  searchTerm?: string;
   page?: number;
   pageSize?: number;
+}
+
+export interface ToolPagedResult {
+  items: Tool[] | null;
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface UploadToolImagesResponse {
+  toolId: number;
+  imageUrls: string[];
+}
+
+export interface CategoryOption {
+  id: number;
+  name: string;
 }

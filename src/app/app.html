@@ -6,7 +6,7 @@
   />
   
   <div class="page-body flex-grow-1 d-flex flex-column">
-    <ng-container *ngIf="auth.isLoggedIn(); else publicContent">
+    <ng-container *ngIf="auth.isLoggedIn() && showSidebar(); else fullWidthLayout">
       <div class="dash-layout flex-grow-1">
         <aside class="sidebar">
           <div class="sidebar-section">
@@ -34,7 +34,7 @@
       </div>
     </ng-container>
 
-    <ng-template #publicContent>
+    <ng-template #fullWidthLayout>
       <main class="flex-grow-1 h-100">
         <router-outlet />
       </main>

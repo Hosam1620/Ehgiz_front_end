@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal, effect } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
 import { ProfileService } from './core/services/profile.service';
 import { Navbar } from './shared/components/navbar/navbar';
@@ -15,8 +16,10 @@ import { Footer } from './shared/components/footer/footer';
 export class App implements OnInit {
   protected readonly auth = inject(AuthService);
   private readonly profileService = inject(ProfileService);
+  private readonly router = inject(Router);
 
   userName = signal<string>('');
+  showSidebar = signal(true);
 
   constructor() {
     effect(() => {
@@ -26,16 +29,29 @@ export class App implements OnInit {
         this.userName.set('');
       }
     });
+
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+      this.updateLayout();
+    });
   }
 
   ngOnInit() {
+    this.updateLayout();
     if (this.auth.isLoggedIn()) {
       this.fetchProfile();
     }
   }
 
+  private updateLayout(): void {
+    let route = this.router.routerState.snapshot.root;
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+    this.showSidebar.set(route.data['layout'] !== 'full');
+  }
+
   private fetchProfile() {
-    if (this.userName()) return; // Already fetched
+    if (this.userName()) return;
     this.profileService.getProfile().subscribe({
       next: (res) => {
         if (res.succeeded && res.data) {
