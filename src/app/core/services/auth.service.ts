@@ -3,8 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
-import { LoginRequest, RegisterRequest, LoginResponse } from '../models/user.model';
+import { LoginRequest, RegisterRequest, LoginResponse, UserProfile } from '../models/user.model';
 import { environment } from '../../../environments/environment';
+
+export interface VerifyEmailRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -19,6 +28,11 @@ export class AuthService {
   readonly isLoggedIn = computed(() => !!this._token());
   readonly token = computed(() => this._token());
 
+  currentUser = signal<UserProfile | null>(null);
+  roles = signal<string[]>([]);
+  isAdmin = computed(() => this.roles().includes('admin'));
+  isUser = computed(() => this.roles().includes('user'));
+
   login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {
     return this.http
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/api/auth/login`, credentials, { withCredentials: true })
@@ -29,8 +43,33 @@ export class AuthService {
       }));
   }
 
+  /** Shared state: email waiting for OTP verification. Set on register, read on verify page. */
+  pendingVerificationEmail = signal<string>('');
+
+  /** When true the verify-email page will auto-trigger resend on init (set by login 401). */
+  autoResendOnVerifyPage = signal<boolean>(false);
+
   register(data: RegisterRequest): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/register`, data);
+  }
+
+  verifyEmail(email: string, code: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/verify-email`, { email, code });
+  }
+
+  resendVerification(email: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/resend-verification`, { email });
+  }
+
+  fetchMe(): Observable<ApiResponse<UserProfile>> {
+    return this.http.get<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me`).pipe(
+      tap(res => {
+        if (res.succeeded && res.data) {
+          this.currentUser.set(res.data);
+          this.roles.set(res.data.roles || []);
+        }
+      })
+    );
   }
 
   refresh(): Observable<ApiResponse<LoginResponse>> {
@@ -55,6 +94,8 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.EXPIRES_KEY);
     this._token.set(null);
+    this.currentUser.set(null);
+    this.roles.set([]);
     this.router.navigate(['/login']);
   }
 

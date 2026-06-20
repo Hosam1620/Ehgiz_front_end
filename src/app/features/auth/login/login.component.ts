@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { switchMap, throwError } from 'rxjs';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -11,19 +13,18 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb          = inject(FormBuilder);
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-
-  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router      = inject(Router);
+  private readonly cdr         = inject(ChangeDetectorRef);
 
   loginForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+    email:    ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
 
-  errorMessage = '';
-  isSubmitting = false;
+  errorMessage  = '';
+  isSubmitting  = false;
 
   onSubmit() {
     if (this.loginForm.invalid) return;
@@ -31,19 +32,35 @@ export class LoginComponent {
     this.isSubmitting = true;
     this.errorMessage = '';
 
-    this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
+    this.authService.login(this.loginForm.getRawValue()).pipe(
+      switchMap(res => {
         if (res.succeeded) {
-          this.router.navigate(['/']);
+          return this.authService.fetchMe();
+        }
+        return throwError(() => ({ error: { message: res.message || 'Login failed' } }));
+      })
+    ).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        if (this.authService.isAdmin()) {
+          this.router.navigate(['/admin']);
         } else {
-          this.errorMessage = res.message || 'Login failed';
-          this.cdr.detectChanges();
+          this.router.navigate(['/dashboard']);
         }
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.errorMessage = err.error?.message || 'An error occurred during login.';
+        const msg: string = err.error?.message || '';
+
+        // Unverified account — redirect silently; verify page auto-resends the code
+        if (err.status === 401 && msg.toLowerCase().includes('verify your email')) {
+          this.authService.pendingVerificationEmail.set(this.loginForm.value.email ?? '');
+          this.authService.autoResendOnVerifyPage.set(true);
+          this.router.navigate(['/verify-email']);
+          return;
+        }
+
+        this.errorMessage = msg || 'An error occurred during login.';
         this.cdr.detectChanges();
       }
     });

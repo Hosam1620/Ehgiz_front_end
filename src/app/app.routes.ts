@@ -8,12 +8,19 @@ export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 
   // Auth (public)
-  { path: 'login',    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent), canActivate: [guestGuard] },
-  { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent), canActivate: [guestGuard] },
+  { path: 'login',        loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),               canActivate: [guestGuard] },
+  { path: 'register',     loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent),       canActivate: [guestGuard] },
+  { path: 'verify-email', loadComponent: () => import('./features/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent), canActivate: [guestGuard] },
+
+  // Admin
+  { path: 'admin', loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent), canActivate: [authGuard, () => import('./core/guards/admin.guard').then(m => m.adminGuard)] },
 
   // Dashboard & Profile
   { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'profile',   loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),       canActivate: [authGuard] },
+
+  // Browse (public alias for tool search)
+  { path: 'browse', loadComponent: () => import('./features/tools/tool-search/tool-search.component').then(m => m.ToolSearchComponent) },
 
   // Tools
   { path: 'tools',          loadComponent: () => import('./features/tools/tool-list/tool-list.component').then(m => m.ToolListComponent),       canActivate: [authGuard] },
