@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Notification } from '../../../core/models/notification.model';
+import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-notification-dropdown',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TimeAgoPipe],
   templateUrl: './notification-dropdown.html',
 })
 export class NotificationDropdownComponent {
@@ -32,7 +33,7 @@ export class NotificationDropdownComponent {
     const opening = !this.isOpen();
     this.isOpen.set(opening);
     if (opening && this.notifications().length === 0) {
-      this.notifService.getNotifications().subscribe();
+      this.notifService.getNotifications().subscribe({ error: () => {} });
     }
   }
 
@@ -60,18 +61,5 @@ export class NotificationDropdownComponent {
     };
     return icons[type] ?? 'fas fa-bell';
   }
-
-  formatTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return '';
-    const diffMs = Date.now() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60_000);
-    const diffHours = Math.floor(diffMs / 3_600_000);
-    const diffDays = Math.floor(diffMs / 86_400_000);
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return 'Yesterday';
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
 }
+

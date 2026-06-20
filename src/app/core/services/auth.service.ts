@@ -63,14 +63,11 @@ export class AuthService {
 
   fetchMe(): Observable<ApiResponse<UserProfile>> {
     return this.http.get<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me`).pipe(
-      tap({
-        next: (res) => {
-          if (res.succeeded && res.data) {
-            this.currentUser.set(res.data);
-            this.roles.set(res.data.roles || []);
-          }
-        },
-        error: () => this.clearSession()
+      tap(res => {
+        if (res.succeeded && res.data) {
+          this.currentUser.set(res.data);
+          this.roles.set(res.data.roles || []);
+        }
       })
     );
   }

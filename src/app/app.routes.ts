@@ -19,6 +19,9 @@ export const routes: Routes = [
   { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'profile',   loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),       canActivate: [authGuard] },
 
+  // Browse (public alias for tool search)
+  { path: 'browse', loadComponent: () => import('./features/tools/tool-search/tool-search.component').then(m => m.ToolSearchComponent) },
+
   // Tools
   { path: 'tools',          loadComponent: () => import('./features/tools/tool-list/tool-list.component').then(m => m.ToolListComponent),       canActivate: [authGuard] },
   { path: 'tools/search',   loadComponent: () => import('./features/tools/tool-search/tool-search.component').then(m => m.ToolSearchComponent), canActivate: [authGuard] },

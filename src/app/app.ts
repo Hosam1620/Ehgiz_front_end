@@ -1,8 +1,7 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, computed, effect } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
-import { ProfileService } from './core/services/profile.service';
 import { NotificationService } from './core/services/notification.service';
 import { NotificationHubService } from './core/services/notification-hub.service';
 import { Navbar } from './shared/components/navbar/navbar';
@@ -17,34 +16,20 @@ import { ToastContainerComponent } from './shared/components/toast/toast.compone
 })
 export class App {
   protected readonly auth = inject(AuthService);
-  private readonly profileService = inject(ProfileService);
   private readonly notifService = inject(NotificationService);
   private readonly hubService = inject(NotificationHubService);
 
-  readonly userName = signal<string>('');
+  readonly userName = computed(() => this.auth.currentUser()?.fullName ?? '');
   readonly unreadCount = this.notifService.unreadCount;
 
   constructor() {
     effect(() => {
       if (this.auth.isLoggedIn()) {
-        this.fetchProfile();
-        this.notifService.loadUnreadCount().subscribe();
+        this.notifService.loadUnreadCount().subscribe({ error: () => {} });
         this.hubService.startConnection();
       } else {
-        this.userName.set('');
         this.hubService.stopConnection();
       }
-    });
-  }
-
-  private fetchProfile() {
-    if (this.userName()) return;
-    this.profileService.getProfile().subscribe({
-      next: res => {
-        if (res.succeeded && res.data) {
-          this.userName.set(res.data.fullName);
-        }
-      },
     });
   }
 }

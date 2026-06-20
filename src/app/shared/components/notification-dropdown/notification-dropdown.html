@@ -77,8 +77,7 @@
         <div class="flex-grow-1 overflow-hidden">
           <div class="d-flex align-items-center justify-content-between gap-1">
             <span class="fw-semibold text-truncate" style="font-size:13px;max-width:190px;">{{ notif.title }}</span>
-            <span class="flex-shrink-0" style="font-size:11px;color:var(--text-3, #94a3b8);">{{
-              formatTime(notif.createdAt) }}</span>
+            <span class="flex-shrink-0" style="font-size:11px;color:var(--text-3, #94a3b8);">{{ notif.createdAt | timeAgo }}</span>
           </div>
           @if (notif.message) {
           <div class="text-truncate" style="font-size:12px;color:var(--text-3, #94a3b8);line-height:1.4;">{{

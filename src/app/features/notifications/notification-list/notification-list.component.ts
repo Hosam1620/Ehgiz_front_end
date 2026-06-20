@@ -12,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Notification, NotificationType } from '../../../core/models/notification.model';
+import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
 
 type TypeFilter = NotificationType | 'all';
 
@@ -20,7 +21,7 @@ const DISPLAY_STEP = 20;
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TimeAgoPipe],
   templateUrl: './notification-list.component.html',
 })
 export class NotificationListComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -154,17 +155,4 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
     return styles[type] ?? { background: 'var(--surface2)', color: 'var(--text-3)' };
   }
 
-  formatTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return '';
-    const diffMs   = Date.now() - date.getTime();
-    const diffMins  = Math.floor(diffMs / 60_000);
-    const diffHours = Math.floor(diffMs / 3_600_000);
-    const diffDays  = Math.floor(diffMs / 86_400_000);
-    if (diffMins < 1)   return 'Just now';
-    if (diffMins < 60)  return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return 'Yesterday';
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
 }

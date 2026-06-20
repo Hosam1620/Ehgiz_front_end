@@ -127,7 +127,7 @@
           </div>
 
           <!-- Timestamp -->
-          <div class="notif-time">{{ formatTime(notif.createdAt) }}</div>
+          <div class="notif-time">{{ notif.createdAt | timeAgo }}</div>
         </div>
       }
     </div>
