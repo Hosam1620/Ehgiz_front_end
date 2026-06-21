@@ -1,4 +1,5 @@
-import { Component, OnInit, effect, inject, output, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, effect, inject, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CategoryOption } from '../../../core/models/tool.model';
@@ -17,6 +18,7 @@ export class FilterPanelComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly filterStore = inject(BrowseFilterStore);
   private readonly browseService = inject(BrowseService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly filtersChanged = output<void>();
 
@@ -56,12 +58,16 @@ export class FilterPanelComponent implements OnInit {
     this.loadCategories();
     this.updateActiveCount();
 
-    this.form.valueChanges.subscribe(() => this.updateActiveCount());
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.updateActiveCount());
 
-    this.form.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
-      this.applyFormToStore();
-      this.filtersChanged.emit();
-    });
+    this.form.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFormToStore();
+        this.filtersChanged.emit();
+      });
   }
 
   reset(): void {
