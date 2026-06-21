@@ -9,7 +9,6 @@ import {
   AfterViewChecked,
   ViewChild,
   ElementRef,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -31,14 +30,12 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesEnd') private messagesEnd!: ElementRef<HTMLElement>;
   @ViewChild('chatBody') private chatBodyRef!: ElementRef<HTMLElement>;
-  @ViewChild('inputRef') private inputRef!: ElementRef<HTMLTextAreaElement>;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly chatHub = inject(ChatHubService);
   private readonly auth = inject(AuthService);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly conversationId = signal(0);
   readonly conversation = signal<ConversationDto | null>(null);
@@ -155,10 +152,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   // ─── Hub subscriptions ───────────────────────────────────────────────────────
 
   private subscribeToHub(): void {
-    // New message from the other user
+    // New message pushed by the server (could be from us or the other user)
     this.subs.push(
       this.chatHub.messageReceived$.subscribe(msg => {
         if (msg.conversationId !== this.conversationId()) return;
+        // Skip if already in the list (e.g. our own message added via optimistic update)
+        if (this.messages().some(m => m.id === msg.id)) return;
         this.messages.update(list => [...list, msg]);
         this.shouldScrollToBottom = true;
         this.markRead();

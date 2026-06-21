@@ -52,11 +52,32 @@ export class NotificationDropdownComponent {
     }
   }
 
-  handleClick(n: Notification) {
+  handleClick(n: Notification): void {
     this.markAsRead(n);
     this.isOpen.set(false);
-    if (n.url) {
-      this.router.navigateByUrl(n.url);
+
+    let path = n.url?.trim() ?? '';
+
+    // Backend may return an absolute URL — extract only the path+search
+    if (path.startsWith('http')) {
+      try {
+        const parsed = new URL(path);
+        path = parsed.pathname + parsed.search;
+      } catch {
+        path = '';
+      }
+    }
+
+    // Ensure the path is always absolute
+    if (path && !path.startsWith('/')) {
+      path = '/' + path;
+    }
+
+    if (path) {
+      this.router.navigateByUrl(path);
+    } else if (n.type === 'message') {
+      // No URL on a message notification — go to the inbox
+      this.router.navigate(['/messages']);
     }
   }
 
