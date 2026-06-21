@@ -53,6 +53,17 @@ export const routes: Routes = [
   { path: 'ai/image-search',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        canActivate: [authGuard] },
   { path: 'ai/rag-search',     loadComponent: () => import('./features/ai/rag-search/rag-search.component').then(m => m.RagSearchComponent),              canActivate: [authGuard] },
 
+  // Static pages
+  { path: 'how-it-works', loadComponent: () => import('./features/pages/how-it-works/how-it-works.component').then(m => m.HowItWorksComponent) },
+  { path: 'pricing',      loadComponent: () => import('./features/pages/pricing/pricing.component').then(m => m.PricingComponent) },
+  { path: 'help',         loadComponent: () => import('./features/pages/help/help.component').then(m => m.HelpComponent) },
+  { path: 'safety',       loadComponent: () => import('./features/pages/safety/safety.component').then(m => m.SafetyComponent) },
+  { path: 'insurance',    loadComponent: () => import('./features/pages/insurance/insurance.component').then(m => m.InsuranceComponent) },
+  { path: 'contact',      loadComponent: () => import('./features/pages/contact/contact.component').then(m => m.ContactComponent) },
+  { path: 'terms',        loadComponent: () => import('./features/pages/terms/terms.component').then(m => m.TermsComponent) },
+  { path: 'privacy',      loadComponent: () => import('./features/pages/privacy/privacy.component').then(m => m.PrivacyComponent) },
+  { path: 'cookie',       loadComponent: () => import('./features/pages/cookie/cookie.component').then(m => m.CookieComponent) },
+
   // Fallback
   { path: '**', loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent) },
 ];

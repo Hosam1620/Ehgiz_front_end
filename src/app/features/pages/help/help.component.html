@@ -1,0 +1,63 @@
+<div class="container py-5" style="max-width:760px">
+  <div class="text-center mb-5">
+    <h1 style="font-size:2.2rem;color:var(--green)">Help Center</h1>
+    <p style="color:var(--text-2);font-size:1rem;max-width:480px;margin:12px auto 0">
+      Find answers to common questions about renting, listing, and payments on Ehgiz.
+    </p>
+  </div>
+
+  <!-- Quick links -->
+  <div class="row gy-3 mb-5">
+    <div class="col-6 col-md-3">
+      <a routerLink="/how-it-works" class="card border-0 shadow-sm p-3 text-center d-block h-100" style="color:inherit;border-radius:var(--radius)">
+        <i class="fas fa-book-open" style="font-size:1.5rem;color:var(--green);margin-bottom:8px"></i>
+        <div style="font-size:.85rem;font-weight:600">How it works</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a routerLink="/safety" class="card border-0 shadow-sm p-3 text-center d-block h-100" style="color:inherit;border-radius:var(--radius)">
+        <i class="fas fa-shield-alt" style="font-size:1.5rem;color:var(--green);margin-bottom:8px"></i>
+        <div style="font-size:.85rem;font-weight:600">Safety guide</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a routerLink="/insurance" class="card border-0 shadow-sm p-3 text-center d-block h-100" style="color:inherit;border-radius:var(--radius)">
+        <i class="fas fa-umbrella" style="font-size:1.5rem;color:var(--green);margin-bottom:8px"></i>
+        <div style="font-size:.85rem;font-weight:600">Insurance</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a routerLink="/contact" class="card border-0 shadow-sm p-3 text-center d-block h-100" style="color:inherit;border-radius:var(--radius)">
+        <i class="fas fa-envelope" style="font-size:1.5rem;color:var(--green);margin-bottom:8px"></i>
+        <div style="font-size:.85rem;font-weight:600">Contact us</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <h2 style="font-size:1.2rem;margin-bottom:20px">Frequently Asked Questions</h2>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:40px">
+    @for (faq of faqs; track faq.q; let i = $index) {
+      <div class="card border-0 shadow-sm" style="border-radius:var(--radius);overflow:hidden">
+        <button
+          (click)="toggle(i)"
+          style="width:100%;text-align:left;padding:16px 20px;background:none;border:none;font-weight:600;font-size:.9rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)"
+        >
+          {{ faq.q }}
+          <i class="fas" [class.fa-chevron-down]="openIndex() !== i" [class.fa-chevron-up]="openIndex() === i" style="color:var(--text-3);flex-shrink:0;margin-left:12px"></i>
+        </button>
+        @if (openIndex() === i) {
+          <div style="padding:0 20px 16px;font-size:.875rem;color:var(--text-2);border-top:1px solid var(--border)">
+            {{ faq.a }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="card border-0 p-4 text-center" style="background:var(--green-light);border-radius:var(--radius-lg)">
+    <h3 style="font-size:1rem;margin-bottom:8px">Still need help?</h3>
+    <p style="color:var(--text-2);font-size:.875rem;margin-bottom:16px">Our support team is here to help you with any questions.</p>
+    <a routerLink="/contact" class="btn btn-primary" style="width:fit-content;margin:0 auto">Contact support</a>
+  </div>
+</div>

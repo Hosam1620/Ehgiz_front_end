@@ -57,7 +57,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private subs: Subscription[] = [];
   private typingTimer?: ReturnType<typeof setTimeout>;
   private isTypingSent = false;
-  private shouldScrollToBottom = true;
+  private shouldScrollToBottom = false;
   private scrollHeightBefore = 0;
   private restoreScroll = false;
 
@@ -117,7 +117,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         // Backend returns newest-first — reverse so oldest is at the top
         this.messages.set([...(data ?? [])].reverse());
         this.hasMore.set((data?.length ?? 0) === this.PAGE_SIZE);
-        this.shouldScrollToBottom = true;
         this.isLoading.set(false);
         this.markRead();
       },

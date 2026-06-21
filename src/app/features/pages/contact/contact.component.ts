@@ -1,0 +1,23 @@
+import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+@Component({
+  selector: 'app-contact',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './contact.component.html',
+})
+export class ContactComponent {
+  name = signal('');
+  email = signal('');
+  subject = signal('');
+  message = signal('');
+  submitted = signal(false);
+
+  submit(): void {
+    if (!this.name() || !this.email() || !this.message()) return;
+    this.submitted.set(true);
+  }
+}

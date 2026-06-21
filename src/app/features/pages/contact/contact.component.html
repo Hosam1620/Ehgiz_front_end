@@ -1,0 +1,77 @@
+<div class="container py-5" style="max-width:760px">
+  <div class="text-center mb-5">
+    <h1 style="font-size:2.2rem;color:var(--green)">Contact Us</h1>
+    <p style="color:var(--text-2);font-size:1rem;max-width:460px;margin:12px auto 0">
+      Have a question or need help? Our team is here for you.
+    </p>
+  </div>
+
+  <div class="row gy-4">
+    <!-- Contact info -->
+    <div class="col-md-4">
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <i class="fas fa-envelope" style="color:var(--green)"></i>
+            <strong style="font-size:.9rem">Email</strong>
+          </div>
+          <p style="color:var(--text-2);font-size:.875rem;margin:0">support&#64;ehgiz.eg</p>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <i class="fas fa-clock" style="color:var(--green)"></i>
+            <strong style="font-size:.9rem">Support hours</strong>
+          </div>
+          <p style="color:var(--text-2);font-size:.875rem;margin:0">Sun – Thu, 9 AM – 6 PM EET</p>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <i class="fas fa-map-marker-alt" style="color:var(--green)"></i>
+            <strong style="font-size:.9rem">Location</strong>
+          </div>
+          <p style="color:var(--text-2);font-size:.875rem;margin:0">Cairo, Egypt 🇪🇬</p>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <i class="fas fa-question-circle" style="color:var(--green)"></i>
+            <strong style="font-size:.9rem">FAQ</strong>
+          </div>
+          <a routerLink="/help" style="color:var(--green);font-size:.875rem">Visit the help center</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact form -->
+    <div class="col-md-8">
+      @if (submitted()) {
+        <div class="card border-0 p-5 text-center" style="background:var(--green-light);border-radius:var(--radius-lg)">
+          <i class="fas fa-check-circle" style="font-size:2.5rem;color:var(--green);margin-bottom:16px"></i>
+          <h3 style="font-size:1.1rem;margin-bottom:8px">Message sent!</h3>
+          <p style="color:var(--text-2);font-size:.875rem;margin:0">Thanks for reaching out. We'll get back to you within 1 business day.</p>
+        </div>
+      } @else {
+        <div class="card border-0 shadow-sm p-4">
+          <div class="mb-3">
+            <label class="form-label" style="font-size:.875rem;font-weight:600">Name</label>
+            <input type="text" class="form-control" placeholder="Your name" [value]="name()" (input)="name.set($any($event.target).value)">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" style="font-size:.875rem;font-weight:600">Email</label>
+            <input type="email" class="form-control" placeholder="your@email.com" [value]="email()" (input)="email.set($any($event.target).value)">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" style="font-size:.875rem;font-weight:600">Subject</label>
+            <input type="text" class="form-control" placeholder="How can we help?" [value]="subject()" (input)="subject.set($any($event.target).value)">
+          </div>
+          <div class="mb-4">
+            <label class="form-label" style="font-size:.875rem;font-weight:600">Message</label>
+            <textarea class="form-control" rows="5" placeholder="Describe your issue or question..." [value]="message()" (input)="message.set($any($event.target).value)"></textarea>
+          </div>
+          <button class="btn btn-primary w-100" (click)="submit()" [disabled]="!name() || !email() || !message()">
+            Send message
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
