@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, OnDestroy } from '@angular/core';
+import { Injectable, inject, signal, OnDestroy, NgZone } from '@angular/core';
 import {
   HubConnectionBuilder,
   HubConnection,
@@ -23,6 +23,7 @@ export interface UserTypingEvent {
 @Injectable({ providedIn: 'root' })
 export class ChatHubService implements OnDestroy {
   private readonly auth = inject(AuthService);
+  private readonly ngZone = inject(NgZone);
   private connection?: HubConnection;
   private retryTimer?: ReturnType<typeof setTimeout>;
 
@@ -58,29 +59,29 @@ export class ChatHubService implements OnDestroy {
       .build();
 
     this.connection.on('ReceiveMessage', (message: MessageDto) => {
-      this.messageReceived$.next(message);
+      this.ngZone.run(() => this.messageReceived$.next(message));
     });
 
     this.connection.on('MessagesRead', (data: MessagesReadEvent) => {
-      this.messagesRead$.next(data);
+      this.ngZone.run(() => this.messagesRead$.next(data));
     });
 
     this.connection.on('UserTyping', (data: UserTypingEvent) => {
-      this.userTyping$.next(data);
+      this.ngZone.run(() => this.userTyping$.next(data));
     });
 
     this.connection.onreconnecting(() => {
-      this.isConnected.set(false);
+      this.ngZone.run(() => this.isConnected.set(false));
       console.log('[ChatHub] Reconnecting…');
     });
 
     this.connection.onreconnected(() => {
-      this.isConnected.set(true);
+      this.ngZone.run(() => this.isConnected.set(true));
       console.log('[ChatHub] Reconnected');
     });
 
     this.connection.onclose(err => {
-      this.isConnected.set(false);
+      this.ngZone.run(() => this.isConnected.set(false));
       if (err) {
         console.error('[ChatHub] Closed with error:', err);
         this.retryTimer = setTimeout(() => this.startConnection(), 60_000);
@@ -89,9 +90,10 @@ export class ChatHubService implements OnDestroy {
 
     try {
       await this.connection.start();
-      this.isConnected.set(true);
+      this.ngZone.run(() => this.isConnected.set(true));
     } catch (err) {
       console.error('[ChatHub] Failed to start:', err);
+      this.retryTimer = setTimeout(() => this.startConnection(), 5_000);
     }
   }
 
