@@ -35,6 +35,8 @@ export class App {
       }
     });
 
+    this.updateLayout();
+
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.updateLayout();
     });

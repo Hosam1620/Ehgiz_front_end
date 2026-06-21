@@ -1,31 +1,38 @@
-<nav class="navbar navbar-expand-md" id="main-nav">
-  <div class="nav-logo" routerLink="/">
+<nav class="navbar" id="main-nav">
+  <a class="nav-logo" routerLink="/">
     <span class="nav-logo-dot"></span> Ehgiz
-  </div>
-  <div class="nav-search flex-grow-1 mx-4">
+  </a>
+
+  <div class="nav-search">
     <i class="fas fa-search search-icon"></i>
-    <input type="text" class="form-control rounded-pill" placeholder="Search tools, drills, cameras…" style="padding-left: 40px;">
+    <input type="text" placeholder="Search tools, drills, cameras…" routerLink="/browse" readonly style="cursor:pointer;" />
     <span class="ai-badge">AI</span>
   </div>
-  <div class="nav-links d-flex align-items-center">
-    <button class="nav-link" routerLink="/browse">Browse</button>
+
+  <div class="nav-links">
+    <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
+
     @if (isLoggedIn) {
       @if (auth.isAdmin()) {
-        <button class="nav-link text-warning font-weight-bold" routerLink="/admin">Admin</button>
+        <a class="nav-link" routerLink="/admin" routerLinkActive="active" style="color:var(--orange);">
+          <i class="fas fa-shield-alt" style="font-size:12px;"></i> Admin
+        </a>
       }
-      <button class="nav-link" routerLink="/dashboard">Dashboard</button>
-      <button class="nav-link" routerLink="/tools/create">List a tool</button>
-      <button class="nav-icon-btn" routerLink="/messages" title="Messages">
+      <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a class="nav-link" routerLink="/tools/create" routerLinkActive="active">List a tool</a>
+
+      <a class="nav-icon-btn" routerLink="/messages" routerLinkActive="active" title="Messages">
         <i class="fas fa-comment-dots"></i>
-        <span class="notif-dot"></span>
-      </button>
+      </a>
+
       <app-notification-dropdown />
-      <div class="nav-avatar ms-2" routerLink="/profile" style="cursor: pointer" title="Profile">
+
+      <a class="nav-avatar" routerLink="/profile" title="{{ userName }}">
         {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
-      </div>
+      </a>
     } @else {
-      <button class="nav-link" routerLink="/login">Login</button>
-      <button class="nav-btn-primary ms-2" routerLink="/register">Sign Up</button>
+      <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+      <a class="nav-btn-primary" routerLink="/register">Sign Up</a>
     }
   </div>
 </nav>

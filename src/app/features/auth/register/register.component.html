@@ -1,71 +1,131 @@
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-5">
-      <div class="card p-4">
-        <h2 class="text-center mb-4 font-weight-bold" style="font-family: 'Fraunces', serif;">Create an Account</h2>
-        
-        <div *ngIf="errorMessage" class="alert alert-danger p-2" style="font-size: 13px;">
-          <strong>{{ errorMessage }}</strong>
-          <ul class="mb-0 mt-1" *ngIf="validationErrors.length > 0">
-            <li *ngFor="let err of validationErrors">{{ err }}</li>
+<div class="auth-page">
+  <div class="auth-card card-elevated">
+
+    <div class="auth-brand">
+      <span class="nav-logo-dot"></span> Ehgiz
+    </div>
+    <h2 class="auth-title">Create your account</h2>
+    <p class="auth-sub">Join thousands of renters and owners on Ehgiz</p>
+
+    @if (errorMessage) {
+      <div class="auth-error">
+        <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+        @if (validationErrors.length > 0) {
+          <ul style="margin:6px 0 0 16px;padding:0;font-size:11px;">
+            @for (err of validationErrors; track err) {
+              <li>{{ err }}</li>
+            }
           </ul>
+        }
+      </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="input-row">
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input
+            type="text"
+            class="form-input"
+            [class.is-invalid]="registerForm.controls.fullName.invalid && registerForm.controls.fullName.touched"
+            formControlName="fullName"
+            placeholder="Ahmed Mohamed"
+          />
+          @if (registerForm.controls.fullName.invalid && registerForm.controls.fullName.touched) {
+            <div class="invalid-feedback">Full name is required.</div>
+          }
         </div>
-
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-          
-          <div class="form-group mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" class="form-input" [class.is-invalid]="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched" formControlName="fullName" placeholder="John Doe" />
-            <div class="invalid-feedback" *ngIf="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched">
-              Full name is required.
-            </div>
-          </div>
-
-          <div class="form-group mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" formControlName="email" placeholder="john@example.com" />
-            <div class="invalid-feedback" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-              A valid email is required.
-            </div>
-          </div>
-
-          <div class="form-group mb-3">
-            <label class="form-label">Phone Number</label>
-            <input type="text" class="form-input" [class.is-invalid]="registerForm.get('phoneNumber')?.invalid && registerForm.get('phoneNumber')?.touched" formControlName="phoneNumber" placeholder="+201234567890" />
-            <div class="invalid-feedback" *ngIf="registerForm.get('phoneNumber')?.invalid && registerForm.get('phoneNumber')?.touched">
-              <span *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone number is required.</span>
-              <span *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern']">Phone number can only contain digits and a leading '+'.</span>
-            </div>
-          </div>
-
-          <div class="form-group mb-3">
-            <label class="form-label">City</label>
-            <input type="text" class="form-input" [class.is-invalid]="registerForm.get('city')?.invalid && registerForm.get('city')?.touched" formControlName="city" placeholder="Cairo" />
-            <div class="invalid-feedback" *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">
-              City is required.
-            </div>
-          </div>
-
-          <div class="form-group mb-4">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-input" [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" formControlName="password" placeholder="Min 8 chars, 1 digit, 1 lowercase, 1 special char" />
-            <div class="invalid-feedback" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-              <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</span>
-              <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Password must be at least 8 characters long, containing at least 1 digit, 1 lowercase letter, and 1 special character.</span>
-            </div>
-            <div class="form-hint" *ngIf="!registerForm.get('password')?.invalid || !registerForm.get('password')?.touched">Password must contain at least 8 characters, including a digit, a lowercase letter, and a special character.</div>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100 justify-content-center" [disabled]="registerForm.invalid || isSubmitting">
-            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Register
-          </button>
-        </form>
-
-        <div class="text-center mt-3" style="font-size: 13px;">
-          Already have an account? <a routerLink="/login" class="text-success font-weight-bold">Login</a>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input
+            type="text"
+            class="form-input"
+            [class.is-invalid]="registerForm.controls.city.invalid && registerForm.controls.city.touched"
+            formControlName="city"
+            placeholder="Cairo"
+          />
+          @if (registerForm.controls.city.invalid && registerForm.controls.city.touched) {
+            <div class="invalid-feedback">City is required.</div>
+          }
         </div>
       </div>
+
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input
+          type="email"
+          class="form-input"
+          [class.is-invalid]="registerForm.controls.email.invalid && registerForm.controls.email.touched"
+          formControlName="email"
+          placeholder="you@example.com"
+        />
+        @if (registerForm.controls.email.invalid && registerForm.controls.email.touched) {
+          <div class="invalid-feedback">A valid email is required.</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone number</label>
+        <input
+          type="tel"
+          class="form-input"
+          [class.is-invalid]="registerForm.controls.phoneNumber.invalid && registerForm.controls.phoneNumber.touched"
+          formControlName="phoneNumber"
+          placeholder="+201234567890"
+        />
+        @if (registerForm.controls.phoneNumber.invalid && registerForm.controls.phoneNumber.touched) {
+          @if (registerForm.controls.phoneNumber.errors?.['required']) {
+            <div class="invalid-feedback">Phone number is required.</div>
+          } @else {
+            <div class="invalid-feedback">Enter a valid phone number (digits and optional leading +).</div>
+          }
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-input"
+          [class.is-invalid]="registerForm.controls.password.invalid && registerForm.controls.password.touched"
+          formControlName="password"
+          placeholder="Min 8 chars, 1 digit, 1 special character"
+        />
+        @if (registerForm.controls.password.invalid && registerForm.controls.password.touched) {
+          <div class="invalid-feedback">
+            Password must be at least 8 characters with a digit and special character.
+          </div>
+        } @else {
+          <div class="form-hint">At least 8 characters · 1 digit · 1 lowercase · 1 special character</div>
+        }
+      </div>
+
+      <div class="auth-terms">
+        <input type="checkbox" required />
+        <span>
+          I agree to the
+          <a class="auth-forgot">Terms of Service</a>
+          and
+          <a class="auth-forgot">Privacy Policy</a>
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="registerForm.invalid || isSubmitting"
+      >
+        @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm"></span> Creating account…
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+
+    <div class="auth-footer-text">
+      Already have an account?
+      <a routerLink="/login" class="auth-link">Sign in</a>
     </div>
   </div>
 </div>

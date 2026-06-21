@@ -1,18 +1,18 @@
-<div class="d-flex flex-column min-vh-100">
+<div class="app-shell">
   <app-navbar
     [isLoggedIn]="auth.isLoggedIn()"
     [userName]="userName()"
     (logoutClicked)="auth.logout()"
   />
 
-  <div class="page-body flex-grow-1 d-flex flex-column">
+  <div class="page-body">
     @if (auth.isLoggedIn()) {
       @if (auth.isAdmin()) {
-        <main class="flex-grow-1 h-100">
+        <main class="content-full">
           <router-outlet />
         </main>
       } @else if (showSidebar()) {
-        <div class="dash-layout flex-grow-1">
+        <div class="dash-layout">
           <aside class="sidebar">
             <div class="sidebar-section">
               <div class="sidebar-label">Overview</div>
@@ -34,7 +34,7 @@
             <div class="sidebar-section">
               <div class="sidebar-label">Account</div>
               <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
-              <a class="sidebar-item" style="cursor: pointer" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+              <a class="sidebar-item" style="cursor:pointer;" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
             </div>
           </aside>
 
@@ -43,12 +43,12 @@
           </main>
         </div>
       } @else {
-        <main class="flex-grow-1 h-100">
+        <main class="content-full">
           <router-outlet />
         </main>
       }
     } @else {
-      <main class="flex-grow-1 h-100">
+      <main class="content-full">
         <router-outlet />
       </main>
     }

@@ -1,22 +1,25 @@
 <a class="tool-card" [routerLink]="['/tools', tool().id]">
-  <div class="tool-card-img">
+  <div class="tool-card-img" [style.background]="primaryImage() ? '' : cardBg()">
     @if (primaryImage()) {
       <img [src]="primaryImage()!" [alt]="tool().name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
     } @else {
       {{ placeholderEmoji() }}
     }
     @if (showAiMatch()) {
-      <span class="chip chip-ai" style="position:absolute;top:10px;left:10px;">AI match</span>
+      <span class="chip chip-ai" style="position:absolute;top:10px;left:10px;">
+        <i class="fas fa-robot" style="font-size:9px;"></i> AI match
+      </span>
     }
   </div>
   <div class="tool-card-body">
     <div class="tool-card-name">{{ tool().name }}</div>
     <div class="tool-card-meta">
       @if (tool().location) {
-        <span>{{ tool().location }}</span>
+        <i class="fas fa-map-marker-alt" style="font-size:10px;color:var(--text-3);margin-right:3px;"></i>{{ tool().location }}
       }
-      @if (tool().condition) {
-        <span> · {{ tool().condition }}</span>
+      @if (tool().categoryName) {
+        @if (tool().location) { <span style="margin:0 3px;">·</span> }
+        {{ tool().categoryName }}
       }
     </div>
     <div class="tool-card-footer">

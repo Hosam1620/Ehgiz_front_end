@@ -10,7 +10,7 @@
   </div>
 
   @if (error()) {
-    <div class="alert alert-danger mb-3" style="font-size:13px;">{{ error() }}</div>
+    <div class="alert alert-danger">{{ error() }}</div>
   }
 
   <div class="tabs">
@@ -23,9 +23,28 @@
   @if (isLoading()) {
     <app-loading-spinner message="Loading your tools..." />
   } @else if (!filteredTools().length) {
-    <div class="card text-center" style="padding:40px 24px;">
-      <p style="color:var(--text-2);margin-bottom:16px;">No tools in this tab yet.</p>
-      <a class="btn btn-primary" routerLink="/tools/create">Add your first tool</a>
+    <div class="card" style="padding:48px 24px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:12px;">
+        @if (activeTab() === 'all') { 🔧 }
+        @else if (activeTab() === 'available') { ✅ }
+        @else if (activeTab() === 'booked') { 📅 }
+        @else { 📦 }
+      </div>
+      <h3 style="font-size:17px;font-weight:600;margin-bottom:8px;">
+        @if (activeTab() === 'all') { No tools listed yet }
+        @else if (activeTab() === 'available') { No available tools }
+        @else if (activeTab() === 'booked') { No booked tools right now }
+        @else { No inactive tools }
+      </h3>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:20px;">
+        @if (activeTab() === 'all') { List your tools and start earning — it takes less than 2 minutes. }
+        @else { No tools match this status right now. }
+      </p>
+      @if (activeTab() === 'all') {
+        <a class="btn btn-primary" routerLink="/tools/create">
+          <i class="fas fa-plus"></i> Add your first tool
+        </a>
+      }
     </div>
   } @else {
     <div class="card-elevated" style="padding:0;overflow:hidden;">
@@ -45,7 +64,7 @@
             <tr>
               <td>
                 <div style="display:flex;align-items:center;gap:12px;">
-                  <div style="width:44px;height:44px;border-radius:var(--radius);background:var(--surface2);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <div style="width:44px;height:44px;border-radius:var(--radius);background:var(--surface2);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">
                     @if (toolThumbnail(tool)) {
                       <img [src]="toolThumbnail(tool)!" [alt]="tool.name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
                     } @else {
@@ -54,20 +73,20 @@
                   </div>
                   <div>
                     <div style="font-weight:600;">{{ tool.name }}</div>
-                    <div style="font-size:12px;color:var(--text-2);">{{ tool.condition }}</div>
+                    <div style="font-size:11px;color:var(--text-3);">{{ tool.condition }}</div>
                   </div>
                 </div>
               </td>
-              <td>{{ tool.categoryName ?? '—' }}</td>
+              <td style="color:var(--text-2);">{{ tool.categoryName ?? '—' }}</td>
               <td style="font-weight:700;color:var(--green);">{{ tool.pricePerDay | number:'1.0-0' }} EGP</td>
               <td><span class="chip" [class]="statusClass(tool)">{{ statusLabel(tool) }}</span></td>
-              <td>{{ tool.location ?? '—' }}</td>
+              <td style="color:var(--text-2);">{{ tool.location ?? '—' }}</td>
               <td>
-                <div style="display:flex;gap:8px;">
+                <div style="display:flex;gap:6px;">
                   <a class="btn btn-secondary btn-sm" [routerLink]="['/tools', tool.id, 'edit']" title="Edit">
                     <i class="fas fa-pen"></i>
                   </a>
-                  <button type="button" class="btn btn-secondary btn-sm" (click)="confirmDelete(tool)" title="Delete">
+                  <button type="button" class="btn btn-danger btn-sm" (click)="confirmDelete(tool)" title="Delete">
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>

@@ -106,13 +106,13 @@
         <input type="text" class="form-input" formControlName="location" placeholder="City or area" [class.is-invalid]="form.controls.location.invalid && form.controls.location.touched" />
       </div>
 
-      <label class="filter-check" style="margin-top:8px;">
-        <span>Tool is available</span>
+      <div class="form-toggle-row" style="margin-top:8px;">
+        <span style="font-size:13px;font-weight:500;color:var(--text);">Tool is available</span>
         <label class="toggle" style="margin-left:auto;">
           <input type="checkbox" formControlName="isAvailable" />
           <span class="toggle-slider"></span>
         </label>
-      </label>
+      </div>
     </div>
   </div>
 

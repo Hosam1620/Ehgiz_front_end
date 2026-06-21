@@ -1,32 +1,72 @@
+<!-- Category chips bar -->
+<div style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <button
+      type="button"
+      class="chip"
+      [class.chip-green]="selectedCategoryId() === null"
+      [class.chip-gray]="selectedCategoryId() !== null"
+      style="cursor:pointer;border:none;"
+      (click)="selectCategory(null)"
+    >All categories</button>
+    @for (cat of categories(); track cat.id) {
+      <button
+        type="button"
+        class="chip"
+        [class.chip-green]="selectedCategoryId() === cat.id"
+        [class.chip-gray]="selectedCategoryId() !== cat.id"
+        style="cursor:pointer;border:none;"
+        (click)="selectCategory(cat.id)"
+      >{{ cat.name }}</button>
+    }
+  </div>
+  <div style="margin-left:auto;display:flex;gap:10px;align-items:center;flex-shrink:0;">
+    @if (!isLoading()) {
+      <span style="font-size:12px;color:var(--text-3);white-space:nowrap;">{{ totalCount() }} tools found</span>
+    }
+    <select
+      class="form-input form-select"
+      style="width:auto;padding:7px 32px 7px 10px;font-size:12px;"
+      (change)="onSortChange($event)"
+    >
+      <option value="default">Default order</option>
+      <option value="price-asc">Price: low to high</option>
+      <option value="price-desc">Price: high to low</option>
+    </select>
+  </div>
+</div>
+
+<!-- AI image search banner -->
+<div style="background:var(--green-light);border-bottom:1px solid #B8DEC9;padding:12px 32px;display:flex;align-items:center;gap:12px;">
+  <i class="fas fa-robot" style="color:var(--green);font-size:16px;flex-shrink:0;"></i>
+  <span style="font-size:13px;color:var(--green-dark);">Search by photo — upload an image and AI will find matching tools nearby</span>
+  <button type="button" class="btn btn-primary btn-sm" routerLink="/ai/image-search" style="margin-left:auto;flex-shrink:0;">
+    <i class="fas fa-camera"></i> Upload photo
+  </button>
+</div>
+
 <div class="browse-layout anim-fade">
   <app-filter-panel (filtersChanged)="onFiltersChanged()" />
 
   <div>
-    <div style="background:var(--green-light);border:1px solid #B8DEC9;border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--green-dark);">
-        <i class="fas fa-robot"></i>
-        Search by photo — upload an image and AI will find matching tools nearby.
-      </div>
-      <button type="button" class="btn btn-primary btn-sm" routerLink="/ai/image-search">
-        <i class="fas fa-camera"></i> Upload photo
-      </button>
-    </div>
-
     @if (error()) {
       <div class="alert alert-danger mb-3" style="font-size:13px;">{{ error() }}</div>
     }
 
     @if (isLoading()) {
       <app-loading-spinner message="Loading tools..." />
-    } @else if (!tools().length) {
+    } @else if (!sortedTools().length) {
       <div class="card text-center" style="padding:48px 24px;">
         <div style="font-size:40px;margin-bottom:12px;">🔍</div>
         <h3 style="font-size:18px;margin-bottom:8px;">No tools found</h3>
         <p style="font-size:13px;color:var(--text-2);">Try adjusting your filters or search term.</p>
+        <button type="button" class="btn btn-secondary btn-sm" style="margin-top:16px;" (click)="selectCategory(null)">
+          Clear category filter
+        </button>
       </div>
     } @else {
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-        @for (tool of tools(); track tool.id) {
+        @for (tool of sortedTools(); track tool.id) {
           <app-tool-card [tool]="tool" [showAiMatch]="$first" />
         }
       </div>

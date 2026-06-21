@@ -1,45 +1,66 @@
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-      <div class="card p-4">
-        <h2 class="text-center mb-4 font-weight-bold" style="font-family: 'Fraunces', serif;">Login</h2>
+<div class="auth-page">
+  <div class="auth-card card-elevated">
 
-        <div *ngIf="errorMessage" class="alert alert-danger p-2" style="font-size: 13px;">
-          {{ errorMessage }}
-        </div>
+    <div class="auth-brand">
+      <span class="nav-logo-dot"></span> Ehgiz
+    </div>
+    <h2 class="auth-title">Welcome back</h2>
+    <p class="auth-sub">Sign in to your account</p>
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <div class="form-group mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input"
-              [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-              formControlName="email" placeholder="Enter your email" />
-            <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-              A valid email is required.
-            </div>
-          </div>
-
-          <div class="form-group mb-4">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-input"
-              [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-              formControlName="password" placeholder="Enter your password" />
-            <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-              Password is required.
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100 justify-content-center"
-            [disabled]="loginForm.invalid || isSubmitting">
-            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Login
-          </button>
-        </form>
-
-        <div class="text-center mt-3" style="font-size: 13px;">
-          Don't have an account? <a routerLink="/register" class="text-success font-weight-bold">Register</a>
-        </div>
+    @if (errorMessage) {
+      <div class="auth-error">
+        <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
       </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input
+          type="email"
+          class="form-input"
+          [class.is-invalid]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+          formControlName="email"
+          placeholder="you@example.com"
+        />
+        @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+          <div class="invalid-feedback">A valid email is required.</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Password</span>
+          <a class="auth-forgot">Forgot password?</a>
+        </label>
+        <input
+          type="password"
+          class="form-input"
+          [class.is-invalid]="loginForm.controls.password.invalid && loginForm.controls.password.touched"
+          formControlName="password"
+          placeholder="••••••••"
+        />
+        @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+          <div class="invalid-feedback">Password is required.</div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="loginForm.invalid || isSubmitting"
+      >
+        @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm"></span> Signing in…
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+
+    <div class="auth-footer-text">
+      Don't have an account?
+      <a routerLink="/register" class="auth-link">Register free</a>
     </div>
   </div>
 </div>

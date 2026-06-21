@@ -31,9 +31,9 @@ export class AddToolComponent {
         })
       )
       .subscribe({
-        next: tool => {
+        next: () => {
           this.isSubmitting.set(false);
-          this.router.navigate(['/tools', tool.id]);
+          this.router.navigate(['/tools']);
         },
         error: err => {
           this.error.set(err.error?.message ?? err.error?.title ?? 'Failed to create tool.');

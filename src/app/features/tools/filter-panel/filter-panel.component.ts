@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CategoryOption } from '../../../core/models/tool.model';
@@ -39,6 +39,17 @@ export class FilterPanelComponent implements OnInit {
     }),
   });
 
+  constructor() {
+    // Keep the category select in sync when chips in browse page update the store
+    effect(() => {
+      const catId = this.filterStore.categoryId();
+      const newValue = catId != null ? String(catId) : '';
+      if (this.form.controls.categoryId.value !== newValue) {
+        this.form.controls.categoryId.setValue(newValue, { emitEvent: false });
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.syncFormFromStore();
     this.loadCategories();
@@ -63,7 +74,6 @@ export class FilterPanelComponent implements OnInit {
 
   private syncFormFromStore(): void {
     const s = this.filterStore.snapshot();
-    const conditionGroup = this.form.controls.conditions.controls;
 
     this.form.patchValue(
       {
@@ -87,7 +97,7 @@ export class FilterPanelComponent implements OnInit {
 
     CONDITION_OPTIONS.forEach(option => {
       if (!s.conditions.length && option === 'Good') {
-        conditionGroup[option].setValue(true, { emitEvent: false });
+        this.form.controls.conditions.controls[option].setValue(true, { emitEvent: false });
       }
     });
   }
