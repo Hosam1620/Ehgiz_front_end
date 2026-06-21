@@ -17,7 +17,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.includes('/api/auth/register') ||
     req.url.includes('/api/auth/refresh') ||
     req.url.includes('/api/auth/verify-email') ||
-    req.url.includes('/api/auth/resend-verification');
+    req.url.includes('/api/auth/resend-verification') ||
+    req.url.includes('/api/auth/forgot-password') ||
+    req.url.includes('/api/auth/resend-reset-code') ||
+    req.url.includes('/api/auth/reset-password');
 
   const authReq =
     token && !isAuthEndpoint

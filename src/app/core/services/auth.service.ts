@@ -64,6 +64,18 @@ export class AuthService {
     return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/resend-verification`, { email });
   }
 
+  forgotPassword(email: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/forgot-password`, { email });
+  }
+
+  resendResetCode(email: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/resend-reset-code`, { email });
+  }
+
+  resetPassword(email: string, code: string, newPassword: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/reset-password`, { email, code, newPassword });
+  }
+
   fetchMe(): Observable<ApiResponse<UserProfile>> {
     return this.http.get<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me`).pipe(
       tap(res => {

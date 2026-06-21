@@ -11,6 +11,8 @@ export const routes: Routes = [
   { path: 'login',        loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),               canActivate: [guestGuard] },
   { path: 'register',     loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent),       canActivate: [guestGuard] },
   { path: 'verify-email', loadComponent: () => import('./features/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent), canActivate: [guestGuard] },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent), canActivate: [guestGuard] },
+  { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent), canActivate: [guestGuard] },
 
   // Admin
   { path: 'admin', loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent), canActivate: [authGuard, () => import('./core/guards/admin.guard').then(m => m.adminGuard)] },
