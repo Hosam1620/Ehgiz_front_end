@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, HostListener, ElementRef } from '@
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MessageService } from '../../../core/services/message.service';
 import { Notification } from '../../../core/models/notification.model';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 
@@ -13,6 +14,7 @@ import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 })
 export class NotificationDropdownComponent {
   private readonly notifService = inject(NotificationService);
+  private readonly messageService = inject(MessageService);
   private readonly el = inject(ElementRef);
   private readonly router = inject(Router);
 
@@ -56,9 +58,12 @@ export class NotificationDropdownComponent {
     this.markAsRead(n);
     this.isOpen.set(false);
 
-    let path = n.url?.trim() ?? '';
+    if (n.type === 'message') {
+      this.openMessageChat(n);
+      return;
+    }
 
-    // Backend may return an absolute URL — extract only the path+search
+    let path = n.url?.trim() ?? '';
     if (path.startsWith('http')) {
       try {
         const parsed = new URL(path);
@@ -67,18 +72,53 @@ export class NotificationDropdownComponent {
         path = '';
       }
     }
-
-    // Ensure the path is always absolute
     if (path && !path.startsWith('/')) {
       path = '/' + path;
     }
-
     if (path) {
       this.router.navigateByUrl(path);
-    } else if (n.type === 'message') {
-      // No URL on a message notification — go to the inbox
-      this.router.navigate(['/messages']);
     }
+  }
+
+  private openMessageChat(n: Notification): void {
+    // 1. Conversation ID embedded directly in the notification
+    if (n.conversationId) {
+      this.router.navigate(['/messages', n.conversationId]);
+      return;
+    }
+
+    // 2. Conversation ID encoded in the URL  (e.g. /messages/5)
+    const urlPath = this.extractPath(n.url);
+    const match = urlPath?.match(/^\/messages\/(\d+)$/);
+    if (match) {
+      this.router.navigate(['/messages', Number(match[1])]);
+      return;
+    }
+
+    // 3. We know the sender — ask the backend for (or create) the conversation
+    if (n.senderId) {
+      this.messageService.startOrGetConversation(n.senderId).subscribe({
+        next: conv => this.router.navigate(['/messages', conv.id]),
+        error: ()  => this.router.navigate(['/messages']),
+      });
+      return;
+    }
+
+    // 4. Nothing to go on — open the inbox
+    this.router.navigate(['/messages']);
+  }
+
+  private extractPath(url: string | null | undefined): string {
+    const raw = url?.trim() ?? '';
+    if (!raw) return '';
+    if (raw.startsWith('http')) {
+      try {
+        return new URL(raw).pathname;
+      } catch {
+        return '';
+      }
+    }
+    return raw.startsWith('/') ? raw : '/' + raw;
   }
 
   getTypeIcon(type: string): string {

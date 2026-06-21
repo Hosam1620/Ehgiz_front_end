@@ -9,6 +9,9 @@ export interface Notification {
   isRead: boolean;
   url: string | null;
   createdAt: string;
+  // Optional fields the backend may include for message notifications
+  conversationId?: number | null;
+  senderId?: number | null;
 }
 
 export interface NotificationHubEvent {
