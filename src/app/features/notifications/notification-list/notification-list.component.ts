@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationHubService } from '../../../core/services/notification-hub.service';
 import { Notification, NotificationType } from '../../../core/models/notification.model';
 import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
 
@@ -28,8 +29,10 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
   @ViewChild('scrollSentinel') scrollSentinel!: ElementRef;
 
   private readonly notifService = inject(NotificationService);
+  private readonly hubService = inject(NotificationHubService);
   private observer?: IntersectionObserver;
 
+  readonly isHubConnected = this.hubService.isConnected;
   readonly notifications = this.notifService.notifications;
   readonly isLoading = this.notifService.isLoading;
   readonly unreadCount = this.notifService.unreadCount;

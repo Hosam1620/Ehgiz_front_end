@@ -1,4 +1,4 @@
-import { Injectable, inject, OnDestroy } from '@angular/core';
+import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import {
   HubConnectionBuilder,
   HubConnection,
@@ -19,9 +19,7 @@ export class NotificationHubService implements OnDestroy {
   private connection?: HubConnection;
   private retryTimer?: ReturnType<typeof setTimeout>;
 
-  get isConnected(): boolean {
-    return this.connection?.state === HubConnectionState.Connected;
-  }
+  readonly isConnected = signal(false);
 
   async startConnection(): Promise<void> {
     const state = this.connection?.state;
@@ -44,25 +42,38 @@ export class NotificationHubService implements OnDestroy {
       this.toastService.show(notification.title, notification.message, 'info');
     });
 
-    this.connection.onreconnecting(() => console.log('[Hub] Reconnecting…'));
-    this.connection.onreconnected(() => console.log('[Hub] Reconnected'));
+    this.connection.onreconnecting(() => {
+      this.isConnected.set(false);
+      console.log('[NotifHub] Reconnecting…');
+    });
+
+    this.connection.onreconnected(() => {
+      this.isConnected.set(true);
+      console.log('[NotifHub] Reconnected — refreshing unread count');
+      this.notifService.loadUnreadCount().subscribe({ error: () => {} });
+    });
+
     this.connection.onclose(err => {
+      this.isConnected.set(false);
       if (err) {
-        console.error('[Hub] Connection closed with error:', err);
-        // Retry after the automatic budget is exhausted
+        console.error('[NotifHub] Connection closed with error:', err);
         this.retryTimer = setTimeout(() => this.startConnection(), 60_000);
       }
     });
 
     try {
       await this.connection.start();
+      this.isConnected.set(true);
+      console.log('[NotifHub] Connected');
     } catch (err) {
-      console.error('[Hub] Failed to start connection:', err);
+      this.isConnected.set(false);
+      console.error('[NotifHub] Failed to start connection:', err);
     }
   }
 
   async stopConnection(): Promise<void> {
     clearTimeout(this.retryTimer);
+    this.isConnected.set(false);
     try {
       await this.connection?.stop();
     } catch {

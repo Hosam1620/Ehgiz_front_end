@@ -45,6 +45,8 @@ export class App {
       } else {
         this.hubService.stopConnection();
         this.chatHubService.stopConnection();
+        this.notifService.reset();
+        this.messageService.conversations.set([]);
       }
     });
 

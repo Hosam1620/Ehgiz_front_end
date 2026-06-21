@@ -2,8 +2,13 @@
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
   <div>
     <h2 style="font-size:22px;margin-bottom:4px;">Notifications</h2>
-    <div style="font-size:12px;color:var(--text-3);">
-      <span class="signalr-dot"></span>Real-time updates
+    <div style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:5px;">
+      <span
+        class="signalr-dot"
+        [class.signalr-dot--off]="!isHubConnected()"
+        [title]="isHubConnected() ? 'Connected — real-time updates active' : 'Reconnecting…'"
+      ></span>
+      {{ isHubConnected() ? 'Real-time updates active' : 'Reconnecting…' }}
     </div>
   </div>
   <button
