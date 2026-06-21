@@ -1,4 +1,5 @@
 export type ToolCondition = 'New' | 'Good' | 'Fair' | 'Poor';
+export type ToolConditionValue = 1 | 2 | 3 | 4;
 
 export interface Tool {
   id: number;
@@ -23,19 +24,11 @@ export interface CreateToolRequest {
   description: string;
   pricePerDay: number;
   insurancePrice: number;
-  condition: string;
+  condition: ToolConditionValue;
   location: string;
-  isAvailable: boolean;
 }
 
-export interface UpdateToolRequest {
-  categoryId: number;
-  name: string;
-  description: string;
-  pricePerDay: number;
-  insurancePrice: number;
-  condition: string;
-  location: string;
+export interface UpdateToolRequest extends CreateToolRequest {
   isAvailable: boolean;
 }
 

@@ -57,8 +57,8 @@
         <div class="form-group">
           <label class="form-label">Condition</label>
           <select class="form-input form-select" formControlName="condition">
-            @for (option of conditionOptions; track option) {
-              <option [value]="option">{{ option }}</option>
+            @for (option of conditionOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
             }
           </select>
         </div>

@@ -20,8 +20,18 @@ export class AddToolComponent {
     this.isSubmitting.set(true);
     this.error.set(null);
 
+    const createRequest = {
+      categoryId: payload.request.categoryId,
+      name: payload.request.name,
+      description: payload.request.description,
+      pricePerDay: payload.request.pricePerDay,
+      insurancePrice: payload.request.insurancePrice,
+      condition: payload.request.condition,
+      location: payload.request.location,
+    };
+
     this.toolsService
-      .create(payload.request)
+      .create(createRequest)
       .pipe(
         switchMap(tool => {
           if (payload.imageFiles.length) {

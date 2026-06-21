@@ -1,9 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
+import { finalize } from 'rxjs';
 import { ToolsService } from '../../../core/services/tools.service';
 import { Tool } from '../../../core/models/tool.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { MessageService } from '../../../core/services/message.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   standalone: true,
@@ -13,12 +16,18 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 })
 export class ToolDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly toolsService = inject(ToolsService);
+  private readonly messageService = inject(MessageService);
+  private readonly auth = inject(AuthService);
 
   protected readonly tool = signal<Tool | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly error = signal<string | null>(null);
+  protected readonly messageError = signal<string | null>(null);
+  protected readonly isStartingConversation = signal(false);
   protected readonly selectedImageIndex = signal(0);
+  protected readonly failedImages = signal<Set<string>>(new Set());
   protected readonly withInsurance = signal(false);
   protected readonly rentalDays = signal(3);
 
@@ -62,6 +71,33 @@ export class ToolDetailComponent implements OnInit {
     this.selectedImageIndex.set(index);
   }
 
+  messageOwner(tool: Tool): void {
+    this.messageError.set(null);
+
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: `/tools/${tool.id}` } });
+      return;
+    }
+
+    if (this.isOwnTool(tool)) {
+      this.router.navigate(['/tools']);
+      return;
+    }
+
+    this.isStartingConversation.set(true);
+    this.messageService
+      .startOrGetConversation(tool.ownerId)
+      .pipe(finalize(() => this.isStartingConversation.set(false)))
+      .subscribe({
+        next: conversation => this.router.navigate(['/messages', conversation.id]),
+        error: err => {
+          this.messageError.set(
+            err.error?.message ?? err.error?.title ?? 'Could not open a conversation with this owner.'
+          );
+        },
+      });
+  }
+
   incrementDays(): void {
     this.rentalDays.update(d => d + 1);
   }
@@ -83,19 +119,24 @@ export class ToolDetailComponent implements OnInit {
   protected currentImage(tool: Tool): string | null {
     const urls = tool.imageUrls ?? [];
     if (!urls.length) return null;
-    return urls[this.selectedImageIndex()] ?? urls[0];
+    const failed = this.failedImages();
+    const selected = urls[this.selectedImageIndex()];
+    if (selected && !failed.has(selected)) {
+      return selected;
+    }
+    return urls.find(url => !failed.has(url)) ?? null;
   }
 
-  protected placeholderEmoji(tool: Tool): string {
-    const name = (tool.categoryName ?? '').toLowerCase();
-    if (name.includes('photo') || name.includes('camera')) return '📷';
-    if (name.includes('power') || name.includes('drill')) return '🔩';
-    if (name.includes('garden') || name.includes('lawn')) return '🌿';
-    if (name.includes('electri') || name.includes('generat')) return '⚡';
-    if (name.includes('wood') || name.includes('saw')) return '🪚';
-    if (name.includes('construct')) return '🏗️';
-    if (name.includes('paint')) return '🎨';
-    return '🔧';
+  protected placeholderIcon(tool: Tool): string {
+    const name = `${tool.categoryName ?? ''} ${tool.name ?? ''}`.toLowerCase();
+    if (name.includes('photo') || name.includes('camera')) return 'fas fa-camera';
+    if (name.includes('clean') || name.includes('washer')) return 'fas fa-broom';
+    if (name.includes('garden') || name.includes('lawn')) return 'fas fa-seedling';
+    if (name.includes('construct') || name.includes('ladder')) return 'fas fa-helmet-safety';
+    if (name.includes('electri') || name.includes('generat')) return 'fas fa-bolt';
+    if (name.includes('wood') || name.includes('saw')) return 'fas fa-ruler-combined';
+    if (name.includes('paint')) return 'fas fa-paint-roller';
+    return 'fas fa-toolbox';
   }
 
   protected cardBg(tool: Tool): string {
@@ -111,5 +152,23 @@ export class ToolDetailComponent implements OnInit {
 
   protected memberSince(createdAt: string): string {
     return new Date(createdAt).getFullYear().toString();
+  }
+
+  protected isOwnTool(tool: Tool): boolean {
+    return this.auth.currentUser()?.id === tool.ownerId;
+  }
+
+  protected conditionLabel(condition: string | null): string | null {
+    if (!condition) return null;
+    const map: Record<string, string> = { '1': 'New', '2': 'Good', '3': 'Fair', '4': 'Poor' };
+    return map[condition] ?? condition;
+  }
+
+  protected onImageError(url: string): void {
+    this.failedImages.update(failed => {
+      const next = new Set(failed);
+      next.add(url);
+      return next;
+    });
   }
 }

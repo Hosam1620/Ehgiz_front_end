@@ -1,12 +1,23 @@
 import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CategoryOption, CreateToolRequest, Tool, UpdateToolRequest } from '../../../core/models/tool.model';
+import {
+  CategoryOption,
+  Tool,
+  ToolCondition,
+  ToolConditionValue,
+  UpdateToolRequest,
+} from '../../../core/models/tool.model';
 import { BrowseService } from '../browse.service';
 
-const CONDITION_OPTIONS = ['New', 'Good', 'Fair', 'Poor'] as const;
+const CONDITION_OPTIONS: { label: ToolCondition; value: ToolConditionValue }[] = [
+  { label: 'New', value: 1 },
+  { label: 'Good', value: 2 },
+  { label: 'Fair', value: 3 },
+  { label: 'Poor', value: 4 },
+];
 
 export interface ToolFormSubmitPayload {
-  request: CreateToolRequest;
+  request: UpdateToolRequest;
   imageFiles: File[];
 }
 
@@ -38,7 +49,7 @@ export class ToolFormComponent implements OnInit {
     description: ['', [Validators.required, Validators.minLength(20)]],
     pricePerDay: [0, [Validators.required, Validators.min(1)]],
     insurancePrice: [0, [Validators.min(0)]],
-    condition: ['Good', Validators.required],
+    condition: ['2', Validators.required],
     location: ['', Validators.required],
     isAvailable: [true],
   });
@@ -86,13 +97,13 @@ export class ToolFormComponent implements OnInit {
     }
 
     const value = this.form.getRawValue();
-    const request: CreateToolRequest = {
+    const request: UpdateToolRequest = {
       name: value.name.trim(),
       categoryId: Number(value.categoryId),
       description: value.description.trim(),
       pricePerDay: Number(value.pricePerDay),
       insurancePrice: Number(value.insurancePrice) || 0,
-      condition: value.condition,
+      condition: Number(value.condition) as ToolConditionValue,
       location: value.location.trim(),
       isAvailable: value.isAvailable,
     };
@@ -110,10 +121,21 @@ export class ToolFormComponent implements OnInit {
       description: tool.description ?? '',
       pricePerDay: tool.pricePerDay,
       insurancePrice: tool.insurancePrice,
-      condition: tool.condition ?? 'Good',
+      condition: String(this.toConditionValue(tool.condition)),
       location: tool.location ?? '',
       isAvailable: tool.isAvailable,
     });
     this.existingImages.set(tool.imageUrls ?? []);
+  }
+
+  private toConditionValue(condition: string | null): ToolConditionValue {
+    const numericValue = Number(condition);
+    if ([1, 2, 3, 4].includes(numericValue)) {
+      return numericValue as ToolConditionValue;
+    }
+
+    const normalizedCondition = condition?.toLowerCase();
+    const match = CONDITION_OPTIONS.find(option => option.label.toLowerCase() === normalizedCondition);
+    return match?.value ?? 2;
   }
 }

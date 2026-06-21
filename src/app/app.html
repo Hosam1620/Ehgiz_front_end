@@ -24,7 +24,12 @@
                   <span class="sidebar-badge">{{ unreadCount() }}</span>
                 }
               </a>
-              <a class="sidebar-item" routerLink="/messages" routerLinkActive="active"><i class="fas fa-comment-dots"></i> Messages</a>
+              <a class="sidebar-item" routerLink="/messages" routerLinkActive="active">
+                <i class="fas fa-comment-dots"></i> Messages
+                @if (unreadMessageCount() > 0) {
+                  <span class="sidebar-badge">{{ unreadMessageCount() }}</span>
+                }
+              </a>
             </div>
             <div class="sidebar-section">
               <div class="sidebar-label">Owner</div>

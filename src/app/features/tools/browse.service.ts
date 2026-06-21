@@ -4,6 +4,15 @@ import { ToolsService } from '../../core/services/tools.service';
 import { CategoryOption, Tool, ToolFilterParams, ToolPagedResult } from '../../core/models/tool.model';
 import { BrowseFilterStore } from './browse-filter.store';
 
+const CONDITION_LABEL_MAP: Record<string, string> = { '1': 'New', '2': 'Good', '3': 'Fair', '4': 'Poor' };
+
+const SEEDED_CATEGORIES: CategoryOption[] = [
+  { id: 1, name: 'Power Tools' },
+  { id: 2, name: 'Gardening' },
+  { id: 3, name: 'Construction' },
+  { id: 4, name: 'Cleaning Equipment' },
+];
+
 @Injectable({ providedIn: 'root' })
 export class BrowseService {
   private readonly toolsService = inject(ToolsService);
@@ -34,7 +43,12 @@ export class BrowseService {
   loadCategoryOptions(): Observable<CategoryOption[]> {
     return this.toolsService
       .getAll({ page: 1, pageSize: 100 })
-      .pipe(map(result => this.extractCategories(result.items ?? [])));
+      .pipe(
+        map(result => {
+          const categories = this.extractCategories(result.items ?? []);
+          return categories.length ? categories : SEEDED_CATEGORIES;
+        })
+      );
   }
 
   private applyClientFilters(tools: Tool[]): Tool[] {
@@ -43,10 +57,10 @@ export class BrowseService {
     let filtered = tools;
 
     if (conditions.length) {
-      filtered = filtered.filter(tool =>
-        tool.condition != null &&
-        conditions.some(c => tool.condition!.toLowerCase().includes(c.toLowerCase()))
-      );
+      filtered = filtered.filter(tool => {
+        const label = tool.condition ? (CONDITION_LABEL_MAP[tool.condition] ?? tool.condition) : '';
+        return conditions.some(c => label.toLowerCase().includes(c.toLowerCase()));
+      });
     }
 
     if (insuredOnly) {

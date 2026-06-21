@@ -2,10 +2,10 @@
   <!-- Greeting -->
   <div style="margin-bottom:28px;">
     <h2 style="font-size:24px;margin-bottom:6px;">
-      {{ greeting() }}, {{ firstName() }} 👋
+      {{ greeting() }}, {{ firstName() }}
     </h2>
     <p style="font-size:13px;color:var(--text-2);">
-      Here's what's happening with your account today.
+      Your tools, conversations, and alerts in one place.
     </p>
   </div>
 
@@ -24,46 +24,54 @@
 
   <!-- Stats -->
   <div class="stat-grid">
-    <div class="stat-card">
+    <a class="stat-card stat-card-link" routerLink="/bookings">
       <div class="stat-label">Active bookings</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div class="stat-value">—</div>
+        <div class="stat-value stat-value-text">Soon</div>
         <div class="stat-icon" style="background:var(--green-light);color:var(--green);">
           <i class="fas fa-calendar-check"></i>
         </div>
       </div>
-      <a routerLink="/bookings" style="font-size:12px;color:var(--green);display:inline-block;margin-top:6px;">View bookings →</a>
-    </div>
-    <div class="stat-card">
+      <div class="stat-delta">Booking API pending</div>
+    </a>
+    <a class="stat-card stat-card-link" routerLink="/tools">
       <div class="stat-label">Tools listed</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div class="stat-value">—</div>
+        <div class="stat-value">
+          @if (toolsListedCount() !== null) {
+            {{ toolsListedCount() }}
+          } @else if (toolsError()) {
+            !
+          } @else {
+            ...
+          }
+        </div>
         <div class="stat-icon" style="background:var(--blue-light);color:var(--blue);">
           <i class="fas fa-toolbox"></i>
         </div>
       </div>
-      <a routerLink="/tools" style="font-size:12px;color:var(--green);display:inline-block;margin-top:6px;">Manage tools →</a>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Messages</div>
+      <div class="stat-delta">Manage your listings</div>
+    </a>
+    <a class="stat-card stat-card-link" routerLink="/messages">
+      <div class="stat-label">Unread messages</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div class="stat-value">—</div>
+        <div class="stat-value">{{ unreadMessages() }}</div>
         <div class="stat-icon" style="background:var(--orange-light);color:var(--orange);">
           <i class="fas fa-comment-dots"></i>
         </div>
       </div>
-      <a routerLink="/messages" style="font-size:12px;color:var(--green);display:inline-block;margin-top:6px;">Open messages →</a>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Notifications</div>
+      <div class="stat-delta">{{ messageSummary() }}</div>
+    </a>
+    <a class="stat-card stat-card-link" routerLink="/notifications">
+      <div class="stat-label">Unread notifications</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div class="stat-value">—</div>
+        <div class="stat-value">{{ unreadNotifications() }}</div>
         <div class="stat-icon" style="background:var(--amber-light);color:var(--amber);">
           <i class="fas fa-bell"></i>
         </div>
       </div>
-      <a routerLink="/notifications" style="font-size:12px;color:var(--green);display:inline-block;margin-top:6px;">View all →</a>
-    </div>
+      <div class="stat-delta">{{ notificationSummary() }}</div>
+    </a>
   </div>
 
   <!-- Getting started cards -->

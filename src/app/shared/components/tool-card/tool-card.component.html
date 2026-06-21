@@ -1,9 +1,18 @@
 <a class="tool-card" [routerLink]="['/tools', tool().id]">
   <div class="tool-card-img" [style.background]="primaryImage() ? '' : cardBg()">
     @if (primaryImage()) {
-      <img [src]="primaryImage()!" [alt]="tool().name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
+      <img
+        [src]="primaryImage()!"
+        [alt]="tool().name ?? 'Tool photo'"
+        loading="lazy"
+        (error)="onImageError(primaryImage()!)"
+      />
     } @else {
-      {{ placeholderEmoji() }}
+      <div class="tool-image-placeholder">
+        <i [class]="placeholderIcon()"></i>
+        <span>{{ placeholderTitle() }}</span>
+        <small>{{ placeholderSubtitle() }}</small>
+      </div>
     }
     @if (showAiMatch()) {
       <span class="chip chip-ai" style="position:absolute;top:10px;left:10px;">
@@ -12,7 +21,7 @@
     }
   </div>
   <div class="tool-card-body">
-    <div class="tool-card-name">{{ tool().name }}</div>
+    <div class="tool-card-name">{{ tool().name ?? 'Untitled tool' }}</div>
     <div class="tool-card-meta">
       @if (tool().location) {
         <i class="fas fa-map-marker-alt" style="font-size:10px;color:var(--text-3);margin-right:3px;"></i>{{ tool().location }}
@@ -22,6 +31,16 @@
         {{ tool().categoryName }}
       }
     </div>
+    @if (conditionLabel() || tool().insurancePrice > 0) {
+      <div class="tool-card-details">
+        @if (conditionLabel()) {
+          <span><i class="fas fa-circle-check"></i>{{ conditionLabel() }}</span>
+        }
+        @if (tool().insurancePrice > 0) {
+          <span><i class="fas fa-shield-halved"></i>Insured</span>
+        }
+      </div>
+    }
     <div class="tool-card-footer">
       <div class="tool-price">{{ tool().pricePerDay | number:'1.0-0' }} EGP <span>/ day</span></div>
       <span class="chip" [class]="statusClass()">{{ statusLabel() }}</span>

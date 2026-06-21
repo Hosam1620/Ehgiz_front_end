@@ -1,4 +1,5 @@
 import { Component, inject, computed, effect, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
@@ -6,6 +7,7 @@ import { AuthService } from './core/services/auth.service';
 import { NotificationService } from './core/services/notification.service';
 import { NotificationHubService } from './core/services/notification-hub.service';
 import { ChatHubService } from './core/services/chat-hub.service';
+import { MessageService } from './core/services/message.service';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
 import { ToastContainerComponent } from './shared/components/toast/toast.component';
@@ -21,16 +23,19 @@ export class App {
   private readonly notifService = inject(NotificationService);
   private readonly hubService = inject(NotificationHubService);
   private readonly chatHubService = inject(ChatHubService);
+  private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
 
   readonly userName = computed(() => this.auth.currentUser()?.fullName ?? '');
   readonly unreadCount = this.notifService.unreadCount;
+  readonly unreadMessageCount = this.messageService.unreadCount;
   showSidebar = signal(true);
 
   constructor() {
     effect(() => {
       if (this.auth.isLoggedIn()) {
         this.notifService.loadUnreadCount().subscribe({ error: () => {} });
+        this.messageService.getConversations().subscribe({ error: () => {} });
         this.hubService.startConnection();
         this.chatHubService.startConnection();
       } else {
@@ -44,6 +49,12 @@ export class App {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.updateLayout();
     });
+
+    this.chatHubService.messageReceived$
+      .pipe(takeUntilDestroyed())
+      .subscribe(message => {
+        this.messageService.applyIncomingMessage(message);
+      });
   }
 
   private updateLayout(): void {
