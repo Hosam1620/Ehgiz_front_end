@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ApiResponse } from '../models/api-response.model';
 import {
   ConversationDto,
   MessageDto,
@@ -13,31 +15,35 @@ export class MessageService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/api/messages`;
 
-  /** POST /conversations — start or retrieve an existing conversation */
   startOrGetConversation(recipientId: number) {
     const body: StartConversationDto = { recipientId };
-    return this.http.post<ConversationDto>(`${this.base}/conversations`, body);
+    return this.http
+      .post<ApiResponse<ConversationDto>>(`${this.base}/conversations`, body)
+      .pipe(map(r => r.data!));
   }
 
-  /** GET /conversations — full inbox sorted by backend */
   getConversations() {
-    return this.http.get<ConversationDto[]>(`${this.base}/conversations`);
+    return this.http
+      .get<ApiResponse<ConversationDto[]>>(`${this.base}/conversations`)
+      .pipe(map(r => r.data ?? []));
   }
 
-  /** GET /conversations/{id}?page&pageSize — messages newest-first from backend */
   getMessages(conversationId: number, page = 1, pageSize = 30) {
-    return this.http.get<MessageDto[]>(`${this.base}/conversations/${conversationId}`, {
-      params: { page: String(page), pageSize: String(pageSize) },
-    });
+    return this.http
+      .get<ApiResponse<MessageDto[]>>(`${this.base}/conversations/${conversationId}`, {
+        params: { page: String(page), pageSize: String(pageSize) },
+      })
+      .pipe(map(r => r.data ?? []));
   }
 
-  /** POST /conversations/{id} — send a message, returns confirmed MessageDto */
   sendMessage(conversationId: number, content: string) {
     const body: SendMessageDto = { content };
-    return this.http.post<MessageDto>(`${this.base}/conversations/${conversationId}`, body);
+    return this.http
+      .post<ApiResponse<MessageDto>>(`${this.base}/conversations/${conversationId}`, body)
+      .pipe(map(r => r.data!));
   }
 
-  /** PUT /conversations/{id}/read — mark all messages in this conversation as read */
+  /** PUT /conversations/{id}/read — 204 No Content, no wrapper */
   markAsRead(conversationId: number) {
     return this.http.put<void>(`${this.base}/conversations/${conversationId}/read`, {});
   }

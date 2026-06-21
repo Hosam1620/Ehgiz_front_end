@@ -14,7 +14,7 @@ export interface MessageDto {
   senderId: number;
   senderName: string;
   senderAvatarUrl: string | null;
-  content: string;
+  content: string | null;
   status: 'Sent' | 'Delivered' | 'Read';
   createdAt: string;
   deliveredAt: string | null;

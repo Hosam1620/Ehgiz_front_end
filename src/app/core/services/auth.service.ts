@@ -20,10 +20,13 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly TOKEN_KEY = 'ehgiz_access_token';
-  private readonly EXPIRES_KEY = 'ehgiz_expires_at';
+  // Lightweight flag: exists when a valid refresh cookie is likely present.
+  // Never stores the actual token — only used to decide whether to attempt
+  // a silent refresh on startup so we don't call /auth/refresh on public pages
+  // for users who have never logged in.
+  private readonly SESSION_HINT = 'ehgiz_session_hint';
 
-  private readonly _token = signal<string | null>(localStorage.getItem(this.TOKEN_KEY));
+  private readonly _token = signal<string | null>(null);
   
   readonly isLoggedIn = computed(() => !!this._token());
   readonly token = computed(() => this._token());
@@ -91,17 +94,21 @@ export class AuthService {
   }
 
   clearSession(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.EXPIRES_KEY);
     this._token.set(null);
     this.currentUser.set(null);
     this.roles.set([]);
+    localStorage.removeItem(this.SESSION_HINT);
     this.router.navigate(['/login']);
   }
 
-  private setSession(token: string, expiresAt: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-    localStorage.setItem(this.EXPIRES_KEY, expiresAt);
+  /** Returns true if the user previously authenticated in this browser, so the
+   *  app initializer knows to attempt a silent refresh via the httpOnly cookie. */
+  hasSessionHint(): boolean {
+    return !!localStorage.getItem(this.SESSION_HINT);
+  }
+
+  private setSession(token: string, _expiresAt: string): void {
     this._token.set(token);
+    localStorage.setItem(this.SESSION_HINT, '1');
   }
 }

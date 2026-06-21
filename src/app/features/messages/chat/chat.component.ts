@@ -1,5 +1,6 @@
 import {
   Component,
+  HostListener,
   inject,
   signal,
   computed,
@@ -61,6 +62,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private restoreScroll = false;
 
   readonly currentUserId = computed(() => this.auth.currentUser()?.id ?? 0);
+
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    if (this.conversationId() && this.messages().length) {
+      this.markRead();
+    }
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
