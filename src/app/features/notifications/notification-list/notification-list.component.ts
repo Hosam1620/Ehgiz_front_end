@@ -10,6 +10,7 @@ import {
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationHubService } from '../../../core/services/notification-hub.service';
 import { Notification, NotificationType } from '../../../core/models/notification.model';
@@ -30,6 +31,7 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
 
   private readonly notifService = inject(NotificationService);
   private readonly hubService = inject(NotificationHubService);
+  private readonly router = inject(Router);
   private observer?: IntersectionObserver;
 
   readonly isHubConnected = this.hubService.isConnected;
@@ -128,6 +130,13 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
   markAsRead(notification: Notification) {
     if (!notification.isRead) {
       this.notifService.markAsRead(notification.id).subscribe();
+    }
+  }
+
+  handleClick(notification: Notification) {
+    this.markAsRead(notification);
+    if (notification.url) {
+      this.router.navigateByUrl(notification.url);
     }
   }
 

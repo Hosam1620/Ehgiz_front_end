@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Notification } from '../models/notification.model';
+import { Notification, NotificationType } from '../models/notification.model';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -43,7 +43,7 @@ export class NotificationService {
         tap({
           next: res => {
             if (res?.data) {
-              this.notifications.set(res.data);
+              this.notifications.set(res.data.map(n => this.normalize(n)));
             }
             this.isLoading.set(false);
           },
@@ -57,9 +57,14 @@ export class NotificationService {
   }
 
   prependNotification(notification: Notification) {
-    this.notifications.update(list => [notification, ...list]);
+    const normalized = this.normalize(notification);
+    this.notifications.update(list => [normalized, ...list]);
     this._unreadCount.update(count => count + 1);
-    this.newNotification$.next(notification);
+    this.newNotification$.next(normalized);
+  }
+
+  private normalize(n: Notification): Notification {
+    return { ...n, type: (n.type ?? '').toLowerCase() as NotificationType };
   }
 
   markAsRead(id: number) {

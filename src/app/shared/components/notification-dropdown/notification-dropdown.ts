@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Notification } from '../../../core/models/notification.model';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
@@ -14,6 +14,7 @@ import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 export class NotificationDropdownComponent {
   private readonly notifService = inject(NotificationService);
   private readonly el = inject(ElementRef);
+  private readonly router = inject(Router);
 
   readonly isOpen = signal(false);
   readonly notifications = this.notifService.notifications;
@@ -48,6 +49,14 @@ export class NotificationDropdownComponent {
   markAsRead(n: Notification) {
     if (!n.isRead) {
       this.notifService.markAsRead(n.id).subscribe();
+    }
+  }
+
+  handleClick(n: Notification) {
+    this.markAsRead(n);
+    this.isOpen.set(false);
+    if (n.url) {
+      this.router.navigateByUrl(n.url);
     }
   }
 

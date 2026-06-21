@@ -92,7 +92,7 @@
   } @else {
     <div class="card" style="padding:0;overflow:hidden;">
       @for (notif of visibleNotifications(); track notif.id) {
-        <div class="notif-item" [class.unread]="!notif.isRead" (click)="markAsRead(notif)">
+        <div class="notif-item" [class.unread]="!notif.isRead" (click)="handleClick(notif)">
           <div class="notif-icon" [ngStyle]="getTypeIconStyle(notif.type)">
             <i [class]="getTypeIcon(notif.type)"></i>
           </div>
