@@ -19,15 +19,13 @@ export const routes: Routes = [
   { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'profile',   loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),       canActivate: [authGuard] },
 
-  // Browse (public alias for tool search)
-  { path: 'browse', loadComponent: () => import('./features/tools/tool-search/tool-search.component').then(m => m.ToolSearchComponent) },
-
-  // Tools
-  { path: 'tools',          loadComponent: () => import('./features/tools/tool-list/tool-list.component').then(m => m.ToolListComponent),       canActivate: [authGuard] },
-  { path: 'tools/search',   loadComponent: () => import('./features/tools/tool-search/tool-search.component').then(m => m.ToolSearchComponent), canActivate: [authGuard] },
-  { path: 'tools/create',   loadComponent: () => import('./features/tools/tool-create/tool-create.component').then(m => m.ToolCreateComponent), canActivate: [authGuard] },
-  { path: 'tools/:id',      loadComponent: () => import('./features/tools/tool-detail/tool-detail.component').then(m => m.ToolDetailComponent), canActivate: [authGuard] },
-  { path: 'tools/:id/edit', loadComponent: () => import('./features/tools/tool-edit/tool-edit.component').then(m => m.ToolEditComponent),       canActivate: [authGuard] },
+  // Tools — browse & detail are public (API AllowAnonymous)
+  { path: 'browse',         loadComponent: () => import('./features/tools/browse-page/browse-page.component').then(m => m.BrowsePageComponent), data: { layout: 'full' } },
+  { path: 'tools',          loadComponent: () => import('./features/tools/my-tools/my-tools.component').then(m => m.MyToolsComponent), canActivate: [authGuard] },
+  { path: 'tools/create',   loadComponent: () => import('./features/tools/add-tool/add-tool.component').then(m => m.AddToolComponent), canActivate: [authGuard] },
+  { path: 'tools/:id/edit', loadComponent: () => import('./features/tools/edit-tool/edit-tool.component').then(m => m.EditToolComponent), canActivate: [authGuard] },
+  { path: 'tools/:id',      loadComponent: () => import('./features/tools/tool-detail/tool-detail.component').then(m => m.ToolDetailComponent), data: { layout: 'full' } },
+  { path: 'add-tool',       redirectTo: 'tools/create', pathMatch: 'full' },
 
   // Bookings
   { path: 'bookings',        loadComponent: () => import('./features/bookings/booking-list/booking-list.component').then(m => m.BookingListComponent),     canActivate: [authGuard] },

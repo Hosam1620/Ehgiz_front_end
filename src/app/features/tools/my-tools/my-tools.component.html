@@ -1,0 +1,90 @@
+<div>
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">My tools</h2>
+      <p class="section-sub">{{ tabCounts().all }} listings · {{ tabCounts().available }} available</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/tools/create">
+      <i class="fas fa-plus"></i> Add new tool
+    </a>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger mb-3" style="font-size:13px;">{{ error() }}</div>
+  }
+
+  <div class="tabs">
+    <button type="button" class="tab" [class.active]="activeTab() === 'all'" (click)="setTab('all')">All ({{ tabCounts().all }})</button>
+    <button type="button" class="tab" [class.active]="activeTab() === 'available'" (click)="setTab('available')">Available ({{ tabCounts().available }})</button>
+    <button type="button" class="tab" [class.active]="activeTab() === 'booked'" (click)="setTab('booked')">Booked ({{ tabCounts().booked }})</button>
+    <button type="button" class="tab" [class.active]="activeTab() === 'inactive'" (click)="setTab('inactive')">Inactive ({{ tabCounts().inactive }})</button>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading your tools..." />
+  } @else if (!filteredTools().length) {
+    <div class="card text-center" style="padding:40px 24px;">
+      <p style="color:var(--text-2);margin-bottom:16px;">No tools in this tab yet.</p>
+      <a class="btn btn-primary" routerLink="/tools/create">Add your first tool</a>
+    </div>
+  } @else {
+    <div class="card-elevated" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Category</th>
+            <th>Price/day</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tool of filteredTools(); track tool.id) {
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:44px;height:44px;border-radius:var(--radius);background:var(--surface2);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    @if (toolThumbnail(tool)) {
+                      <img [src]="toolThumbnail(tool)!" [alt]="tool.name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
+                    } @else {
+                      🔧
+                    }
+                  </div>
+                  <div>
+                    <div style="font-weight:600;">{{ tool.name }}</div>
+                    <div style="font-size:12px;color:var(--text-2);">{{ tool.condition }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ tool.categoryName ?? '—' }}</td>
+              <td style="font-weight:700;color:var(--green);">{{ tool.pricePerDay | number:'1.0-0' }} EGP</td>
+              <td><span class="chip" [class]="statusClass(tool)">{{ statusLabel(tool) }}</span></td>
+              <td>{{ tool.location ?? '—' }}</td>
+              <td>
+                <div style="display:flex;gap:8px;">
+                  <a class="btn btn-secondary btn-sm" [routerLink]="['/tools', tool.id, 'edit']" title="Edit">
+                    <i class="fas fa-pen"></i>
+                  </a>
+                  <button type="button" class="btn btn-secondary btn-sm" (click)="confirmDelete(tool)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<app-confirmation-modal
+  title="Delete tool"
+  message="Are you sure you want to delete this listing? This action cannot be undone."
+  confirmLabel="Delete"
+  cancelLabel="Cancel"
+  confirmClass="btn-danger"
+  (confirmed)="onDeleteConfirmed()"
+/>

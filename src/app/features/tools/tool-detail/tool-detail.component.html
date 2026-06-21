@@ -1,0 +1,98 @@
+@if (isLoading()) {
+  <app-loading-spinner message="Loading tool details..." />
+} @else if (error()) {
+  <div class="detail-layout">
+    <div class="alert alert-danger">{{ error() }}</div>
+  </div>
+} @else if (tool(); as item) {
+  <div class="detail-layout anim-fade">
+    <div>
+      <div class="detail-images">
+        <div class="detail-main-img">
+          @if (currentImage(item)) {
+            <img [src]="currentImage(item)!" [alt]="item.name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-xl);" />
+          } @else {
+            {{ placeholderEmoji(item) }}
+          }
+        </div>
+        @if (item.imageUrls?.length) {
+          <div class="thumb-row">
+            @for (url of item.imageUrls!; track url; let i = $index) {
+              <button type="button" class="thumb" [class.active]="selectedImageIndex() === i" (click)="selectImage(i)">
+                <img [src]="url" [alt]="item.name ?? 'Tool thumbnail'" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <h1 class="detail-title">{{ item.name }}</h1>
+      <div class="detail-meta">
+        <span class="chip" [class.chip-green]="item.isAvailable" [class.chip-red]="!item.isAvailable">
+          {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+        </span>
+        @if (item.categoryName) {
+          <span class="chip chip-gray">{{ item.categoryName }}</span>
+        }
+        @if (item.condition) {
+          <span class="chip chip-blue">{{ item.condition }} condition</span>
+        }
+      </div>
+
+      <div class="owner-row">
+        <div class="owner-avatar">{{ ownerInitials(item.ownerName) }}</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;font-size:14px;">{{ item.ownerName ?? 'Owner' }}</div>
+          <div style="font-size:12px;color:var(--text-2);">Tool owner</div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" routerLink="/messages">
+          <i class="fas fa-comment-dots"></i> Message
+        </button>
+      </div>
+
+      <h3 style="font-size:18px;margin-bottom:10px;">About this tool</h3>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:20px;">
+        {{ item.description }}
+      </p>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;">Category</div>
+          <div style="font-size:14px;font-weight:600;">{{ item.categoryName ?? '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;">Condition</div>
+          <div style="font-size:14px;font-weight:600;">{{ item.condition ?? '—' }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;">Location</div>
+          <div style="font-size:14px;font-weight:600;">{{ item.location ?? '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="booking-panel">
+      <div class="price-big">{{ item.pricePerDay | number:'1.0-0' }} EGP <span>/ day</span></div>
+      <div style="font-size:12px;color:var(--text-3);margin:8px 0 16px;">
+        @if (item.insurancePrice > 0) {
+          Insurance available · +{{ item.insurancePrice | number:'1.0-0' }} EGP/day
+        } @else {
+          Escrow protected
+        }
+      </div>
+
+      <div class="cal-widget">
+        <div class="cal-title">Select dates to book</div>
+        <div style="font-size:12px;color:var(--text-2);">Booking flow coming soon</div>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-lg w-100 justify-content-center" routerLink="/bookings/create" [queryParams]="{ toolId: item.id }">
+        <i class="fas fa-calendar-check"></i> Book now
+      </button>
+
+      <div style="margin-top:14px;font-size:11px;color:var(--text-3);text-align:center;">
+        <i class="fas fa-lock"></i> Escrow protected · Money held safely
+      </div>
+    </aside>
+  </div>
+}

@@ -1,0 +1,21 @@
+<div>
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Add new tool</h2>
+      <p class="section-sub">List your tool and start earning</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger mb-3" style="font-size:13px;">{{ error() }}</div>
+  }
+
+  <div class="edit-layout" style="padding:0;grid-template-columns:1fr;">
+    <app-tool-form
+      [isSubmitting]="isSubmitting()"
+      submitLabel="Save & publish"
+      (submitted)="onSubmit($event)"
+      (cancelled)="onCancel()"
+    />
+  </div>
+</div>

@@ -11,7 +11,7 @@
         <main class="flex-grow-1 h-100">
           <router-outlet />
         </main>
-      } @else {
+      } @else if (showSidebar()) {
         <div class="dash-layout flex-grow-1">
           <aside class="sidebar">
             <div class="sidebar-section">
@@ -42,6 +42,10 @@
             <router-outlet />
           </main>
         </div>
+      } @else {
+        <main class="flex-grow-1 h-100">
+          <router-outlet />
+        </main>
       }
     } @else {
       <main class="flex-grow-1 h-100">

@@ -1,0 +1,45 @@
+<div class="browse-layout anim-fade">
+  <app-filter-panel (filtersChanged)="onFiltersChanged()" />
+
+  <div>
+    <div style="background:var(--green-light);border:1px solid #B8DEC9;border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--green-dark);">
+        <i class="fas fa-robot"></i>
+        Search by photo — upload an image and AI will find matching tools nearby.
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" routerLink="/ai/image-search">
+        <i class="fas fa-camera"></i> Upload photo
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger mb-3" style="font-size:13px;">{{ error() }}</div>
+    }
+
+    @if (isLoading()) {
+      <app-loading-spinner message="Loading tools..." />
+    } @else if (!tools().length) {
+      <div class="card text-center" style="padding:48px 24px;">
+        <div style="font-size:40px;margin-bottom:12px;">🔍</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">No tools found</h3>
+        <p style="font-size:13px;color:var(--text-2);">Try adjusting your filters or search term.</p>
+      </div>
+    } @else {
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        @for (tool of tools(); track tool.id) {
+          <app-tool-card [tool]="tool" [showAiMatch]="$first" />
+        }
+      </div>
+
+      <div style="margin-top:28px;">
+        <app-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          [totalItems]="totalCount()"
+          [pageSize]="pageSize()"
+          (pageChange)="onPageChange($event)"
+        />
+      </div>
+    }
+  </div>
+</div>
