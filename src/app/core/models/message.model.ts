@@ -1,33 +1,30 @@
-import { UserProfile } from './user.model';
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  content: string;
-  read: boolean;
-  createdAt: string;
-  
-  // Relations
-  sender?: UserProfile;
-}
-
-export interface Conversation {
-  id: string;
-  participants: string[];
-  lastMessage?: Message;
+export interface ConversationDto {
+  id: number;
+  otherUserId: number;
+  otherUserName: string;
+  otherUserAvatarUrl: string | null;
   updatedAt: string;
-  
-  // Relations
-  otherParticipant?: UserProfile;
+  lastMessage: MessageDto | null;
+  unreadCount: number;
 }
 
-export interface SendMessageRequest {
-  conversationId: string;
+export interface MessageDto {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  senderName: string;
+  senderAvatarUrl: string | null;
+  content: string;
+  status: 'Sent' | 'Delivered' | 'Read';
+  createdAt: string;
+  deliveredAt: string | null;
+  readAt: string | null;
+}
+
+export interface SendMessageDto {
   content: string;
 }
 
-export interface StartConversationRequest {
-  recipientId: string;
-  content: string;
+export interface StartConversationDto {
+  recipientId: number;
 }

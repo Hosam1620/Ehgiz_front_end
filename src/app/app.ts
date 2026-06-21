@@ -5,6 +5,7 @@ import { filter } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
 import { NotificationService } from './core/services/notification.service';
 import { NotificationHubService } from './core/services/notification-hub.service';
+import { ChatHubService } from './core/services/chat-hub.service';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
 import { ToastContainerComponent } from './shared/components/toast/toast.component';
@@ -19,6 +20,7 @@ export class App {
   protected readonly auth = inject(AuthService);
   private readonly notifService = inject(NotificationService);
   private readonly hubService = inject(NotificationHubService);
+  private readonly chatHubService = inject(ChatHubService);
   private readonly router = inject(Router);
 
   readonly userName = computed(() => this.auth.currentUser()?.fullName ?? '');
@@ -30,8 +32,10 @@ export class App {
       if (this.auth.isLoggedIn()) {
         this.notifService.loadUnreadCount().subscribe({ error: () => {} });
         this.hubService.startConnection();
+        this.chatHubService.startConnection();
       } else {
         this.hubService.stopConnection();
+        this.chatHubService.stopConnection();
       }
     });
 

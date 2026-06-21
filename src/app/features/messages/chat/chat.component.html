@@ -1,0 +1,142 @@
+<div class="chat-view">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="goBack()" style="flex-shrink:0;">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
+    @if (conversation(); as convo) {
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;overflow:hidden;">
+        @if (convo.otherUserAvatarUrl) {
+          <img [src]="convo.otherUserAvatarUrl" [alt]="convo.otherUserName" style="width:100%;height:100%;object-fit:cover;" />
+        } @else {
+          {{ initialsOf(convo.otherUserName) }}
+        }
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">{{ convo.otherUserName }}</div>
+        @if (isOtherTyping()) {
+          <div style="font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px;">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span>typing…</span>
+          </div>
+        } @else {
+          <div style="font-size:11px;color:var(--text-3);">Active recently</div>
+        }
+      </div>
+    } @else {
+      <div style="flex:1;font-size:14px;font-weight:600;">Conversation</div>
+    }
+  </div>
+
+  <!-- Messages body -->
+  <div class="chat-body" #chatBody (scroll)="onScroll($event)">
+
+    <!-- Load older messages -->
+    @if (isLoadingMore()) {
+      <div style="text-align:center;padding:8px 0;">
+        <div class="spinner-border spinner-border-sm" style="color:var(--green);" role="status">
+          <span class="visually-hidden">Loading more…</span>
+        </div>
+      </div>
+    } @else if (hasMore()) {
+      <div style="text-align:center;padding:4px 0 8px;">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="loadOlderMessages()">
+          <i class="fas fa-chevron-up"></i> Load older messages
+        </button>
+      </div>
+    }
+
+    <!-- Initial load spinner -->
+    @if (isLoading()) {
+      <div style="display:flex;flex:1;align-items:center;justify-content:center;">
+        <app-loading-spinner message="Loading messages..." />
+      </div>
+    }
+
+    <!-- Error state -->
+    @if (error()) {
+      <div class="alert alert-danger" style="margin:0;">{{ error() }}</div>
+    }
+
+    <!-- Message list -->
+    @for (msg of messages(); track msg.id) {
+      <div class="chat-msg-group" [style.align-items]="isMe(msg) ? 'flex-end' : 'flex-start'">
+        <div style="display:flex;align-items:flex-end;gap:8px;" [style.flex-direction]="isMe(msg) ? 'row-reverse' : 'row'">
+          @if (!isMe(msg)) {
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);flex-shrink:0;">
+              {{ initialsOf(msg.senderName) }}
+            </div>
+          }
+          <div>
+            <div class="msg-bubble" [class.sent]="isMe(msg)" [class.recv]="!isMe(msg)">
+              {{ msg.content }}
+            </div>
+            <div class="msg-time" [class.sent]="isMe(msg)">
+              {{ msg.createdAt | timeAgo }}
+              @if (isMe(msg)) {
+                <i [class]="statusIcon(msg.status)" style="margin-left:4px;font-size:9px;" [style.color]="msg.status === 'Read' ? 'var(--blue)' : 'var(--text-3)'"></i>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Typing bubble -->
+    @if (isOtherTyping()) {
+      <div class="chat-msg-group" style="align-items:flex-start;">
+        <div style="display:flex;align-items:flex-end;gap:8px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);flex-shrink:0;">
+            {{ initialsOf(conversation()?.otherUserName ?? '?') }}
+          </div>
+          <div class="msg-bubble recv" style="padding:10px 14px;">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Scroll anchor -->
+    <div #messagesEnd></div>
+  </div>
+
+  <!-- Send error -->
+  @if (sendError()) {
+    <div class="alert alert-danger" style="margin:0 16px 0;border-radius:var(--radius);font-size:12px;">
+      {{ sendError() }}
+    </div>
+  }
+
+  <!-- Input area -->
+  <div class="chat-input-area">
+    <textarea
+      #inputRef
+      class="chat-input"
+      placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
+      rows="1"
+      [value]="messageInput()"
+      (input)="onInputChange($any($event.target).value)"
+      (keydown)="onKeydown($event)"
+      (blur)="onInputBlur()"
+    ></textarea>
+    <button
+      type="button"
+      class="btn btn-primary"
+      style="flex-shrink:0;padding:10px 16px;"
+      [disabled]="!messageInput().trim() || isSending()"
+      (click)="send()"
+    >
+      @if (isSending()) {
+        <span class="spinner-border spinner-border-sm" role="status"></span>
+      } @else {
+        <i class="fas fa-paper-plane"></i>
+      }
+    </button>
+  </div>
+</div>
