@@ -27,6 +27,10 @@ export class App {
   private readonly router = inject(Router);
 
   readonly userName = computed(() => this.auth.currentUser()?.fullName ?? '');
+  readonly userInitials = computed(() => {
+    const name = this.auth.currentUser()?.fullName ?? '';
+    return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('') || '?';
+  });
   readonly unreadCount = this.notifService.unreadCount;
   readonly unreadMessageCount = this.messageService.unreadCount;
   showSidebar = signal(true);

@@ -4,7 +4,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TimeAgoPipe implements PipeTransform {
   transform(dateStr: string | null | undefined): string {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
+    // Append Z if no timezone info so browser parses as UTC, not local time
+    const normalized = /Z|[+-]\d{2}:\d{2}$/.test(dateStr) ? dateStr : dateStr + 'Z';
+    const date = new Date(normalized);
     if (isNaN(date.getTime())) return '';
     const diffMs    = Date.now() - date.getTime();
     const diffMins  = Math.floor(diffMs / 60_000);

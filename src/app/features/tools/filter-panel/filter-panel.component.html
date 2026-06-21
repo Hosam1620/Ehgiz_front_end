@@ -1,17 +1,36 @@
 <aside class="filter-panel">
-  <div class="filter-title">
-    Filters
-    <button type="button" class="btn btn-sm btn-secondary" style="padding:2px 8px;font-size:11px;" (click)="reset()">
-      Reset
+
+  <!-- Header -->
+  <div class="filter-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="filter-header-title">Filters</span>
+      @if (activeFilterCount() > 0) {
+        <span class="filter-active-badge">{{ activeFilterCount() }}</span>
+      }
+    </div>
+    <button type="button" class="filter-reset-btn" (click)="reset()">
+      <i class="fas fa-rotate-left"></i> Reset all
     </button>
   </div>
 
   <form [formGroup]="form">
+
+    <!-- Search -->
     <div class="filter-section">
       <div class="filter-section-title">Search</div>
-      <input type="text" class="form-input" formControlName="searchTerm" placeholder="Search tools..." />
+      <div class="filter-input-wrap">
+        <i class="fas fa-search filter-input-icon"></i>
+        <input
+          type="text"
+          class="form-input filter-icon-input"
+          formControlName="searchTerm"
+          placeholder="Tool name, brand…"
+          autocomplete="off"
+        />
+      </div>
     </div>
 
+    <!-- Category -->
     <div class="filter-section">
       <div class="filter-section-title">Category</div>
       <select class="form-input form-select" formControlName="categoryId">
@@ -22,48 +41,108 @@
       </select>
     </div>
 
+    <!-- Location -->
     <div class="filter-section">
       <div class="filter-section-title">Location</div>
-      <input type="text" class="form-input" formControlName="location" placeholder="City or area" />
-    </div>
-
-    <div class="filter-section">
-      <div class="filter-section-title">Price per day (EGP)</div>
-      <div class="price-range">
-        <input type="number" class="range-input" formControlName="minPrice" placeholder="Min" min="0" />
-        <span style="color:var(--text-3);">–</span>
-        <input type="number" class="range-input" formControlName="maxPrice" placeholder="Max" min="0" />
+      <div class="filter-input-wrap">
+        <i class="fas fa-map-marker-alt filter-input-icon"></i>
+        <input
+          type="text"
+          class="form-input filter-icon-input"
+          formControlName="location"
+          placeholder="City or area"
+          autocomplete="off"
+        />
       </div>
     </div>
 
+    <!-- Price -->
+    <div class="filter-section">
+      <div class="filter-section-title">
+        Price per day
+        <span class="filter-section-unit">EGP</span>
+      </div>
+      <div class="filter-price-row">
+        <div class="filter-price-col">
+          <label class="filter-price-label">Min</label>
+          <input
+            type="number"
+            class="form-input"
+            formControlName="minPrice"
+            placeholder="0"
+            min="0"
+          />
+        </div>
+        <span class="filter-price-sep">—</span>
+        <div class="filter-price-col">
+          <label class="filter-price-label">Max</label>
+          <input
+            type="number"
+            class="form-input"
+            formControlName="maxPrice"
+            placeholder="Any"
+            min="0"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Condition -->
     <div class="filter-section" formGroupName="conditions">
       <div class="filter-section-title">Condition</div>
-      @for (option of conditionOptions; track option) {
-        <label class="filter-check">
-          <input type="checkbox" [formControlName]="option" />
-          {{ option }}
-        </label>
-      }
+      <div class="filter-pills">
+        @for (option of conditionOptions; track option) {
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="conditionActive(option)"
+            (click)="toggleCondition(option)"
+          >{{ option }}</button>
+        }
+      </div>
     </div>
 
+    <!-- Availability -->
     <div class="filter-section">
       <div class="filter-section-title">Availability</div>
-      <label class="filter-check">
-        <input type="checkbox" formControlName="availableOnly" />
-        Available now
-      </label>
-      <label class="filter-check">
-        <input type="checkbox" formControlName="includeUnavailable" />
-        Include unavailable
+      <div class="filter-segment">
+        <button
+          type="button"
+          class="filter-seg-btn"
+          [class.active]="form.controls.availableOnly.value"
+          (click)="setAvailability(true)"
+        >
+          <i class="fas fa-circle-check"></i> Available
+        </button>
+        <button
+          type="button"
+          class="filter-seg-btn"
+          [class.active]="!form.controls.availableOnly.value"
+          (click)="setAvailability(false)"
+        >
+          <i class="fas fa-layer-group"></i> All tools
+        </button>
+      </div>
+    </div>
+
+    <!-- Insurance -->
+    <div class="filter-section filter-section-last">
+      <label class="filter-toggle-row">
+        <div class="filter-toggle-info">
+          <div class="filter-toggle-label">
+            <i class="fas fa-shield-halved" style="color:var(--green);font-size:12px;"></i>
+            Insured tools only
+          </div>
+          <div class="filter-toggle-sub">Damage protection included</div>
+        </div>
+        <div class="filter-switch">
+          <input type="checkbox" formControlName="insuredOnly" />
+          <span class="filter-switch-track">
+            <span class="filter-switch-thumb"></span>
+          </span>
+        </div>
       </label>
     </div>
 
-    <div class="filter-section">
-      <div class="filter-section-title">Insurance</div>
-      <label class="filter-check">
-        <input type="checkbox" formControlName="insuredOnly" />
-        Insured tools only
-      </label>
-    </div>
   </form>
 </aside>

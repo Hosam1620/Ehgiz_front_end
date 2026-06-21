@@ -6,6 +6,7 @@ import { BrowseFilterStore } from '../browse-filter.store';
 import { BrowseService } from '../browse.service';
 
 const CONDITION_OPTIONS = ['New', 'Good', 'Fair', 'Poor'] as const;
+type ConditionKey = typeof CONDITION_OPTIONS[number];
 
 @Component({
   selector: 'app-filter-panel',
@@ -21,6 +22,7 @@ export class FilterPanelComponent implements OnInit {
 
   protected readonly categories = signal<CategoryOption[]>([]);
   protected readonly conditionOptions = CONDITION_OPTIONS;
+  protected readonly activeFilterCount = signal(0);
 
   protected readonly form = this.fb.nonNullable.group({
     searchTerm: [''],
@@ -40,7 +42,6 @@ export class FilterPanelComponent implements OnInit {
   });
 
   constructor() {
-    // Keep the category select in sync when chips in browse page update the store
     effect(() => {
       const catId = this.filterStore.categoryId();
       const newValue = catId != null ? String(catId) : '';
@@ -53,6 +54,9 @@ export class FilterPanelComponent implements OnInit {
   ngOnInit(): void {
     this.syncFormFromStore();
     this.loadCategories();
+    this.updateActiveCount();
+
+    this.form.valueChanges.subscribe(() => this.updateActiveCount());
 
     this.form.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.applyFormToStore();
@@ -63,7 +67,39 @@ export class FilterPanelComponent implements OnInit {
   reset(): void {
     this.filterStore.reset();
     this.syncFormFromStore();
+    this.updateActiveCount();
     this.filtersChanged.emit();
+  }
+
+  protected toggleCondition(option: ConditionKey): void {
+    const ctrl = this.form.controls.conditions.controls[option];
+    ctrl.setValue(!ctrl.value);
+  }
+
+  protected conditionActive(option: ConditionKey): boolean {
+    return this.form.controls.conditions.controls[option].value;
+  }
+
+  protected setAvailability(availableOnly: boolean): void {
+    this.form.patchValue({
+      availableOnly,
+      includeUnavailable: !availableOnly,
+    });
+  }
+
+  private updateActiveCount(): void {
+    const v = this.form.getRawValue();
+    let count = 0;
+    if (v.searchTerm.trim()) count++;
+    if (v.categoryId) count++;
+    if (v.location.trim()) count++;
+    if (v.minPrice || v.maxPrice) count++;
+    if (!v.availableOnly) count++;
+    if (v.insuredOnly) count++;
+    const active = CONDITION_OPTIONS.filter(o => v.conditions[o]);
+    const isDefault = active.length === 1 && active[0] === 'Good';
+    if (!isDefault) count++;
+    this.activeFilterCount.set(count);
   }
 
   private loadCategories(): void {

@@ -14,10 +14,28 @@
       } @else if (showSidebar()) {
         <div class="dash-layout">
           <aside class="sidebar">
+
+            <!-- User identity -->
+            <div class="sidebar-user">
+              <div class="sidebar-avatar">{{ userInitials() }}</div>
+              <div class="sidebar-user-info">
+                <div class="sidebar-user-name">{{ userName() }}</div>
+                <div class="sidebar-user-role">Member</div>
+              </div>
+            </div>
+            <div class="sidebar-divider"></div>
+
+            <!-- Discover -->
             <div class="sidebar-section">
-              <div class="sidebar-label">Overview</div>
+              <div class="sidebar-label">Discover</div>
               <a class="sidebar-item" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-th-large"></i> Dashboard</a>
+              <a class="sidebar-item" routerLink="/browse" routerLinkActive="active"><i class="fas fa-search"></i> Browse tools</a>
               <a class="sidebar-item" routerLink="/bookings" routerLinkActive="active"><i class="fas fa-calendar-check"></i> My bookings</a>
+            </div>
+
+            <!-- Activity -->
+            <div class="sidebar-section">
+              <div class="sidebar-label">Activity</div>
               <a class="sidebar-item" routerLink="/notifications" routerLinkActive="active">
                 <i class="fas fa-bell"></i> Notifications
                 @if (unreadCount() > 0) {
@@ -31,16 +49,21 @@
                 }
               </a>
             </div>
+
+            <!-- Manage tools -->
             <div class="sidebar-section">
-              <div class="sidebar-label">Owner</div>
-              <a class="sidebar-item" routerLink="/tools" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="fas fa-toolbox"></i> My tools</a>
-              <a class="sidebar-item" routerLink="/tools/create" routerLinkActive="active"><i class="fas fa-plus-circle"></i> Add tool</a>
+              <div class="sidebar-label">My tools</div>
+              <a class="sidebar-item" routerLink="/tools" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="fas fa-toolbox"></i> My listings</a>
+              <a class="sidebar-item" routerLink="/tools/create" routerLinkActive="active"><i class="fas fa-plus-circle"></i> Add new tool</a>
             </div>
-            <div class="sidebar-section">
-              <div class="sidebar-label">Account</div>
+
+            <!-- Account pinned to bottom -->
+            <div class="sidebar-bottom">
+              <div class="sidebar-divider" style="margin-bottom:12px;"></div>
               <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
-              <a class="sidebar-item" style="cursor:pointer;" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+              <a class="sidebar-item sidebar-item-danger" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
             </div>
+
           </aside>
 
           <main class="dash-content">
