@@ -1,0 +1,114 @@
+<div>
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Bookings</h2>
+      <p class="section-sub">Track rentals as renter or owner · funds held in wallet escrow</p>
+    </div>
+    <a class="btn btn-secondary" routerLink="/browse">
+      <i class="fas fa-search"></i> Find a tool
+    </a>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  <div class="tabs">
+    <button type="button" class="tab" [class.active]="activeTab() === 'my'" (click)="setTab('my')">
+      <i class="fas fa-arrow-right-to-bracket"></i> My bookings ({{ myBookings().length }})
+    </button>
+    <button type="button" class="tab" [class.active]="activeTab() === 'received'" (click)="setTab('received')">
+      <i class="fas fa-inbox"></i> Received ({{ receivedBookings().length }})
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading bookings..." />
+  } @else if (!displayedBookings().length) {
+    <div class="card" style="padding:48px 24px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:12px;">📅</div>
+      <h3 style="font-size:17px;font-weight:600;margin-bottom:8px;">
+        @if (activeTab() === 'my') { No bookings yet }
+        @else { No incoming booking requests }
+      </h3>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:20px;">
+        @if (activeTab() === 'my') {
+          Browse tools and book your first rental.
+        } @else {
+          When someone books your tools, they will appear here.
+        }
+      </p>
+      @if (activeTab() === 'my') {
+        <a class="btn btn-primary" routerLink="/browse">Browse tools</a>
+      } @else {
+        <a class="btn btn-primary" routerLink="/tools/create">List a tool</a>
+      }
+    </div>
+  } @else {
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      @for (booking of displayedBookings(); track booking.id) {
+        <div class="card-elevated" style="padding:20px;">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <div style="width:72px;height:72px;border-radius:var(--radius);background:var(--surface2);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">
+              @if (booking.toolImageUrl) {
+                <img [src]="booking.toolImageUrl" [alt]="booking.toolName" style="width:100%;height:100%;object-fit:cover;" />
+              } @else {
+                🔧
+              }
+            </div>
+
+            <div style="flex:1;min-width:200px;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                <div>
+                  <a [routerLink]="['/bookings', booking.id]" style="font-size:16px;font-weight:700;color:var(--text);">
+                    {{ booking.toolName }}
+                  </a>
+                  <div style="font-size:12px;color:var(--text-3);margin-top:4px;">
+                    Booking #{{ booking.id }} · {{ booking.days }} day(s)
+                  </div>
+                </div>
+                <span class="chip" [ngClass]="statusClass(booking.status)">{{ statusLabel(booking.status) }}</span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px;font-size:13px;">
+                <div>
+                  <div style="color:var(--text-3);font-size:11px;margin-bottom:2px;">Dates</div>
+                  {{ booking.startDate | date:'mediumDate' }} – {{ booking.endDate | date:'mediumDate' }}
+                </div>
+                <div>
+                  <div style="color:var(--text-3);font-size:11px;margin-bottom:2px;">{{ otherPartyLabel() }}</div>
+                  {{ booking.otherPartyName }}
+                </div>
+                <div>
+                  <div style="color:var(--text-3);font-size:11px;margin-bottom:2px;">Total</div>
+                  <strong style="color:var(--green);">{{ booking.totalPrice | number:'1.0-0' }} EGP</strong>
+                </div>
+              </div>
+
+              @if (booking.deliveryHandover || booking.returnHandover) {
+                <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+                  @if (booking.deliveryHandover) {
+                    <span class="chip chip-gray" style="font-size:11px;">
+                      Delivery: {{ booking.deliveryHandover.isAccepted === true ? 'Accepted' : booking.deliveryHandover.isSubmitted ? 'Awaiting response' : 'Pending' }}
+                    </span>
+                  }
+                  @if (booking.returnHandover) {
+                    <span class="chip chip-gray" style="font-size:11px;">
+                      Return: {{ booking.returnHandover.isAccepted === true ? 'Accepted' : booking.returnHandover.isSubmitted ? 'Awaiting response' : 'Pending' }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div style="display:flex;align-items:center;">
+              <a class="btn btn-secondary btn-sm" [routerLink]="['/bookings', booking.id]">
+                View details <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

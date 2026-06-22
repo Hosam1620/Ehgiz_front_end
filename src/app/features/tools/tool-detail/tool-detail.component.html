@@ -6,7 +6,6 @@
   </div>
 } @else if (tool(); as item) {
 
-  <!-- Breadcrumb -->
   <div style="padding:12px 32px;border-bottom:1px solid var(--border);background:var(--white);font-size:12px;color:var(--text-3);">
     <a routerLink="/" style="color:var(--text-3);">Home</a>
     <span style="margin:0 6px;">›</span>
@@ -16,11 +15,7 @@
   </div>
 
   <div class="detail-layout anim-fade">
-
-    <!-- LEFT: images + info -->
     <div>
-
-      <!-- Image gallery -->
       <div class="detail-main-img" [style.background]="currentImage(item) ? '' : cardBg(item)">
         @if (currentImage(item)) {
           <img
@@ -41,24 +36,13 @@
       @if (item.imageUrls?.length) {
         <div class="thumb-row" style="margin-bottom:24px;">
           @for (url of item.imageUrls!; track url; let i = $index) {
-            <button
-              type="button"
-              class="thumb"
-              [class.active]="selectedImageIndex() === i"
-              (click)="selectImage(i)"
-            >
-              <img
-                [src]="url"
-                [alt]="item.name ?? 'Tool thumbnail'"
-                (error)="onImageError(url)"
-                style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);"
-              />
+            <button type="button" class="thumb" [class.active]="selectedImageIndex() === i" (click)="selectImage(i)">
+              <img [src]="url" [alt]="item.name ?? 'Tool thumbnail'" (error)="onImageError(url)" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);" />
             </button>
           }
         </div>
       }
 
-      <!-- Title & chips -->
       <h1 class="detail-title">{{ item.name }}</h1>
       <div class="detail-meta">
         <span class="chip" [class.chip-green]="item.isAvailable" [class.chip-red]="!item.isAvailable">
@@ -70,6 +54,11 @@
         @if (conditionLabel(item.condition)) {
           <span class="chip chip-blue">{{ conditionLabel(item.condition) }}</span>
         }
+        @if (averageRating() !== null) {
+          <span style="font-size:12px;color:var(--text-2);">
+            <span style="color:var(--amber);">★</span> {{ averageRating() | number:'1.1-1' }} ({{ reviews().length }} reviews)
+          </span>
+        }
         @if (item.location) {
           <span style="font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:4px;">
             <i class="fas fa-map-marker-alt" style="color:var(--text-3);"></i>{{ item.location }}
@@ -77,21 +66,13 @@
         }
       </div>
 
-      <!-- Owner row -->
       <div class="owner-row">
         <div class="owner-avatar">{{ ownerInitials(item.ownerName) }}</div>
         <div style="flex:1;">
           <div style="font-weight:600;font-size:14px;">{{ item.ownerName ?? 'Owner' }}</div>
-          <div style="font-size:12px;color:var(--text-2);">
-            Tool owner · Member since {{ memberSince(item.createdAt) }}
-          </div>
+          <div style="font-size:12px;color:var(--text-2);">Tool owner · Member since {{ memberSince(item.createdAt) }}</div>
         </div>
-        <button
-          type="button"
-          class="btn btn-secondary btn-sm"
-          (click)="messageOwner(item)"
-          [disabled]="isStartingConversation()"
-        >
+        <button type="button" class="btn btn-secondary btn-sm" (click)="messageOwner(item)" [disabled]="isStartingConversation()">
           @if (isStartingConversation()) {
             <span class="spinner-border spinner-border-sm"></span>
           } @else {
@@ -105,13 +86,9 @@
         <div class="alert alert-danger">{{ messageError() }}</div>
       }
 
-      <!-- Description -->
       <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;">About this tool</h3>
-      <p style="font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:20px;">
-        {{ item.description }}
-      </p>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:20px;">{{ item.description }}</p>
 
-      <!-- Specs grid -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
         <div style="background:var(--surface);border-radius:var(--radius);padding:12px;text-align:center;">
           <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Category</div>
@@ -127,97 +104,116 @@
         </div>
       </div>
 
-      <!-- AI analysis box -->
-      <div class="ai-suggest">
-        <i class="fas fa-robot ai-suggest-icon"></i>
-        <div class="ai-suggest-text">
-          <strong>AI analysis:</strong> Tool listed as
-          <strong>{{ conditionLabel(item.condition) ?? 'Good' }}</strong> condition.
-          @if (item.insurancePrice > 0) {
-            Optional insurance available for +{{ item.insurancePrice | number:'1.0-0' }} EGP/day.
-          } @else {
-            No insurance required by owner.
+      <!-- Reviews -->
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">Reviews</h3>
+      @if (reviewsLoading()) {
+        <p style="font-size:13px;color:var(--text-3);margin-bottom:20px;">Loading reviews...</p>
+      } @else if (!reviews().length) {
+        <div class="card" style="padding:20px;text-align:center;margin-bottom:20px;">
+          <div style="font-size:24px;margin-bottom:8px;">⭐</div>
+          <p style="font-size:13px;color:var(--text-2);">No reviews yet — be the first to rent and review.</p>
+        </div>
+      } @else {
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+          @for (review of reviews(); track review.id) {
+            <div class="card" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <strong style="font-size:13px;">{{ review.renterName }}</strong>
+                <span style="font-size:11px;color:var(--text-3);">{{ review.createdAt | date:'mediumDate' }}</span>
+              </div>
+              <div style="margin-bottom:6px;">
+                @for (s of reviewStars(review.rating); track s) { <span style="color:var(--amber);">★</span> }
+                @for (s of reviewEmptyStars(review.rating); track s) { <span style="color:var(--border);">★</span> }
+              </div>
+              @if (review.comment) {
+                <p style="font-size:13px;color:var(--text-2);margin:0;">{{ review.comment }}</p>
+              }
+            </div>
           }
         </div>
-      </div>
+      }
     </div>
 
-    <!-- RIGHT: booking panel -->
+    <!-- Booking panel -->
     <aside class="booking-panel">
+      <div class="price-big">{{ item.pricePerDay | number:'1.0-0' }} EGP <span>/ day</span></div>
+      <div style="font-size:12px;color:var(--text-3);margin:6px 0 16px;">Escrow protected · Charged from wallet</div>
 
-      <div class="price-big">
-        {{ item.pricePerDay | number:'1.0-0' }} EGP <span>/ day</span>
-      </div>
-      <div style="font-size:12px;color:var(--text-3);margin:6px 0 16px;">
-        Escrow protected · Money held safely
-      </div>
-
-      <!-- Rental days selector -->
-      <div style="background:var(--surface);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-size:13px;font-weight:600;">Rental duration</span>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm"
-            style="padding:4px 10px;min-width:28px;line-height:1;"
-            (click)="decrementDays()"
-          >−</button>
-          <span style="font-size:14px;font-weight:700;min-width:20px;text-align:center;">{{ rentalDays() }}</span>
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm"
-            style="padding:4px 10px;min-width:28px;line-height:1;"
-            (click)="incrementDays()"
-          >+</button>
-          <span style="font-size:12px;color:var(--text-3);">days</span>
+      <!-- Availability calendar -->
+      <div class="availability-calendar">
+        <div class="cal-header">
+          <button type="button" class="btn btn-secondary btn-sm cal-nav" (click)="prevMonth()" aria-label="Previous month">‹</button>
+          <span class="cal-title">{{ monthLabel() }}</span>
+          <button type="button" class="btn btn-secondary btn-sm cal-nav" (click)="nextMonth()" aria-label="Next month">›</button>
         </div>
+
+        @if (availabilityLoading()) {
+          <div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3);">Loading availability...</div>
+        } @else {
+          <div class="cal-weekdays">
+            @for (wd of ['Su','Mo','Tu','We','Th','Fr','Sa']; track wd) {
+              <span>{{ wd }}</span>
+            }
+          </div>
+          @for (week of calendarWeeks(); track $index) {
+            <div class="cal-week">
+              @for (day of week; track day.date.toISOString()) {
+                <button
+                  type="button"
+                  [ngClass]="dayClass(day)"
+                  [disabled]="!day.inMonth || isPast(day.date) || isDateBooked(day.date)"
+                  (click)="onCalendarDayClick(day)"
+                >
+                  {{ day.date.getDate() }}
+                </button>
+              }
+            </div>
+          }
+          <div class="cal-legend">
+            <span><i class="cal-dot cal-dot-booked"></i> Booked</span>
+            <span><i class="cal-dot cal-dot-selected"></i> Selected</span>
+          </div>
+        }
       </div>
 
-      <!-- Insurance toggle -->
-      @if (item.insurancePrice > 0) {
-        <div class="insurance-toggle">
-          <div>
-            <div style="font-size:13px;font-weight:600;">Add insurance</div>
-            <div style="font-size:11px;color:var(--text-3);">
-              +{{ item.insurancePrice | number:'1.0-0' }} EGP/day · Damage covered
-            </div>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" [checked]="withInsurance()" (change)="toggleInsurance()">
-            <span class="toggle-slider"></span>
-          </label>
+      @if (selectedStart()) {
+        <div style="font-size:13px;color:var(--text-2);margin:12px 0;">
+          @if (selectedEnd()) {
+            <strong>{{ selectedStart() | date:'mediumDate' }}</strong> → <strong>{{ selectedEnd() | date:'mediumDate' }}</strong>
+            · {{ rentalDays() }} day(s)
+          } @else {
+            Start: <strong>{{ selectedStart() | date:'mediumDate' }}</strong> — select end date
+          }
         </div>
       }
 
-      <!-- Cost breakdown -->
       <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px;">
-        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
-          <span>{{ item.pricePerDay | number:'1.0-0' }} EGP × {{ rentalDays() }} days</span>
-          <span>{{ subtotal() | number:'1.0-0' }} EGP</span>
-        </div>
-        @if (withInsurance() && item.insurancePrice > 0) {
+        @if (rentalDays() > 0) {
           <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
-            <span>Insurance ({{ rentalDays() }} days)</span>
-            <span>{{ insuranceCost() | number:'1.0-0' }} EGP</span>
+            <span>{{ item.pricePerDay | number:'1.0-0' }} EGP × {{ rentalDays() }} days</span>
+            <span>{{ subtotal() | number:'1.0-0' }} EGP</span>
           </div>
+          @if (item.insurancePrice > 0) {
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
+              <span>Insurance (flat fee)</span>
+              <span>{{ insuranceAmount() | number:'1.0-0' }} EGP</span>
+            </div>
+          }
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <span>Total from wallet</span>
+            <span style="color:var(--green);">{{ total() | number:'1.0-0' }} EGP</span>
+          </div>
+        } @else {
+          <p style="font-size:13px;color:var(--text-3);">Select dates on the calendar to see pricing.</p>
         }
-        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
-          <span>Service fee</span>
-          <span>{{ serviceFee() | number:'1.0-0' }} EGP</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-          <span>Total</span>
-          <span style="color:var(--green);">{{ total() | number:'1.0-0' }} EGP</span>
-        </div>
       </div>
 
-      <!-- Book button -->
       <button
         type="button"
         class="btn btn-primary btn-lg"
         style="width:100%;justify-content:center;"
-        routerLink="/bookings/create"
-        [queryParams]="{ toolId: item.id }"
+        [disabled]="!canBook()"
+        (click)="bookNow(item)"
       >
         <i class="fas fa-calendar-check"></i> Book now
       </button>
@@ -227,6 +223,5 @@
         Escrow protected · Money held safely
       </div>
     </aside>
-
   </div>
 }

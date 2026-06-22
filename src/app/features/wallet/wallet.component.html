@@ -1,0 +1,114 @@
+<div>
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">Wallet</h2>
+      <p class="section-sub">Manage balance, top-ups, withdrawals, and transaction history</p>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm" (click)="reload()">
+      <i class="fas fa-sync-alt"></i> Refresh
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading wallet..." />
+  } @else if (wallet(); as w) {
+    <div class="stat-grid" style="margin-bottom:24px;">
+      <div class="stat-card">
+        <div class="stat-label">Available balance</div>
+        <div class="stat-value" style="color:var(--green);">{{ w.balance | number:'1.2-2' }}</div>
+        <div class="stat-delta">Ready to spend or withdraw</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Held in escrow</div>
+        <div class="stat-value">{{ w.heldBalance | number:'1.2-2' }}</div>
+        <div class="stat-delta">Active booking deposits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total balance</div>
+        <div class="stat-value">{{ w.totalBalance | number:'1.2-2' }}</div>
+        <div class="stat-delta">Available + held</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+      <button type="button" class="btn btn-primary" (click)="openTopUpPanel()">
+        <i class="fas fa-plus"></i> Top up
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="showWithdraw.set(!showWithdraw()); showTopUp.set(false)">
+        <i class="fas fa-arrow-up"></i> Withdraw
+      </button>
+      <button type="button" class="btn btn-secondary" [disabled]="isActing()" (click)="connectBank()">
+        <i class="fas fa-university"></i> Connect bank (Stripe)
+      </button>
+    </div>
+
+    @if (showTopUp()) {
+      <div class="card-elevated" style="padding:20px;margin-bottom:24px;">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Top up wallet</h3>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;">
+          <div>
+            <label class="form-label">Amount</label>
+            <input type="number" class="form-input" min="1" [(ngModel)]="topUpAmount" style="width:140px;" />
+          </div>
+          <button type="button" class="btn btn-primary" [disabled]="isActing()" (click)="startTopUp()">
+            @if (isActing()) { Preparing checkout... } @else { Pay with Stripe }
+          </button>
+        </div>
+        @if (checkoutMounting()) {
+          <app-loading-spinner message="Loading Stripe checkout..." />
+        }
+        <div id="stripe-checkout" style="min-height:420px;"></div>
+      </div>
+    }
+
+    @if (showWithdraw()) {
+      <div class="card-elevated" style="padding:20px;margin-bottom:24px;">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Withdraw to bank</h3>
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">Requires Stripe Connect setup. Max: {{ w.balance | number:'1.2-2' }}</p>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+          <div>
+            <label class="form-label">Amount</label>
+            <input type="number" class="form-input" min="1" [max]="w.balance" [(ngModel)]="withdrawAmount" style="width:140px;" />
+          </div>
+          <button type="button" class="btn btn-primary" [disabled]="isActing()" (click)="submitWithdraw()">Withdraw</button>
+        </div>
+      </div>
+    }
+
+    <div class="card-elevated" style="padding:0;overflow:hidden;">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;">
+        Transaction history
+      </div>
+      @if (!transactions().length) {
+        <div style="padding:32px;text-align:center;color:var(--text-3);font-size:13px;">No transactions yet</div>
+      } @else {
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tx of transactions(); track tx.id) {
+              <tr>
+                <td style="font-size:12px;color:var(--text-3);">{{ tx.createdAt | date:'medium' }}</td>
+                <td><span class="chip chip-gray" style="font-size:11px;">{{ tx.type }}</span></td>
+                <td style="font-size:13px;">{{ tx.description ?? '—' }}</td>
+                <td [style]="transactionClass(tx.amount)">
+                  <strong>{{ transactionSign(tx.amount) }}{{ tx.amount | number:'1.2-2' }}</strong>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,46 @@
+@if (isLoading()) {
+  <app-loading-spinner message="Loading..." />
+} @else {
+  <div style="max-width:480px;margin:0 auto;">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Leave a review</h2>
+        <p class="section-sub">Rate your experience with {{ toolName() }}</p>
+      </div>
+      <a class="btn btn-secondary btn-sm" [routerLink]="['/bookings', bookingId]">Back</a>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    } @else {
+      <div class="card-elevated" style="padding:24px;">
+        <label class="form-label">Rating</label>
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          @for (star of [1,2,3,4,5]; track star) {
+            <button
+              type="button"
+              (click)="setRating(star)"
+              style="background:none;border:none;font-size:28px;cursor:pointer;padding:0;"
+              [style.color]="star <= rating ? 'var(--amber)' : 'var(--border)'"
+            >
+              ★
+            </button>
+          }
+        </div>
+
+        <label class="form-label">Comment (optional)</label>
+        <textarea class="form-input" rows="4" [(ngModel)]="comment" placeholder="Share your experience..."></textarea>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          style="width:100%;margin-top:20px;justify-content:center;"
+          [disabled]="isSubmitting()"
+          (click)="submit()"
+        >
+          @if (isSubmitting()) { Submitting... } @else { <i class="fas fa-paper-plane"></i> Submit review }
+        </button>
+      </div>
+    }
+  </div>
+}

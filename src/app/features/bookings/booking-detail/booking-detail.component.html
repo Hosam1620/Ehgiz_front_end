@@ -1,0 +1,182 @@
+@if (isLoading()) {
+  <app-loading-spinner message="Loading booking..." />
+} @else if (error()) {
+  <div class="alert alert-danger">{{ error() }}</div>
+} @else if (booking(); as b) {
+  <div>
+    <div class="section-header">
+      <div>
+        <a routerLink="/bookings" style="font-size:12px;color:var(--text-3);">← Back to bookings</a>
+        <h2 class="section-title" style="margin-top:8px;">{{ b.toolName }}</h2>
+        <p class="section-sub">Booking #{{ b.id }} · {{ b.days }} day(s)</p>
+      </div>
+      <span class="chip" [ngClass]="statusClass(b.status)">{{ b.status }}</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card-elevated" style="padding:20px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Rental details</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+            <div><span style="color:var(--text-3);">Start</span><div>{{ b.startDate | date:'mediumDate' }}</div></div>
+            <div><span style="color:var(--text-3);">End</span><div>{{ b.endDate | date:'mediumDate' }}</div></div>
+            <div><span style="color:var(--text-3);">Owner</span><div>{{ b.ownerName }}</div></div>
+            <div><span style="color:var(--text-3);">Renter</span><div>{{ b.renterName }}</div></div>
+            <div><span style="color:var(--text-3);">Payment</span><div>{{ b.paymentStatus ?? '—' }}</div></div>
+            <div><span style="color:var(--text-3);">Escrow</span><div>{{ b.escrowStatus ?? '—' }}</div></div>
+          </div>
+
+          @if (b.adminResolutionNotes) {
+            <div class="alert alert-warning" style="margin-top:16px;font-size:13px;">
+              <strong>Admin notes:</strong> {{ b.adminResolutionNotes }}
+            </div>
+          }
+        </div>
+
+        @if (b.handovers?.length) {
+          <div class="card-elevated" style="padding:20px;">
+            <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Handovers</h3>
+            @for (h of b.handovers!; track h.id) {
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                  <strong style="font-size:13px;">{{ h.type }} handover</strong>
+                  <span class="chip chip-gray" style="font-size:11px;">
+                    {{ h.isAccepted === true ? 'Accepted' : h.isAccepted === false ? 'Rejected' : 'Pending' }}
+                  </span>
+                </div>
+                <div style="font-size:12px;color:var(--text-2);margin-bottom:6px;">
+                  Submitted by {{ h.submittedByName }} · {{ h.submittedAt | date:'medium' }}
+                </div>
+                @if (h.submitterNotes) {
+                  <p style="font-size:13px;margin-bottom:8px;">{{ h.submitterNotes }}</p>
+                }
+                @if (h.images?.length) {
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    @for (img of h.images!; track img.id) {
+                      <img [src]="resolveMediaUrl(img.imageUrl)!" alt="Handover photo" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius-sm);" />
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card-elevated" style="padding:20px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Cost breakdown</h3>
+          <div style="font-size:13px;color:var(--text-2);display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;"><span>Rental</span><span>{{ b.rentalCost | number:'1.0-0' }} EGP</span></div>
+            <div style="display:flex;justify-content:space-between;"><span>Insurance</span><span>{{ b.insurancePrice | number:'1.0-0' }} EGP</span></div>
+            <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--text);border-top:1px solid var(--border);padding-top:8px;margin-top:4px;">
+              <span>Total</span><span style="color:var(--green);">{{ b.totalPrice | number:'1.0-0' }} EGP</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-elevated" style="padding:20px;">
+          <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Actions</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            @if (can('Accept')) {
+              <button type="button" class="btn btn-primary btn-sm" [disabled]="isActing()" (click)="acceptBooking()">Accept booking</button>
+            }
+            @if (can('Reject')) {
+              <button type="button" class="btn btn-danger btn-sm" [disabled]="isActing()" (click)="rejectBooking()">Reject</button>
+            }
+            @if (can('Cancel')) {
+              <button type="button" class="btn btn-secondary btn-sm" [disabled]="isActing()" (click)="cancelBooking()">Cancel</button>
+            }
+            @if (can('SubmitDeliveryHandover')) {
+              <button type="button" class="btn btn-primary btn-sm" (click)="openModal('delivery')">Submit delivery handover</button>
+            }
+            @if (can('RespondDeliveryHandover')) {
+              <button type="button" class="btn btn-primary btn-sm" (click)="openModal('respond-delivery')">Respond to delivery</button>
+            }
+            @if (can('SubmitReturnHandover')) {
+              <button type="button" class="btn btn-primary btn-sm" (click)="openModal('return')">Submit return handover</button>
+            }
+            @if (can('RespondReturnHandover')) {
+              <button type="button" class="btn btn-primary btn-sm" (click)="openModal('respond-return')">Respond to return</button>
+            }
+            @if (can('ReportIssue')) {
+              <button type="button" class="btn btn-secondary btn-sm" (click)="openModal('issue')">Report issue</button>
+            }
+            @if (can('LeaveReview') && !b.hasReview) {
+              <button type="button" class="btn btn-sm" style="background:var(--amber-light);color:#7a5400;" (click)="leaveReview()">
+                <i class="fas fa-star"></i> Leave review
+              </button>
+            }
+            @if (can('MessageOwner') || can('MessageRenter')) {
+              <button type="button" class="btn btn-secondary btn-sm" [disabled]="isActing()" (click)="messageOtherParty()">
+                <i class="fas fa-comment-dots"></i> Message {{ isOwner() ? 'renter' : 'owner' }}
+              </button>
+            }
+            @if (!b.allowedActions.length) {
+              <p style="font-size:13px;color:var(--text-3);">No actions available for this booking.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (activeModal()) {
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;" (click)="closeModal()">
+      <div class="card-elevated" style="width:100%;max-width:480px;padding:24px;" (click)="$event.stopPropagation()">
+        @switch (activeModal()) {
+          @case ('delivery') {
+            <h3 style="font-size:18px;margin-bottom:16px;">Submit delivery handover</h3>
+            <label class="form-label">Notes (optional)</label>
+            <textarea class="form-input" rows="3" [(ngModel)]="handoverNotes"></textarea>
+            <label class="form-label" style="margin-top:12px;">Photos</label>
+            <input type="file" class="form-input" accept="image/*" multiple (change)="onImagesSelected($event)" />
+          }
+          @case ('return') {
+            <h3 style="font-size:18px;margin-bottom:16px;">Submit return handover</h3>
+            <label class="form-label">Notes (optional)</label>
+            <textarea class="form-input" rows="3" [(ngModel)]="handoverNotes"></textarea>
+            <label class="form-label" style="margin-top:12px;">Photos</label>
+            <input type="file" class="form-input" accept="image/*" multiple (change)="onImagesSelected($event)" />
+          }
+          @case ('respond-delivery') {
+            <h3 style="font-size:18px;margin-bottom:16px;">Respond to delivery</h3>
+            <div style="display:flex;gap:12px;margin-bottom:12px;">
+              <label style="font-size:13px;"><input type="radio" name="accept" [value]="true" [(ngModel)]="respondAccept" /> Accept delivery</label>
+              <label style="font-size:13px;"><input type="radio" name="accept" [value]="false" [(ngModel)]="respondAccept" /> Report issue</label>
+            </div>
+            <label class="form-label">Notes (optional)</label>
+            <textarea class="form-input" rows="3" [(ngModel)]="respondNotes"></textarea>
+          }
+          @case ('respond-return') {
+            <h3 style="font-size:18px;margin-bottom:16px;">Respond to return</h3>
+            <div style="display:flex;gap:12px;margin-bottom:12px;">
+              <label style="font-size:13px;"><input type="radio" name="acceptRet" [value]="true" [(ngModel)]="respondAccept" /> Accept return</label>
+              <label style="font-size:13px;"><input type="radio" name="acceptRet" [value]="false" [(ngModel)]="respondAccept" /> Report issue</label>
+            </div>
+            <label class="form-label">Notes (optional)</label>
+            <textarea class="form-input" rows="3" [(ngModel)]="respondNotes"></textarea>
+          }
+          @case ('issue') {
+            <h3 style="font-size:18px;margin-bottom:16px;">Report an issue</h3>
+            <label class="form-label">Title</label>
+            <input type="text" class="form-input" [(ngModel)]="issueTitle" />
+            <label class="form-label" style="margin-top:12px;">Description</label>
+            <textarea class="form-input" rows="4" [(ngModel)]="issueDescription"></textarea>
+          }
+        }
+
+        <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          @if (activeModal() === 'issue') {
+            <button type="button" class="btn btn-primary" [disabled]="isActing()" (click)="submitIssue()">Submit</button>
+          } @else if (activeModal() === 'respond-delivery' || activeModal() === 'respond-return') {
+            <button type="button" class="btn btn-primary" [disabled]="isActing()" (click)="submitRespondHandover()">Confirm</button>
+          } @else {
+            <button type="button" class="btn btn-primary" [disabled]="isActing()" (click)="submitHandover()">Submit</button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+}

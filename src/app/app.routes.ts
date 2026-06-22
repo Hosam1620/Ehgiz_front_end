@@ -27,6 +27,10 @@ export const routes: Routes = [
   { path: 'tools/:id',      loadComponent: () => import('./features/tools/tool-detail/tool-detail.component').then(m => m.ToolDetailComponent), data: { layout: 'full' } },
   { path: 'add-tool',       redirectTo: 'tools/create', pathMatch: 'full' },
 
+  // Wallet
+  { path: 'wallet', loadComponent: () => import('./features/wallet/wallet.component').then(m => m.WalletComponent), canActivate: [authGuard] },
+  { path: 'wallet/topup/return', loadComponent: () => import('./features/wallet/wallet-topup-return/wallet-topup-return.component').then(m => m.WalletTopupReturnComponent), canActivate: [authGuard] },
+
   // Bookings
   { path: 'bookings',        loadComponent: () => import('./features/bookings/booking-list/booking-list.component').then(m => m.BookingListComponent),     canActivate: [authGuard] },
   { path: 'bookings/create', loadComponent: () => import('./features/bookings/booking-create/booking-create.component').then(m => m.BookingCreateComponent), canActivate: [authGuard] },

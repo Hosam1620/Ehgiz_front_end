@@ -1,0 +1,91 @@
+@if (isLoading()) {
+  <app-loading-spinner message="Loading tool..." />
+} @else {
+  <div style="max-width:640px;margin:0 auto;">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Confirm booking</h2>
+        <p class="section-sub">Payment is taken from your wallet and held in escrow</p>
+      </div>
+      <a class="btn btn-secondary btn-sm" routerLink="/browse">Back to browse</a>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger" style="margin-bottom:16px;">
+        {{ error() }}
+        @if (error() && (error()!.toLowerCase().includes('balance') || error()!.toLowerCase().includes('wallet'))) {
+          <div style="margin-top:10px;">
+            <a class="btn btn-sm btn-primary" routerLink="/wallet">Top up wallet</a>
+          </div>
+        }
+      </div>
+    }
+
+    @if (tool(); as item) {
+      <div class="card-elevated" style="padding:24px;">
+        <div style="display:flex;gap:16px;margin-bottom:20px;">
+          <div style="width:64px;height:64px;border-radius:var(--radius);background:var(--surface2);overflow:hidden;display:flex;align-items:center;justify-content:center;">
+            @if (item.imageUrls?.length) {
+              <img [src]="item.imageUrls![0]" [alt]="item.name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
+            } @else {
+              🔧
+            }
+          </div>
+          <div>
+            <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">{{ item.name }}</h3>
+            <div style="font-size:13px;color:var(--text-2);">
+              {{ item.pricePerDay | number:'1.0-0' }} EGP/day · {{ item.location ?? 'Location TBD' }}
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div>
+            <label class="form-label">Start date</label>
+            <input type="date" class="form-input" [(ngModel)]="startDate" />
+          </div>
+          <div>
+            <label class="form-label">End date</label>
+            <input type="date" class="form-input" [(ngModel)]="endDate" />
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
+            <span>{{ item.pricePerDay | number:'1.0-0' }} EGP × {{ rentalDays() }} days</span>
+            <span>{{ rentalCost() | number:'1.0-0' }} EGP</span>
+          </div>
+          @if (item.insurancePrice > 0) {
+            <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
+              <span>Insurance (flat fee)</span>
+              <span>{{ insuranceAmount() | number:'1.0-0' }} EGP</span>
+            </div>
+          }
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <span>Total charged from wallet</span>
+            <span style="color:var(--green);">{{ totalCharged() | number:'1.0-0' }} EGP</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary btn-lg"
+          style="width:100%;justify-content:center;"
+          [disabled]="isSubmitting() || rentalDays() <= 0"
+          (click)="submit()"
+        >
+          @if (isSubmitting()) {
+            Creating booking...
+          } @else {
+            <i class="fas fa-calendar-check"></i> Confirm & pay from wallet
+          }
+        </button>
+
+        <p style="margin-top:12px;font-size:11px;color:var(--text-3);text-align:center;">
+          <i class="fas fa-lock" style="color:var(--green);"></i>
+          Funds are held in escrow until the rental completes
+        </p>
+      </div>
+    }
+  </div>
+}
