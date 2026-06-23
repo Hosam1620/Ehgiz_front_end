@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { BookingService } from '../../core/services/booking.service';
 import { MessageService } from '../../core/services/message.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { ToolsService } from '../../core/services/tools.service';
@@ -13,12 +14,15 @@ import { ToolsService } from '../../core/services/tools.service';
 })
 export class DashboardComponent implements OnInit {
   private readonly auth = inject(AuthService);
+  private readonly bookingService = inject(BookingService);
   private readonly toolsService = inject(ToolsService);
   private readonly messageService = inject(MessageService);
   private readonly notificationService = inject(NotificationService);
 
   protected readonly toolsListedCount = signal<number | null>(null);
+  protected readonly activeBookingsCount = signal<number | null>(null);
   protected readonly toolsError = signal(false);
+  protected readonly bookingsError = signal(false);
   protected readonly unreadMessages = this.messageService.unreadCount;
   protected readonly unreadNotifications = this.notificationService.unreadCount;
 
@@ -50,6 +54,19 @@ export class DashboardComponent implements OnInit {
       error: () => {
         this.toolsListedCount.set(null);
         this.toolsError.set(true);
+      },
+    });
+
+    this.bookingService.getMyBookings().subscribe({
+      next: bookings => {
+        const active = bookings.filter(b =>
+          !['Completed', 'Cancelled', 'Rejected'].includes(b.status)
+        ).length;
+        this.activeBookingsCount.set(active);
+      },
+      error: () => {
+        this.activeBookingsCount.set(null);
+        this.bookingsError.set(true);
       },
     });
 

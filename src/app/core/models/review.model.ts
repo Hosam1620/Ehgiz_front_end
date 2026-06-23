@@ -1,21 +1,21 @@
-import { UserProfile } from './user.model';
-
 export interface Review {
-  id: string;
-  bookingId: string;
-  toolId: string;
-  reviewerId: string;
-  rating: number; // 1-5
-  comment: string;
+  id: number;
+  bookingId: number;
+  rating: number;
+  comment: string | null;
   createdAt: string;
-  
-  // Relations
-  reviewer?: UserProfile;
+  toolId: number;
+  toolName: string;
+  renterName: string;
 }
 
 export interface CreateReviewRequest {
-  bookingId: string;
-  toolId: string;
+  bookingId: number;
   rating: number;
-  comment: string;
+  comment?: string;
+}
+
+export interface ToolRating {
+  toolId: number;
+  averageRating: number;
 }

@@ -27,12 +27,20 @@
     <a class="stat-card stat-card-link" routerLink="/bookings">
       <div class="stat-label">Active bookings</div>
       <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div class="stat-value stat-value-text">Soon</div>
+        <div class="stat-value">
+          @if (activeBookingsCount() !== null) {
+            {{ activeBookingsCount() }}
+          } @else if (bookingsError()) {
+            !
+          } @else {
+            ...
+          }
+        </div>
         <div class="stat-icon" style="background:var(--green-light);color:var(--green);">
           <i class="fas fa-calendar-check"></i>
         </div>
       </div>
-      <div class="stat-delta">Booking API pending</div>
+      <div class="stat-delta">Active rentals & pending</div>
     </a>
     <a class="stat-card stat-card-link" routerLink="/tools">
       <div class="stat-label">Tools listed</div>
