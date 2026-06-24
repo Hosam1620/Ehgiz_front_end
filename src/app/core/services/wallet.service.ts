@@ -18,7 +18,10 @@ export class WalletService {
   private readonly base = `${environment.apiUrl}/api/wallet`;
 
   getWallet(): Observable<Wallet> {
-    return this.http.get<ApiResponse<Wallet>>(this.base).pipe(map(r => r.data!));
+    return this.http.get<ApiResponse<Wallet>>(this.base).pipe(map(r => {
+      if (!r.data) throw new Error('No wallet data returned');
+      return r.data;
+    }));
   }
 
   getTransactions(): Observable<WalletTransaction[]> {
@@ -30,7 +33,10 @@ export class WalletService {
   initiateTopUp(data: TopUpRequest): Observable<TopUpResponse> {
     return this.http
       .post<ApiResponse<TopUpResponse>>(`${this.base}/topup`, data)
-      .pipe(map(r => r.data!));
+      .pipe(map(r => {
+        if (!r.data) throw new Error('No top-up response returned');
+        return r.data;
+      }));
   }
 
   withdraw(data: WithdrawalRequest): Observable<ApiResponse<unknown>> {
@@ -40,6 +46,9 @@ export class WalletService {
   getConnectOnboardingUrl(): Observable<ConnectOnboardingResponse> {
     return this.http
       .get<ApiResponse<ConnectOnboardingResponse>>(`${this.base}/connect/onboard`)
-      .pipe(map(r => r.data!));
+      .pipe(map(r => {
+        if (!r.data) throw new Error('No onboarding URL returned');
+        return r.data;
+      }));
   }
 }

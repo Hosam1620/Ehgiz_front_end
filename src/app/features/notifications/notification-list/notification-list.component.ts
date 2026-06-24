@@ -9,7 +9,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationHubService } from '../../../core/services/notification-hub.service';
@@ -23,7 +23,7 @@ const DISPLAY_STEP = 20;
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule, TimeAgoPipe],
+  imports: [NgStyle, TimeAgoPipe],
   templateUrl: './notification-list.component.html',
 })
 export class NotificationListComponent implements OnInit, AfterViewInit, OnDestroy {

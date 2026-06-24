@@ -11,7 +11,6 @@ import {
   ElementRef,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageService } from '../../../core/services/message.service';
@@ -25,7 +24,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   standalone: true,
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  imports: [CommonModule, RouterModule, FormsModule, TimeAgoPipe, LoadingSpinnerComponent],
+  imports: [RouterModule, FormsModule, TimeAgoPipe, LoadingSpinnerComponent],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesEnd') private messagesEnd!: ElementRef<HTMLElement>;

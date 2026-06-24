@@ -6,16 +6,16 @@
   </div>
 } @else if (tool(); as item) {
 
-  <div style="padding:12px 32px;border-bottom:1px solid var(--border);background:var(--white);font-size:12px;color:var(--text-3);">
-    <a routerLink="/" style="color:var(--text-3);">Home</a>
-    <span style="margin:0 6px;">›</span>
-    <a routerLink="/browse" style="color:var(--text-3);">Browse</a>
-    <span style="margin:0 6px;">›</span>
-    <span style="color:var(--text);">{{ item.name }}</span>
+  <div class="detail-breadcrumb">
+    <a routerLink="/">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a routerLink="/browse">Browse</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>{{ item.name }}</span>
   </div>
 
-  <div class="detail-layout anim-fade">
-    <div>
+  <div class="detail-layout anim-fade" [class.detail-layout-owner]="isOwnTool(item)">
+    <div class="detail-main-col">
       <div class="detail-main-img" [style.background]="currentImage(item) ? '' : cardBg(item)">
         @if (currentImage(item)) {
           <img
@@ -55,13 +55,13 @@
           <span class="chip chip-blue">{{ conditionLabel(item.condition) }}</span>
         }
         @if (averageRating() !== null) {
-          <span style="font-size:12px;color:var(--text-2);">
-            <span style="color:var(--amber);">★</span> {{ averageRating() | number:'1.1-1' }} ({{ reviews().length }} reviews)
+          <span class="detail-rating">
+            <span style="color:var(--amber);">★</span> {{ averageRating() | number:'1.1-1' }} <span style="color:var(--text-3);">({{ reviews().length }} reviews)</span>
           </span>
         }
         @if (item.location) {
-          <span style="font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:4px;">
-            <i class="fas fa-map-marker-alt" style="color:var(--text-3);"></i>{{ item.location }}
+          <span class="detail-location">
+            <i class="fas fa-map-marker-alt"></i>{{ item.location }}
           </span>
         }
       </div>
@@ -72,156 +72,187 @@
           <div style="font-weight:600;font-size:14px;">{{ item.ownerName ?? 'Owner' }}</div>
           <div style="font-size:12px;color:var(--text-2);">Tool owner · Member since {{ memberSince(item.createdAt) }}</div>
         </div>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="messageOwner(item)" [disabled]="isStartingConversation()">
-          @if (isStartingConversation()) {
-            <span class="spinner-border spinner-border-sm"></span>
-          } @else {
-            <i class="fas fa-comment-dots"></i>
-          }
-          {{ isOwnTool(item) ? 'My tools' : 'Message owner' }}
-        </button>
+        @if (!isOwnTool(item)) {
+          <button type="button" class="btn btn-secondary btn-sm" (click)="messageOwner(item)" [disabled]="isStartingConversation()">
+            @if (isStartingConversation()) {
+              <span class="spinner-border spinner-border-sm"></span>
+            } @else {
+              <i class="fas fa-comment-dots"></i>
+            }
+            Message owner
+          </button>
+        } @else {
+          <a routerLink="/tools" class="btn btn-secondary btn-sm">
+            <i class="fas fa-list"></i> My tools
+          </a>
+        }
       </div>
 
       @if (messageError()) {
         <div class="alert alert-danger">{{ messageError() }}</div>
       }
 
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;">About this tool</h3>
-      <p style="font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:20px;">{{ item.description }}</p>
+      <h3 class="detail-section-title">About this tool</h3>
+      <p class="detail-description">{{ item.description }}</p>
 
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
-        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;text-align:center;">
-          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Category</div>
-          <div style="font-size:13px;font-weight:600;">{{ item.categoryName ?? '—' }}</div>
+      <div class="detail-specs-grid">
+        <div class="detail-spec-card">
+          <div class="detail-spec-label">Category</div>
+          <div class="detail-spec-value">{{ item.categoryName ?? '—' }}</div>
         </div>
-        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;text-align:center;">
-          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Condition</div>
-          <div style="font-size:13px;font-weight:600;">{{ conditionLabel(item.condition) ?? '—' }}</div>
+        <div class="detail-spec-card">
+          <div class="detail-spec-label">Condition</div>
+          <div class="detail-spec-value">{{ conditionLabel(item.condition) ?? '—' }}</div>
         </div>
-        <div style="background:var(--surface);border-radius:var(--radius);padding:12px;text-align:center;">
-          <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Location</div>
-          <div style="font-size:13px;font-weight:600;">{{ item.location ?? '—' }}</div>
+        <div class="detail-spec-card">
+          <div class="detail-spec-label">Location</div>
+          <div class="detail-spec-value">{{ item.location ?? '—' }}</div>
         </div>
+        @if (!isOwnTool(item)) {
+          <div class="detail-spec-card">
+            <div class="detail-spec-label">Price</div>
+            <div class="detail-spec-value" style="color:var(--green);">{{ item.pricePerDay | number:'1.0-0' }} EGP/day</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Booking panel — hidden for tool owner -->
+    @if (!isOwnTool(item)) {
+      <aside class="booking-panel">
+        <div class="price-big">{{ item.pricePerDay | number:'1.0-0' }} EGP <span>/ day</span></div>
+        <div class="booking-panel-sub">Escrow protected · Charged from wallet</div>
+
+        <!-- Availability calendar -->
+        <div class="availability-calendar">
+          <div class="cal-header">
+            <button type="button" class="btn btn-secondary btn-sm cal-nav" (click)="prevMonth()" aria-label="Previous month">‹</button>
+            <span class="cal-title">{{ monthLabel() }}</span>
+            <button type="button" class="btn btn-secondary btn-sm cal-nav" (click)="nextMonth()" aria-label="Next month">›</button>
+          </div>
+
+          @if (availabilityLoading()) {
+            <div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3);">Loading availability...</div>
+          } @else {
+            <div class="cal-weekdays">
+              @for (wd of ['Su','Mo','Tu','We','Th','Fr','Sa']; track wd) {
+                <span>{{ wd }}</span>
+              }
+            </div>
+            @for (week of calendarWeeks(); track $index) {
+              <div class="cal-week">
+                @for (day of week; track day.date.toISOString()) {
+                  <button
+                    type="button"
+                    [ngClass]="dayClass(day)"
+                    [disabled]="!day.inMonth || isPast(day.date) || isDateBooked(day.date)"
+                    (click)="onCalendarDayClick(day)"
+                  >
+                    {{ day.date.getDate() }}
+                  </button>
+                }
+              </div>
+            }
+            <div class="cal-legend">
+              <span><i class="cal-dot cal-dot-booked"></i> Booked</span>
+              <span><i class="cal-dot cal-dot-selected"></i> Selected</span>
+            </div>
+          }
+        </div>
+
+        @if (selectedStart()) {
+          <div class="booking-dates-preview">
+            @if (selectedEnd()) {
+              <strong>{{ selectedStart() | date:'mediumDate' }}</strong> → <strong>{{ selectedEnd() | date:'mediumDate' }}</strong>
+              · {{ rentalDays() }} day(s)
+            } @else {
+              Start: <strong>{{ selectedStart() | date:'mediumDate' }}</strong> — select end date
+            }
+          </div>
+        }
+
+        <div class="booking-price-breakdown">
+          @if (rentalDays() > 0) {
+            <div class="price-row">
+              <span>{{ item.pricePerDay | number:'1.0-0' }} EGP × {{ rentalDays() }} days</span>
+              <span>{{ subtotal() | number:'1.0-0' }} EGP</span>
+            </div>
+            @if (item.insurancePrice > 0) {
+              <div class="price-row">
+                <span>Insurance (flat fee)</span>
+                <span>{{ insuranceAmount() | number:'1.0-0' }} EGP</span>
+              </div>
+            }
+            <div class="price-row price-row-total">
+              <span>Total from wallet</span>
+              <span style="color:var(--green);">{{ total() | number:'1.0-0' }} EGP</span>
+            </div>
+          } @else {
+            <p class="booking-hint">Select dates on the calendar to see pricing.</p>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary btn-lg"
+          style="width:100%;justify-content:center;"
+          [disabled]="!canBook()"
+          (click)="bookNow(item)"
+        >
+          <i class="fas fa-calendar-check"></i> Book now
+        </button>
+
+        <div class="booking-trust-badge">
+          <i class="fas fa-lock" style="color:var(--green);"></i>
+          Escrow protected · Money held safely
+        </div>
+      </aside>
+    }
+  </div>
+
+  <!-- Reviews — always shown at bottom of page -->
+  <div class="reviews-section">
+    <div class="reviews-section-inner">
+      <div class="reviews-header">
+        <h2 class="reviews-title">
+          <i class="fas fa-star" style="color:var(--amber);font-size:18px;"></i>
+          Reviews
+          @if (averageRating() !== null) {
+            <span class="reviews-avg">{{ averageRating() | number:'1.1-1' }}</span>
+            <span class="reviews-count">({{ reviews().length }})</span>
+          }
+        </h2>
       </div>
 
-      <!-- Reviews -->
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">Reviews</h3>
       @if (reviewsLoading()) {
-        <p style="font-size:13px;color:var(--text-3);margin-bottom:20px;">Loading reviews...</p>
+        <p class="reviews-loading">Loading reviews...</p>
       } @else if (!reviews().length) {
-        <div class="card" style="padding:20px;text-align:center;margin-bottom:20px;">
-          <div style="font-size:24px;margin-bottom:8px;">⭐</div>
-          <p style="font-size:13px;color:var(--text-2);">No reviews yet — be the first to rent and review.</p>
+        <div class="reviews-empty">
+          <div class="reviews-empty-icon">⭐</div>
+          <p>No reviews yet — be the first to rent and review.</p>
         </div>
       } @else {
-        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <div class="reviews-grid">
           @for (review of reviews(); track review.id) {
-            <div class="card" style="padding:16px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                <strong style="font-size:13px;">{{ review.renterName }}</strong>
-                <span style="font-size:11px;color:var(--text-3);">{{ review.createdAt | date:'mediumDate' }}</span>
-              </div>
-              <div style="margin-bottom:6px;">
-                @for (s of reviewStars(review.rating); track s) { <span style="color:var(--amber);">★</span> }
-                @for (s of reviewEmptyStars(review.rating); track s) { <span style="color:var(--border);">★</span> }
+            <div class="review-card">
+              <div class="review-card-header">
+                <div class="review-avatar">{{ review.renterName ? review.renterName[0].toUpperCase() : 'U' }}</div>
+                <div style="flex:1;">
+                  <strong style="font-size:13px;display:block;">{{ review.renterName }}</strong>
+                  <span style="font-size:11px;color:var(--text-3);">{{ review.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="review-stars">
+                  @for (s of reviewStars(review.rating); track s) { <span style="color:var(--amber);">★</span> }
+                  @for (s of reviewEmptyStars(review.rating); track s) { <span style="color:var(--border);">★</span> }
+                </div>
               </div>
               @if (review.comment) {
-                <p style="font-size:13px;color:var(--text-2);margin:0;">{{ review.comment }}</p>
+                <p class="review-comment">{{ review.comment }}</p>
               }
             </div>
           }
         </div>
       }
     </div>
-
-    <!-- Booking panel -->
-    <aside class="booking-panel">
-      <div class="price-big">{{ item.pricePerDay | number:'1.0-0' }} EGP <span>/ day</span></div>
-      <div style="font-size:12px;color:var(--text-3);margin:6px 0 16px;">Escrow protected · Charged from wallet</div>
-
-      <!-- Availability calendar -->
-      <div class="availability-calendar">
-        <div class="cal-header">
-          <button type="button" class="btn btn-secondary btn-sm cal-nav" (click)="prevMonth()" aria-label="Previous month">‹</button>
-          <span class="cal-title">{{ monthLabel() }}</span>
-          <button type="button" class="btn btn-secondary btn-sm cal-nav" (click)="nextMonth()" aria-label="Next month">›</button>
-        </div>
-
-        @if (availabilityLoading()) {
-          <div style="padding:16px;text-align:center;font-size:12px;color:var(--text-3);">Loading availability...</div>
-        } @else {
-          <div class="cal-weekdays">
-            @for (wd of ['Su','Mo','Tu','We','Th','Fr','Sa']; track wd) {
-              <span>{{ wd }}</span>
-            }
-          </div>
-          @for (week of calendarWeeks(); track $index) {
-            <div class="cal-week">
-              @for (day of week; track day.date.toISOString()) {
-                <button
-                  type="button"
-                  [ngClass]="dayClass(day)"
-                  [disabled]="!day.inMonth || isPast(day.date) || isDateBooked(day.date)"
-                  (click)="onCalendarDayClick(day)"
-                >
-                  {{ day.date.getDate() }}
-                </button>
-              }
-            </div>
-          }
-          <div class="cal-legend">
-            <span><i class="cal-dot cal-dot-booked"></i> Booked</span>
-            <span><i class="cal-dot cal-dot-selected"></i> Selected</span>
-          </div>
-        }
-      </div>
-
-      @if (selectedStart()) {
-        <div style="font-size:13px;color:var(--text-2);margin:12px 0;">
-          @if (selectedEnd()) {
-            <strong>{{ selectedStart() | date:'mediumDate' }}</strong> → <strong>{{ selectedEnd() | date:'mediumDate' }}</strong>
-            · {{ rentalDays() }} day(s)
-          } @else {
-            Start: <strong>{{ selectedStart() | date:'mediumDate' }}</strong> — select end date
-          }
-        </div>
-      }
-
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px;">
-        @if (rentalDays() > 0) {
-          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
-            <span>{{ item.pricePerDay | number:'1.0-0' }} EGP × {{ rentalDays() }} days</span>
-            <span>{{ subtotal() | number:'1.0-0' }} EGP</span>
-          </div>
-          @if (item.insurancePrice > 0) {
-            <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2);margin-bottom:6px;">
-              <span>Insurance (flat fee)</span>
-              <span>{{ insuranceAmount() | number:'1.0-0' }} EGP</span>
-            </div>
-          }
-          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-            <span>Total from wallet</span>
-            <span style="color:var(--green);">{{ total() | number:'1.0-0' }} EGP</span>
-          </div>
-        } @else {
-          <p style="font-size:13px;color:var(--text-3);">Select dates on the calendar to see pricing.</p>
-        }
-      </div>
-
-      <button
-        type="button"
-        class="btn btn-primary btn-lg"
-        style="width:100%;justify-content:center;"
-        [disabled]="!canBook()"
-        (click)="bookNow(item)"
-      >
-        <i class="fas fa-calendar-check"></i> Book now
-      </button>
-
-      <div style="margin-top:12px;font-size:11px;color:var(--text-3);text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;">
-        <i class="fas fa-lock" style="color:var(--green);"></i>
-        Escrow protected · Money held safely
-      </div>
-    </aside>
   </div>
 }

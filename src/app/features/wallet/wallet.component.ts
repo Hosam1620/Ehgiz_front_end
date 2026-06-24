@@ -108,7 +108,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       }
 
       this.destroyCheckout();
-      this.embeddedCheckout = await stripe.initEmbeddedCheckout({
+      this.embeddedCheckout = await stripe.createEmbeddedCheckoutPage({
         clientSecret,
         onComplete: () => {
           this.toast.show('Payment complete', 'Your wallet will update shortly.', 'success');
@@ -123,7 +123,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       }
 
       el.innerHTML = '';
-      this.embeddedCheckout.mount(el);
+      this.embeddedCheckout!.mount(el);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       this.toast.show('Stripe error', `Failed to load payment form: ${message}`, 'error');
