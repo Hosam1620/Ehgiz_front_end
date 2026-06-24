@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { ToolsService } from '../../../core/services/tools.service';
 import { BookingService } from '../../../core/services/booking.service';
@@ -20,7 +21,7 @@ interface CalendarDay {
 @Component({
   standalone: true,
   selector: 'app-tool-detail',
-  imports: [RouterModule, DecimalPipe, DatePipe, NgClass, LoadingSpinnerComponent],
+  imports: [RouterModule, DecimalPipe, DatePipe, NgClass, FormsModule, LoadingSpinnerComponent],
   templateUrl: './tool-detail.component.html',
 })
 export class ToolDetailComponent implements OnInit {
@@ -30,7 +31,7 @@ export class ToolDetailComponent implements OnInit {
   private readonly bookingService = inject(BookingService);
   private readonly reviewService = inject(ReviewService);
   private readonly messageService = inject(MessageService);
-  private readonly auth = inject(AuthService);
+  protected readonly auth = inject(AuthService);
 
   protected readonly tool = signal<Tool | null>(null);
   protected readonly isLoading = signal(true);
@@ -43,6 +44,15 @@ export class ToolDetailComponent implements OnInit {
   protected readonly reviews = signal<Review[]>([]);
   protected readonly averageRating = signal<number | null>(null);
   protected readonly reviewsLoading = signal(false);
+
+  protected readonly completedBookingId = signal<number | null>(null);
+  protected readonly reviewRating = signal(0);
+  protected readonly reviewHoverRating = signal(0);
+  protected readonly reviewComment = signal('');
+  protected readonly isSubmittingReview = signal(false);
+  protected readonly reviewSubmitError = signal<string | null>(null);
+  protected readonly reviewSubmitted = signal(false);
+  protected readonly isDeletingReview = signal<number | null>(null);
 
   protected readonly calendarYear = signal(new Date().getFullYear());
   protected readonly calendarMonth = signal(new Date().getMonth() + 1);
@@ -99,6 +109,9 @@ export class ToolDetailComponent implements OnInit {
         this.isLoading.set(false);
         this.loadAvailability(id);
         this.loadReviews(id);
+        if (!this.isOwnTool(tool) && this.auth.isLoggedIn()) {
+          this.findEligibleBooking(id);
+        }
       },
       error: err => {
         this.error.set(err.error?.message ?? err.error?.title ?? 'Failed to load tool.');
@@ -320,6 +333,78 @@ export class ToolDetailComponent implements OnInit {
       error: () => {},
     });
   }
+
+  private findEligibleBooking(toolId: number): void {
+    this.bookingService.getMyBookings().subscribe({
+      next: bookings => {
+        const eligible = bookings.find(
+          b => b.toolId === toolId && b.allowedActions.includes('LeaveReview')
+        );
+        this.completedBookingId.set(eligible?.id ?? null);
+      },
+      error: () => {},
+    });
+  }
+
+  protected submitReview(): void {
+    const bookingId = this.completedBookingId();
+    const rating = this.reviewRating();
+    if (!bookingId || rating === 0 || this.isSubmittingReview()) return;
+
+    this.isSubmittingReview.set(true);
+    this.reviewSubmitError.set(null);
+
+    const comment = this.reviewComment().trim();
+    this.reviewService.create({ bookingId, rating, comment: comment || undefined }).subscribe({
+      next: review => {
+        this.reviews.update(list => [review, ...list]);
+        this.reviewSubmitted.set(true);
+        this.completedBookingId.set(null);
+        this.isSubmittingReview.set(false);
+        const tool = this.tool();
+        if (tool) {
+          this.reviewService.getToolRating(tool.id).subscribe({
+            next: r => this.averageRating.set(r.averageRating),
+            error: () => {},
+          });
+        }
+      },
+      error: err => {
+        this.reviewSubmitError.set(
+          err.error?.message ?? err.error?.title ?? 'Failed to submit review. Please try again.'
+        );
+        this.isSubmittingReview.set(false);
+      },
+    });
+  }
+
+  protected deleteReview(review: Review): void {
+    if (this.isDeletingReview() !== null) return;
+    this.isDeletingReview.set(review.id);
+    this.reviewService.delete(review.id).subscribe({
+      next: () => {
+        this.reviews.update(list => list.filter(r => r.id !== review.id));
+        this.isDeletingReview.set(null);
+        const tool = this.tool();
+        if (tool) {
+          this.reviewService.getToolRating(tool.id).subscribe({
+            next: r => this.averageRating.set(r.averageRating),
+            error: () => {},
+          });
+          this.findEligibleBooking(tool.id);
+        }
+      },
+      error: () => this.isDeletingReview.set(null),
+    });
+  }
+
+  protected isMyReview(review: Review): boolean {
+    const user = this.auth.currentUser();
+    if (!user) return false;
+    return review.renterName === user.fullName;
+  }
+
+  protected readonly reviewStars5 = [1, 2, 3, 4, 5] as const;
 
   private buildCalendarWeeks(year: number, month: number): CalendarDay[][] {
     const first = new Date(year, month - 1, 1);

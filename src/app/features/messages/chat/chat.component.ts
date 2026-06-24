@@ -216,9 +216,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.messageService.sendMessage(this.conversationId(), content).subscribe({
       next: confirmed => {
-        this.messages.update(list =>
-          list.map(m => (m.id === tempId ? confirmed : m))
-        );
+        this.messages.update(list => {
+          const filtered = list.filter(m => m.id !== tempId);
+          return filtered.some(m => m.id === confirmed.id) ? filtered : [...filtered, confirmed];
+        });
         this.isSending.set(false);
       },
       error: () => {

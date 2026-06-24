@@ -224,6 +224,65 @@
         </h2>
       </div>
 
+      <!-- Leave a review form -->
+      @if (!isOwnTool(item) && auth.isLoggedIn()) {
+        @if (completedBookingId() !== null && !reviewSubmitted()) {
+          <div class="review-form-card">
+            <h3 class="review-form-title"><i class="fas fa-pen" style="color:var(--green);font-size:14px;"></i> Leave a Review</h3>
+            <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;">You rented this tool — share your experience with others.</p>
+
+            <div class="review-star-row">
+              @for (star of reviewStars5; track star) {
+                <button
+                  type="button"
+                  class="review-star-btn"
+                  [class.active]="star <= (reviewHoverRating() || reviewRating())"
+                  (mouseenter)="reviewHoverRating.set(star)"
+                  (mouseleave)="reviewHoverRating.set(0)"
+                  (click)="reviewRating.set(star)"
+                  [attr.aria-label]="star + ' star'"
+                >★</button>
+              }
+              @if (reviewRating() > 0) {
+                <span class="review-rating-label">
+                  {{ ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'][reviewRating()] }}
+                </span>
+              }
+            </div>
+
+            <textarea
+              class="form-input review-form-textarea"
+              placeholder="Describe your experience (optional)"
+              [value]="reviewComment()"
+              (input)="reviewComment.set($any($event.target).value)"
+              rows="3"
+            ></textarea>
+
+            @if (reviewSubmitError()) {
+              <div class="alert alert-danger" style="margin-bottom:12px;">{{ reviewSubmitError() }}</div>
+            }
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="reviewRating() === 0 || isSubmittingReview()"
+              (click)="submitReview()"
+            >
+              @if (isSubmittingReview()) {
+                <span class="spinner-border spinner-border-sm"></span> Submitting…
+              } @else {
+                <i class="fas fa-paper-plane"></i> Submit Review
+              }
+            </button>
+          </div>
+        } @else if (reviewSubmitted()) {
+          <div class="alert alert-success" style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+            <i class="fas fa-check-circle" style="font-size:16px;"></i>
+            <span>Thanks for your review! It has been posted below.</span>
+          </div>
+        }
+      }
+
       @if (reviewsLoading()) {
         <p class="reviews-loading">Loading reviews...</p>
       } @else if (!reviews().length) {
@@ -245,6 +304,22 @@
                   @for (s of reviewStars(review.rating); track s) { <span style="color:var(--amber);">★</span> }
                   @for (s of reviewEmptyStars(review.rating); track s) { <span style="color:var(--border);">★</span> }
                 </div>
+                @if (isMyReview(review)) {
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    style="margin-left:8px;flex-shrink:0;"
+                    [disabled]="isDeletingReview() !== null"
+                    (click)="deleteReview(review)"
+                    title="Delete your review"
+                  >
+                    @if (isDeletingReview() === review.id) {
+                      <span class="spinner-border spinner-border-sm"></span>
+                    } @else {
+                      <i class="fas fa-trash-alt"></i>
+                    }
+                  </button>
+                }
               </div>
               @if (review.comment) {
                 <p class="review-comment">{{ review.comment }}</p>
