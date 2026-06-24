@@ -1,6 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { BookingService } from '../../../core/services/booking.service';
 import { BookingCard, BookingStatus } from '../../../core/models/booking.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -76,18 +78,17 @@ export class BookingListComponent implements OnInit {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.bookingService.getMyBookings().subscribe({
-      next: bookings => this.myBookings.set(bookings),
-      error: err => this.error.set(err.error?.message ?? 'Failed to load your bookings.'),
-    });
-
-    this.bookingService.getReceivedBookings().subscribe({
-      next: bookings => {
-        this.receivedBookings.set(bookings);
+    forkJoin({
+      my: this.bookingService.getMyBookings().pipe(catchError(() => of([] as BookingCard[]))),
+      received: this.bookingService.getReceivedBookings().pipe(catchError(() => of([] as BookingCard[]))),
+    }).subscribe({
+      next: ({ my, received }) => {
+        this.myBookings.set(my);
+        this.receivedBookings.set(received);
         this.isLoading.set(false);
       },
       error: err => {
-        this.error.set(err.error?.message ?? 'Failed to load received bookings.');
+        this.error.set(err.error?.message ?? 'Failed to load bookings.');
         this.isLoading.set(false);
       },
     });

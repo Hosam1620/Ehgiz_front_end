@@ -121,5 +121,8 @@ export class ChatHubService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopConnection();
+    this.messageReceived$.complete();
+    this.messagesRead$.complete();
+    this.userTyping$.complete();
   }
 }

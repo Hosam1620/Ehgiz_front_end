@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'dateFormat' })
+@Pipe({ name: 'dateFormat', standalone: true })
 export class DateFormatPipe implements PipeTransform {
   transform(value: string | Date | null | undefined, format: 'short' | 'medium' | 'long' = 'medium'): string {
     if (!value) return '';

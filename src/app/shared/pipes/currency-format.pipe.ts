@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'currencyFormat' })
+@Pipe({ name: 'currencyFormat', standalone: true })
 export class CurrencyFormatPipe implements PipeTransform {
   transform(value: number | null | undefined, currency: string = 'USD', locale: string = 'en-US'): string {
     if (value == null) return '';

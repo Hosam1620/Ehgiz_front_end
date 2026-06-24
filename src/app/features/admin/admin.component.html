@@ -182,7 +182,39 @@
           <p style="font-size:13px;color:var(--text-2);">Track and update report status</p>
         </div>
 
-        @if (!issueReports().length) {
+        @if (selectedIssue(); as issue) {
+          <div class="card-elevated" style="padding:24px;margin-bottom:20px;">
+            <button type="button" class="btn btn-sm btn-secondary" style="margin-bottom:16px;" (click)="closeIssueDetail()">← Back to list</button>
+
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+              <div>
+                <h3 style="font-size:18px;margin-bottom:6px;">{{ issue.title ?? 'Untitled issue' }}</h3>
+                <div style="font-size:13px;color:var(--text-3);">
+                  Reported by <strong>{{ issue.reporterName }}</strong> · {{ issue.createdAt | date:'medium' }}
+                </div>
+              </div>
+              <span class="chip" [ngClass]="issueStatusClass(issue.status)">{{ issue.status }}</span>
+            </div>
+
+            <div style="margin-bottom:24px;">
+              <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Description</div>
+              <p style="font-size:14px;color:var(--text-2);line-height:1.7;margin:0;white-space:pre-wrap;padding:16px;background:var(--surface);border-radius:var(--radius);">
+                {{ issue.description ?? 'No description provided.' }}
+              </p>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <label class="form-label" style="margin:0;">Change status:</label>
+              <select class="form-input form-select" style="width:auto;" [value]="issue.status" (change)="updateIssueStatus(issue, $any($event.target).value)">
+                <option value="Open">Open</option>
+                <option value="InReview">In Review</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+        } @else if (!issueReports().length) {
           <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">No issue reports</div>
         } @else {
           <div class="card-elevated" style="padding:0;overflow:hidden;">
@@ -203,13 +235,16 @@
                     <td>#{{ report.id }}</td>
                     <td>{{ report.reporterName }}</td>
                     <td style="font-size:13px;">{{ report.title ?? '—' }}</td>
-                    <td><span class="chip chip-gray">{{ report.status }}</span></td>
+                    <td><span class="chip" [ngClass]="issueStatusClass(report.status)">{{ report.status }}</span></td>
                     <td style="font-size:12px;color:var(--text-3);">{{ report.createdAt | date:'mediumDate' }}</td>
-                    <td>
+                    <td style="display:flex;gap:8px;align-items:center;">
+                      <button type="button" class="btn btn-sm btn-secondary" (click)="viewIssue(report)">View</button>
                       <select class="form-input form-select" style="width:auto;font-size:12px;padding:4px 8px;" [value]="report.status" (change)="updateIssueStatus(report, $any($event.target).value)">
                         <option value="Open">Open</option>
-                        <option value="InReview">InReview</option>
+                        <option value="InReview">In Review</option>
                         <option value="Resolved">Resolved</option>
+                        <option value="Closed">Closed</option>
+                        <option value="Rejected">Rejected</option>
                       </select>
                     </td>
                   </tr>
@@ -252,13 +287,13 @@
         <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;">
           Specify what percentage of the booking total should be refunded to the renter. The remainder goes to the owner per platform rules.
         </p>
-        <label class="form-label">Refund percentage (0–100)</label>
+        <label class="form-label">Refund percentage (1–99)</label>
         <div style="display:flex;align-items:center;gap:12px;">
           <input
             type="range"
-            min="0"
-            max="100"
-            step="5"
+            min="1"
+            max="99"
+            step="1"
             [ngModel]="partialRefundPercent()"
             (ngModelChange)="partialRefundPercent.set($event)"
             style="flex:1;"
@@ -266,8 +301,8 @@
           <input
             type="number"
             class="form-input"
-            min="0"
-            max="100"
+            min="1"
+            max="99"
             style="width:80px;"
             [ngModel]="partialRefundPercent()"
             (ngModelChange)="partialRefundPercent.set($event)"

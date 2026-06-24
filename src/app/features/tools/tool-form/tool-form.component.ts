@@ -42,6 +42,7 @@ export class ToolFormComponent implements OnInit {
   protected readonly selectedFiles = signal<File[]>([]);
   protected readonly existingImages = signal<string[]>([]);
   protected readonly previewUrls = signal<string[]>([]);
+  protected readonly fileError = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -71,8 +72,15 @@ export class ToolFormComponent implements OnInit {
 
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const files = Array.from(input.files ?? []);
-    if (!files.length) return;
+    const raw = Array.from(input.files ?? []);
+    this.fileError.set(null);
+
+    const invalid = raw.filter(f => !f.type.startsWith('image/') || f.size > 5 * 1024 * 1024);
+    if (invalid.length) {
+      this.fileError.set('Some files were skipped: only images up to 5 MB are allowed.');
+    }
+    const files = raw.filter(f => f.type.startsWith('image/') && f.size <= 5 * 1024 * 1024);
+    if (!files.length) { input.value = ''; return; }
 
     this.selectedFiles.update(current => [...current, ...files]);
     files.forEach(file => {

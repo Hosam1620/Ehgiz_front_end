@@ -350,7 +350,7 @@ export class ToolDetailComponent implements OnInit {
       if (skip.has(range.status)) continue;
       const start = this.stripTime(new Date(range.startDate)).getTime();
       const end = this.stripTime(new Date(range.endDate)).getTime();
-      if (d >= start && d < end) return range;
+      if (d >= start && d <= end) return range;
     }
     return null;
   }

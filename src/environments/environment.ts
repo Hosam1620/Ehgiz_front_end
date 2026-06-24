@@ -1,3 +1,5 @@
+// TODO: Replace apiUrl with the production server URL before deploying.
+// TODO: Replace stripePublishableKey with the live pk_live_... key before going live.
 export const environment = {
   production: true,
   apiUrl: 'http://localhost:5257',

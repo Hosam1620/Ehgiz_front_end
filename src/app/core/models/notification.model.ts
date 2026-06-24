@@ -1,4 +1,14 @@
-export type NotificationType = 'booking' | 'review' | 'message' | 'payment' | 'system';
+export type NotificationType =
+  | 'booking'
+  | 'payment'
+  | 'message'
+  | 'review'
+  | 'issuereport'
+  | 'system'
+  | 'handoverpending'
+  | 'handoveraccepted'
+  | 'handoverdisputed'
+  | 'disputeresolved';
 
 export interface Notification {
   id: number;

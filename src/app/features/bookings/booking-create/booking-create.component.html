@@ -42,11 +42,11 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
           <div>
             <label class="form-label">Start date</label>
-            <input type="date" class="form-input" [(ngModel)]="startDate" />
+            <input type="date" class="form-input" [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
           </div>
           <div>
             <label class="form-label">End date</label>
-            <input type="date" class="form-input" [(ngModel)]="endDate" />
+            <input type="date" class="form-input" [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
           </div>
         </div>
 

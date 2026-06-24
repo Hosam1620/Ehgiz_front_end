@@ -1,5 +1,4 @@
 import { Component, inject, signal, computed, HostListener, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { MessageService } from '../../../core/services/message.service';
@@ -9,7 +8,7 @@ import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 @Component({
   selector: 'app-notification-dropdown',
   standalone: true,
-  imports: [CommonModule, RouterModule, TimeAgoPipe],
+  imports: [RouterModule, TimeAgoPipe],
   templateUrl: './notification-dropdown.html',
 })
 export class NotificationDropdownComponent {
@@ -123,11 +122,16 @@ export class NotificationDropdownComponent {
 
   getTypeIcon(type: string): string {
     const icons: Record<string, string> = {
-      booking: 'fas fa-calendar-check',
-      review:  'fas fa-star',
-      message: 'fas fa-comment-dots',
-      payment: 'fas fa-coins',
-      system:  'fas fa-robot',
+      booking:          'fas fa-calendar-check',
+      review:           'fas fa-star',
+      message:          'fas fa-comment-dots',
+      payment:          'fas fa-coins',
+      system:           'fas fa-robot',
+      issuereport:      'fas fa-flag',
+      handoverpending:  'fas fa-exchange-alt',
+      handoveraccepted: 'fas fa-check-circle',
+      handoverdisputed: 'fas fa-gavel',
+      disputeresolved:  'fas fa-handshake',
     };
     return icons[type] ?? 'fas fa-bell';
   }

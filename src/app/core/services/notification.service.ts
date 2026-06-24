@@ -25,7 +25,7 @@ export class NotificationService {
 
   loadUnreadCount() {
     return this.http
-      .get<{ data: { count: number } }>(`${this.api}/unread/count`)
+      .get<{ data: { count: number } }>(`${this.api}/unread-count`)
       .pipe(
         tap(res => {
           if (res?.data) {
@@ -69,7 +69,7 @@ export class NotificationService {
 
   markAsRead(id: number) {
     return this.http
-      .put<void>(`${this.api}/${id}/read`, {})
+      .post<void>(`${this.api}/${id}/read`, {})
       .pipe(
         tap(() => {
           this.notifications.update(list =>
@@ -81,7 +81,7 @@ export class NotificationService {
 
   markAllAsRead() {
     return this.http
-      .put<void>(`${this.api}/read-all`, {})
+      .post<void>(`${this.api}/read-all`, {})
       .pipe(
         tap(() => {
           this.notifications.update(list =>

@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { forkJoin, finalize, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import type { StripeEmbeddedCheckout } from '@stripe/stripe-js';
 import { WalletService } from '../../core/services/wallet.service';
 import { Wallet, WalletTransaction } from '../../core/models/wallet.model';
@@ -46,17 +47,19 @@ export class WalletComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.walletService.getWallet().subscribe({
-      next: w => this.wallet.set(w),
-      error: err => this.error.set(err.error?.message ?? 'Failed to load wallet.'),
-    });
-
-    this.walletService.getTransactions().subscribe({
-      next: tx => {
-        this.transactions.set(tx);
+    forkJoin({
+      wallet: this.walletService.getWallet(),
+      transactions: this.walletService.getTransactions().pipe(catchError(() => of([] as WalletTransaction[]))),
+    }).subscribe({
+      next: ({ wallet, transactions }) => {
+        this.wallet.set(wallet);
+        this.transactions.set(transactions);
         this.isLoading.set(false);
       },
-      error: () => this.isLoading.set(false),
+      error: err => {
+        this.error.set(err.error?.message ?? 'Failed to load wallet.');
+        this.isLoading.set(false);
+      },
     });
   }
 
@@ -83,7 +86,7 @@ export class WalletComponent implements OnInit, OnDestroy {
     this.checkoutMounting.set(true);
 
     this.walletService
-      .initiateTopUp({ amount: this.topUpAmount, currency: 'usd' })
+      .initiateTopUp({ amount: this.topUpAmount })
       .pipe(finalize(() => this.isActing.set(false)))
       .subscribe({
         next: res => void this.mountStripeCheckout(res.clientSecret),
@@ -105,7 +108,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       }
 
       this.destroyCheckout();
-      this.embeddedCheckout = await stripe.createEmbeddedCheckoutPage({
+      this.embeddedCheckout = await stripe.initEmbeddedCheckout({
         clientSecret,
         onComplete: () => {
           this.toast.show('Payment complete', 'Your wallet will update shortly.', 'success');

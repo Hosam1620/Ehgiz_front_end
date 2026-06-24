@@ -1,12 +1,14 @@
 import { BookingDetail } from './booking.model';
 import { Handover } from './booking.model';
 
+export type IssueReportStatus = 'Open' | 'InReview' | 'Resolved' | 'Closed' | 'Rejected';
+
 export interface IssueReport {
   id: number;
   reporterName: string;
   title: string | null;
   description: string | null;
-  status: string;
+  status: IssueReportStatus;
   createdAt: string;
 }
 
@@ -26,7 +28,7 @@ export interface PartialRefundRequest {
 }
 
 export interface UpdateIssueStatusRequest {
-  status: string;
+  status: IssueReportStatus;
 }
 
 export interface PlatformFeeResponse {

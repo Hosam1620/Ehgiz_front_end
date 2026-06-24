@@ -27,14 +27,14 @@ export class BookingCreateComponent implements OnInit {
   protected readonly isSubmitting = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  protected startDate = '';
-  protected endDate = '';
+  protected readonly startDate = signal('');
+  protected readonly endDate = signal('');
 
   protected readonly rentalDays = computed(() => {
-    if (!this.startDate || !this.endDate) return 0;
-    const start = new Date(this.startDate);
-    const end = new Date(this.endDate);
-    const diff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    const s = this.startDate();
+    const e = this.endDate();
+    if (!s || !e) return 0;
+    const diff = Math.ceil((new Date(e).getTime() - new Date(s).getTime()) / (1000 * 60 * 60 * 24));
     return diff > 0 ? diff : 0;
   });
 
@@ -43,7 +43,10 @@ export class BookingCreateComponent implements OnInit {
     return t ? t.pricePerDay * this.rentalDays() : 0;
   });
 
-  protected readonly insuranceAmount = computed(() => this.tool()?.insurancePrice ?? 0);
+  protected readonly insuranceAmount = computed(() => {
+    const t = this.tool();
+    return t && this.rentalDays() > 0 ? (t.insurancePrice ?? 0) : 0;
+  });
 
   protected readonly totalCharged = computed(() => this.rentalCost() + this.insuranceAmount());
 
@@ -61,8 +64,8 @@ export class BookingCreateComponent implements OnInit {
 
     const qpStart = this.route.snapshot.queryParamMap.get('startDate');
     const qpEnd = this.route.snapshot.queryParamMap.get('endDate');
-    this.startDate = qpStart ?? this.formatDate(today);
-    this.endDate = qpEnd ?? this.formatDate(defaultEnd);
+    this.startDate.set(qpStart ?? this.formatDate(today));
+    this.endDate.set(qpEnd ?? this.formatDate(defaultEnd));
 
     this.toolsService.getById(toolId).subscribe({
       next: tool => {
@@ -89,8 +92,8 @@ export class BookingCreateComponent implements OnInit {
     this.bookingService
       .create({
         toolId: tool.id,
-        startDate: new Date(this.startDate).toISOString(),
-        endDate: new Date(this.endDate).toISOString(),
+        startDate: this.startDate(),
+        endDate: this.endDate(),
       })
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({

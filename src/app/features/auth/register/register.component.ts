@@ -1,5 +1,4 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -7,7 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule],
   templateUrl: './register.component.html'
 })
 export class RegisterComponent {
@@ -22,7 +21,8 @@ export class RegisterComponent {
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern('^[+]?[0-9]{10,15}$')]],
     city: ['', Validators.required],
-    password: ['', [Validators.required, Validators.pattern('^(?=.*\\d)(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,}$')]]
+    password: ['', [Validators.required, Validators.pattern('^(?=.*\\d)(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,}$')]],
+    termsAccepted: [false, Validators.requiredTrue],
   });
 
   errorMessage = '';

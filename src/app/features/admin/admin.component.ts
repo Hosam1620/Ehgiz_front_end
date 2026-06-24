@@ -1,11 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AdminService } from '../../core/services/admin.service';
 import { BookingDetail, BookingStatus, Handover } from '../../core/models/booking.model';
-import { DisputeDetails, IssueReport } from '../../core/models/admin.model';
+import { DisputeDetails, IssueReport, IssueReportStatus } from '../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { resolveMediaUrl } from '../../core/utils/media-url';
@@ -26,6 +26,7 @@ export class AdminComponent implements OnInit {
   protected readonly disputes = signal<BookingDetail[]>([]);
   protected readonly issueReports = signal<IssueReport[]>([]);
   protected readonly selectedDispute = signal<DisputeDetails | null>(null);
+  protected readonly selectedIssue = signal<IssueReport | null>(null);
   protected readonly platformFee = signal(10);
   protected readonly feeInput = signal(10);
   protected readonly isLoading = signal(true);
@@ -52,6 +53,7 @@ export class AdminComponent implements OnInit {
   setTab(tab: AdminTab): void {
     this.activeTab.set(tab);
     this.selectedDispute.set(null);
+    this.selectedIssue.set(null);
     this.showPartialRefundModal.set(false);
   }
 
@@ -111,8 +113,8 @@ export class AdminComponent implements OnInit {
     if (!details) return;
 
     const refundPercentage = this.partialRefundPercent();
-    if (Number.isNaN(refundPercentage) || refundPercentage < 0 || refundPercentage > 100) {
-      this.toast.show('Invalid percentage', 'Enter a value between 0 and 100.', 'warning');
+    if (Number.isNaN(refundPercentage) || refundPercentage < 1 || refundPercentage > 99) {
+      this.toast.show('Invalid percentage', 'Enter a value between 1 and 99.', 'warning');
       return;
     }
 
@@ -170,11 +172,24 @@ export class AdminComponent implements OnInit {
       });
   }
 
-  updateIssueStatus(report: IssueReport, status: string): void {
+  viewIssue(issue: IssueReport): void {
+    this.selectedIssue.set(issue);
+  }
+
+  closeIssueDetail(): void {
+    this.selectedIssue.set(null);
+  }
+
+  updateIssueStatus(report: IssueReport, status: IssueReportStatus): void {
     this.adminService.updateIssueStatus(report.id, { status }).subscribe({
       next: () => {
         this.toast.show('Updated', `Status set to ${status}.`, 'success');
-        this.loadIssueReports();
+        this.issueReports.update(list =>
+          list.map(r => (r.id === report.id ? { ...r, status } : r))
+        );
+        if (this.selectedIssue()?.id === report.id) {
+          this.selectedIssue.update(r => (r ? { ...r, status } : null));
+        }
       },
       error: err => this.toast.show('Error', err.error?.message ?? 'Update failed.', 'error'),
     });
@@ -205,8 +220,19 @@ export class AdminComponent implements OnInit {
     return Array.isArray(i) ? i : i ? [...i] : [];
   }
 
-  openIssuesCount(): number {
-    return this.issueReports().filter(r => r.status.toLowerCase() !== 'resolved').length;
+  readonly openIssuesCount = computed(() =>
+    this.issueReports().filter(r => r.status === 'Open' || r.status === 'InReview').length
+  );
+
+  issueStatusClass(status: IssueReportStatus): string {
+    const map: Record<IssueReportStatus, string> = {
+      Open:     'chip-red',
+      InReview: 'chip-amber',
+      Resolved: 'chip-green',
+      Closed:   'chip-gray',
+      Rejected: 'chip-gray',
+    };
+    return map[status] ?? 'chip-gray';
   }
 
   statusClass(status: BookingStatus): string {

@@ -101,7 +101,7 @@
       </div>
 
       <div class="auth-terms">
-        <input type="checkbox" required />
+        <input type="checkbox" formControlName="termsAccepted" />
         <span>
           I agree to the
           <a class="auth-forgot">Terms of Service</a>
@@ -109,6 +109,9 @@
           <a class="auth-forgot">Privacy Policy</a>
         </span>
       </div>
+      @if (registerForm.controls.termsAccepted.invalid && registerForm.controls.termsAccepted.touched) {
+        <div class="invalid-feedback" style="margin-top:-8px;">You must accept the terms to continue.</div>
+      }
 
       <button
         type="submit"

@@ -45,12 +45,17 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
   readonly displayCount = signal(DISPLAY_STEP);
 
   readonly typeFilters: { value: TypeFilter; label: string; icon: string }[] = [
-    { value: 'all',     label: 'All',     icon: 'fas fa-th' },
-    { value: 'booking', label: 'Booking', icon: 'fas fa-calendar-check' },
-    { value: 'review',  label: 'Review',  icon: 'fas fa-star' },
-    { value: 'message', label: 'Message', icon: 'fas fa-comment-dots' },
-    { value: 'payment', label: 'Payment', icon: 'fas fa-coins' },
-    { value: 'system',  label: 'System',  icon: 'fas fa-robot' },
+    { value: 'all',              label: 'All',      icon: 'fas fa-th' },
+    { value: 'booking',          label: 'Booking',  icon: 'fas fa-calendar-check' },
+    { value: 'payment',          label: 'Payment',  icon: 'fas fa-coins' },
+    { value: 'message',          label: 'Message',  icon: 'fas fa-comment-dots' },
+    { value: 'review',           label: 'Review',   icon: 'fas fa-star' },
+    { value: 'issuereport',      label: 'Issue',    icon: 'fas fa-flag' },
+    { value: 'handoverpending',  label: 'Handover', icon: 'fas fa-exchange-alt' },
+    { value: 'handoveraccepted', label: 'Accepted', icon: 'fas fa-check-circle' },
+    { value: 'handoverdisputed', label: 'Disputed', icon: 'fas fa-gavel' },
+    { value: 'disputeresolved',  label: 'Resolved', icon: 'fas fa-handshake' },
+    { value: 'system',           label: 'System',   icon: 'fas fa-robot' },
   ];
 
   readonly filteredNotifications = computed(() => {
@@ -147,22 +152,32 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
 
   getTypeIcon(type: string): string {
     const icons: Record<string, string> = {
-      booking: 'fas fa-calendar-check',
-      review:  'fas fa-star',
-      message: 'fas fa-comment-dots',
-      payment: 'fas fa-coins',
-      system:  'fas fa-robot',
+      booking:          'fas fa-calendar-check',
+      review:           'fas fa-star',
+      message:          'fas fa-comment-dots',
+      payment:          'fas fa-coins',
+      system:           'fas fa-robot',
+      issuereport:      'fas fa-flag',
+      handoverpending:  'fas fa-exchange-alt',
+      handoveraccepted: 'fas fa-check-circle',
+      handoverdisputed: 'fas fa-gavel',
+      disputeresolved:  'fas fa-handshake',
     };
     return icons[type] ?? 'fas fa-bell';
   }
 
   getTypeIconStyle(type: string): { background: string; color: string } {
     const styles: Record<string, { background: string; color: string }> = {
-      booking: { background: 'var(--green-light)',  color: 'var(--green)'  },
-      review:  { background: 'var(--amber-light)',  color: 'var(--amber)'  },
-      message: { background: 'var(--blue-light)',   color: 'var(--blue)'   },
-      payment: { background: 'var(--orange-light)', color: 'var(--orange)' },
-      system:  { background: 'var(--surface2)',     color: 'var(--text-3)' },
+      booking:          { background: 'var(--green-light)',  color: 'var(--green)'  },
+      review:           { background: 'var(--amber-light)',  color: 'var(--amber)'  },
+      message:          { background: 'var(--blue-light)',   color: 'var(--blue)'   },
+      payment:          { background: 'var(--orange-light)', color: 'var(--orange)' },
+      system:           { background: 'var(--surface2)',     color: 'var(--text-3)' },
+      issuereport:      { background: 'var(--red-light)',    color: 'var(--red)'    },
+      handoverpending:  { background: 'var(--orange-light)', color: 'var(--orange)' },
+      handoveraccepted: { background: 'var(--green-light)',  color: 'var(--green)'  },
+      handoverdisputed: { background: 'var(--red-light)',    color: 'var(--red)'    },
+      disputeresolved:  { background: 'var(--green-light)',  color: 'var(--green)'  },
     };
     return styles[type] ?? { background: 'var(--surface2)', color: 'var(--text-3)' };
   }

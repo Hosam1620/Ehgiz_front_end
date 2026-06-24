@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown';
@@ -7,7 +6,7 @@ import { NotificationDropdownComponent } from '../notification-dropdown/notifica
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, NotificationDropdownComponent],
+  imports: [RouterModule, NotificationDropdownComponent],
   templateUrl: './navbar.html',
 })
 export class Navbar {

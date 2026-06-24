@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { take } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -7,11 +8,25 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   imports: [RouterModule],
   template: `
     <div class="card-elevated" style="max-width:480px;margin:48px auto;padding:32px;text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;">✅</div>
-      <h2 style="font-size:20px;margin-bottom:8px;">Top-up processing</h2>
-      <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
-        If payment succeeded, your wallet balance will update shortly.
-      </p>
+      @if (status() === 'success') {
+        <div style="font-size:48px;margin-bottom:16px;">✅</div>
+        <h2 style="font-size:20px;margin-bottom:8px;">Top-up processing</h2>
+        <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
+          Your wallet balance will update shortly.
+        </p>
+      } @else if (status() === 'failed') {
+        <div style="font-size:48px;margin-bottom:16px;">❌</div>
+        <h2 style="font-size:20px;margin-bottom:8px;">Payment failed</h2>
+        <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
+          Your payment was not processed. Please try again.
+        </p>
+      } @else {
+        <div style="font-size:48px;margin-bottom:16px;">↩️</div>
+        <h2 style="font-size:20px;margin-bottom:8px;">Payment cancelled</h2>
+        <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
+          You cancelled the top-up. No funds were charged.
+        </p>
+      }
       <a class="btn btn-primary" routerLink="/wallet">Back to wallet</a>
     </div>
   `,
@@ -19,11 +34,19 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 export class WalletTopupReturnComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
+  protected readonly status = signal<'success' | 'failed' | 'cancelled'>('cancelled');
+
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.pipe(take(1)).subscribe(params => {
+      const redirectStatus = params.get('redirect_status');
       const sessionId = params.get('session_id');
-      if (sessionId) {
-        console.info('Stripe checkout session:', sessionId);
+
+      if (redirectStatus === 'succeeded' || (!redirectStatus && sessionId)) {
+        this.status.set('success');
+      } else if (redirectStatus === 'failed') {
+        this.status.set('failed');
+      } else if (redirectStatus === 'canceled' || redirectStatus === 'cancelled') {
+        this.status.set('cancelled');
       }
     });
   }

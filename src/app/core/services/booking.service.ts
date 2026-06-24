@@ -33,13 +33,19 @@ export class BookingService {
   getById(id: number): Observable<BookingDetail> {
     return this.http
       .get<ApiResponse<BookingDetail>>(`${this.base}/${id}`)
-      .pipe(map(r => r.data!));
+      .pipe(map(r => {
+        if (!r.data) throw new Error('No booking data returned');
+        return r.data;
+      }));
   }
 
   create(data: CreateBookingRequest): Observable<CreateBookingResponse> {
     return this.http
       .post<ApiResponse<CreateBookingResponse>>(this.base, data)
-      .pipe(map(r => r.data!));
+      .pipe(map(r => {
+        if (!r.data) throw new Error('No booking response returned');
+        return r.data;
+      }));
   }
 
   cancel(id: number): Observable<ApiResponse<unknown>> {
@@ -84,7 +90,10 @@ export class BookingService {
     const params = new HttpParams().set('year', year).set('month', month);
     return this.http
       .get<ApiResponse<ToolAvailability>>(`${this.base}/tool/${toolId}/availability`, { params })
-      .pipe(map(r => r.data!));
+      .pipe(map(r => {
+        if (!r.data) throw new Error('No availability data returned');
+        return r.data;
+      }));
   }
 
   private buildHandoverForm(notes: string | null, images: File[]): FormData {

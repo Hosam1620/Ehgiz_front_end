@@ -1,9 +1,9 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MessageService } from '../../../core/services/message.service';
 import { ChatHubService } from '../../../core/services/chat-hub.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ConversationDto } from '../../../core/models/message.model';
 import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -12,11 +12,12 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   standalone: true,
   selector: 'app-conversation-list',
   templateUrl: './conversation-list.component.html',
-  imports: [CommonModule, RouterModule, TimeAgoPipe, LoadingSpinnerComponent],
+  imports: [RouterModule, TimeAgoPipe, LoadingSpinnerComponent],
 })
 export class ConversationListComponent implements OnInit, OnDestroy {
   private readonly messageService = inject(MessageService);
   private readonly chatHub = inject(ChatHubService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly conversations = signal<ConversationDto[]>([]);
@@ -52,9 +53,15 @@ export class ConversationListComponent implements OnInit, OnDestroy {
             this.loadConversations();
             return list;
           }
+          const isOwnMessage = msg.senderId === this.auth.currentUser()?.id;
           return list.map(c =>
             c.id === msg.conversationId
-              ? { ...c, lastMessage: msg, updatedAt: msg.createdAt, unreadCount: c.unreadCount + 1 }
+              ? {
+                  ...c,
+                  lastMessage: msg,
+                  updatedAt: msg.createdAt,
+                  unreadCount: isOwnMessage ? c.unreadCount : c.unreadCount + 1,
+                }
               : c
           );
         });

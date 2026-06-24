@@ -1,7 +1,6 @@
 import { Component, inject, computed, effect, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet, RouterModule, NavigationEnd } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
 import { NotificationService } from './core/services/notification.service';
@@ -15,7 +14,7 @@ import { ToastContainerComponent } from './shared/components/toast/toast.compone
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet, Navbar, Footer, ToastContainerComponent],
+  imports: [RouterModule, RouterOutlet, Navbar, Footer, ToastContainerComponent],
   templateUrl: './app.html',
 })
 export class App {
@@ -52,9 +51,11 @@ export class App {
 
     this.updateLayout();
 
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
-      this.updateLayout();
-    });
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
+      .subscribe(() => {
+        this.updateLayout();
+      });
 
     this.chatHubService.messageReceived$
       .pipe(takeUntilDestroyed())
