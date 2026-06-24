@@ -36,7 +36,8 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.validationErrors = [];
 
-    this.authService.register(this.registerForm.getRawValue()).subscribe({
+    const { termsAccepted: _, ...payload } = this.registerForm.getRawValue();
+    this.authService.register(payload).subscribe({
       next: (res) => {
         setTimeout(() => {
           this.isSubmitting = false;

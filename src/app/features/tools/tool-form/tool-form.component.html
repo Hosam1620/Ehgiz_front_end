@@ -26,8 +26,11 @@
         <input type="file" accept="image/*" multiple hidden (change)="onFilesSelected($event)" />
         <div><i class="fas fa-cloud-upload-alt" style="font-size:24px;margin-bottom:8px;"></i></div>
         <div style="font-size:13px;font-weight:600;">Drag photos here or click to upload</div>
-        <div style="font-size:11px;margin-top:4px;">JPG, PNG · up to 10 photos</div>
+        <div style="font-size:11px;margin-top:4px;">JPG, PNG · max 5 MB each</div>
       </label>
+      @if (fileError()) {
+        <div class="invalid-feedback" style="display:block;margin-top:6px;">{{ fileError() }}</div>
+      }
     </div>
   </div>
 
