@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -12,7 +12,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 @Component({
   standalone: true,
   selector: 'app-booking-create',
-  imports: [RouterModule, FormsModule, DecimalPipe, LoadingSpinnerComponent],
+  imports: [RouterLink, FormsModule, DecimalPipe, LoadingSpinnerComponent],
   templateUrl: './booking-create.component.html',
 })
 export class BookingCreateComponent implements OnInit {

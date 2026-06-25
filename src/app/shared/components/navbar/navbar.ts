@@ -1,20 +1,20 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject, input, output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule, NotificationDropdownComponent],
+  imports: [RouterLink, RouterLinkActive, NotificationDropdownComponent],
   templateUrl: './navbar.html',
 })
 export class Navbar {
   public auth = inject(AuthService);
-  
-  @Input() isLoggedIn = false;
-  @Input() userName = '';
-  @Output() logoutClicked = new EventEmitter<void>();
+
+  isLoggedIn = input(false);
+  userName = input('');
+  logoutClicked = output<void>();
 
   onLogout() {
     this.logoutClicked.emit();

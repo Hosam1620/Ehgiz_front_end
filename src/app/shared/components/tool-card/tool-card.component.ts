@@ -1,11 +1,11 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Tool } from '../../../core/models/tool.model';
 
 @Component({
   selector: 'app-tool-card',
-  imports: [RouterModule, DecimalPipe],
+  imports: [RouterLink, DecimalPipe],
   templateUrl: './tool-card.component.html',
 })
 export class ToolCardComponent {

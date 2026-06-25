@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { ReviewService } from '../../../core/services/review.service';
@@ -10,7 +10,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 @Component({
   standalone: true,
   selector: 'app-review-create',
-  imports: [RouterModule, FormsModule, LoadingSpinnerComponent],
+  imports: [RouterLink, FormsModule, LoadingSpinnerComponent],
   templateUrl: './review-create.component.html',
 })
 export class ReviewCreateComponent implements OnInit {

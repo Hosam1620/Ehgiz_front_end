@@ -1,8 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { RouterLink } from '@angular/router';
+import { forkJoin, of, catchError } from 'rxjs';
 import { BookingService } from '../../../core/services/booking.service';
 import { BookingCard, BookingStatus } from '../../../core/models/booking.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -12,7 +11,7 @@ type BookingTab = 'my' | 'received';
 @Component({
   standalone: true,
   selector: 'app-booking-list',
-  imports: [RouterModule, DecimalPipe, DatePipe, NgClass, LoadingSpinnerComponent],
+  imports: [RouterLink, DecimalPipe, DatePipe, NgClass, LoadingSpinnerComponent],
   templateUrl: './booking-list.component.html',
 })
 export class BookingListComponent implements OnInit {

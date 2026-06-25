@@ -1,5 +1,4 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -15,7 +14,7 @@ type AdminTab = 'disputes' | 'issues' | 'settings';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [RouterModule, FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent],
+  imports: [FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent],
   templateUrl: './admin.component.html',
 })
 export class AdminComponent implements OnInit {

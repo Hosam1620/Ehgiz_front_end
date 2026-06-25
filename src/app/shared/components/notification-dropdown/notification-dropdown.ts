@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, HostListener, ElementRef } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NotificationService } from '../../../core/services/notification.service';
 import { MessageService } from '../../../core/services/message.service';
 import { Notification } from '../../../core/models/notification.model';
@@ -8,7 +8,7 @@ import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 @Component({
   selector: 'app-notification-dropdown',
   standalone: true,
-  imports: [RouterModule, TimeAgoPipe],
+  imports: [RouterLink, TimeAgoPipe],
   templateUrl: './notification-dropdown.html',
 })
 export class NotificationDropdownComponent {

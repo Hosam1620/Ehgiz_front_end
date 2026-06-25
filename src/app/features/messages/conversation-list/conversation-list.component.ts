@@ -1,6 +1,6 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, DestroyRef, inject, signal, computed, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterLink } from '@angular/router';
 import { MessageService } from '../../../core/services/message.service';
 import { ChatHubService } from '../../../core/services/chat-hub.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,20 +12,19 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   standalone: true,
   selector: 'app-conversation-list',
   templateUrl: './conversation-list.component.html',
-  imports: [RouterModule, TimeAgoPipe, LoadingSpinnerComponent],
+  imports: [RouterLink, TimeAgoPipe, LoadingSpinnerComponent],
 })
-export class ConversationListComponent implements OnInit, OnDestroy {
+export class ConversationListComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly chatHub = inject(ChatHubService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly conversations = signal<ConversationDto[]>([]);
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
   readonly searchQuery = signal('');
-
-  private subs: Subscription[] = [];
 
   readonly filteredConversations = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
@@ -44,33 +43,27 @@ export class ConversationListComponent implements OnInit, OnDestroy {
     this.loadConversations();
 
     // Incoming message: bump updatedAt, update lastMessage, increment unreadCount
-    this.subs.push(
-      this.chatHub.messageReceived$.subscribe(msg => {
-        this.conversations.update(list => {
-          const exists = list.some(c => c.id === msg.conversationId);
-          if (!exists) {
-            // New conversation appeared — reload
-            this.loadConversations();
-            return list;
-          }
-          const isOwnMessage = msg.senderId === this.auth.currentUser()?.id;
-          return list.map(c =>
-            c.id === msg.conversationId
-              ? {
-                  ...c,
-                  lastMessage: msg,
-                  updatedAt: msg.createdAt,
-                  unreadCount: isOwnMessage ? c.unreadCount : c.unreadCount + 1,
-                }
-              : c
-          );
-        });
-      })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subs.forEach(s => s.unsubscribe());
+    this.chatHub.messageReceived$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(msg => {
+      this.conversations.update(list => {
+        const exists = list.some(c => c.id === msg.conversationId);
+        if (!exists) {
+          // New conversation appeared — reload
+          this.loadConversations();
+          return list;
+        }
+        const isOwnMessage = msg.senderId === this.auth.currentUser()?.id;
+        return list.map(c =>
+          c.id === msg.conversationId
+            ? {
+                ...c,
+                lastMessage: msg,
+                updatedAt: msg.createdAt,
+                unreadCount: isOwnMessage ? c.unreadCount : c.unreadCount + 1,
+              }
+            : c
+        );
+      });
+    });
   }
 
   loadConversations(): void {

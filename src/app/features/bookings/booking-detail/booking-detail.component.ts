@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -16,7 +16,7 @@ type ModalType = 'delivery' | 'return' | 'respond-delivery' | 'respond-return' |
 @Component({
   standalone: true,
   selector: 'app-booking-detail',
-  imports: [RouterModule, FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent],
+  imports: [RouterLink, FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent],
   templateUrl: './booking-detail.component.html',
 })
 export class BookingDetailComponent implements OnInit {

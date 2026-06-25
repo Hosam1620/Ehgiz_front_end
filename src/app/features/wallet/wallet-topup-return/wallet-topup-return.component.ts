@@ -1,11 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { take } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-wallet-topup-return',
-  imports: [RouterModule],
+  imports: [RouterLink],
   template: `
     <div class="card-elevated" style="max-width:480px;margin:48px auto;padding:32px;text-align:center;">
       @if (status() === 'success') {

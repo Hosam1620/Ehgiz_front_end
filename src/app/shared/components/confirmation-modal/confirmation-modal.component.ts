@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, input, output } from '@angular/core';
+import { Component, ElementRef, viewChild, input, output } from '@angular/core';
 
 declare const bootstrap: any;
 
@@ -17,11 +17,11 @@ export class ConfirmationModalComponent {
   confirmed = output<void>();
   cancelled = output<void>();
 
-  @ViewChild('modalEl') private modalEl!: ElementRef<HTMLElement>;
+  private readonly modalEl = viewChild<ElementRef<HTMLElement>>('modalEl');
   private bsModal: any;
 
   open(): void {
-    this.bsModal = new bootstrap.Modal(this.modalEl.nativeElement);
+    this.bsModal = new bootstrap.Modal(this.modalEl()!.nativeElement);
     this.bsModal.show();
   }
 

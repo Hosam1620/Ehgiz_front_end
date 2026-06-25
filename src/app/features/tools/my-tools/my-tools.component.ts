@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ToolsService } from '../../../core/services/tools.service';
 import { Tool } from '../../../core/models/tool.model';
@@ -10,11 +10,11 @@ type ToolTab = 'all' | 'available' | 'booked' | 'inactive';
 
 @Component({
   selector: 'app-my-tools',
-  imports: [RouterModule, DecimalPipe, LoadingSpinnerComponent, ConfirmationModalComponent],
+  imports: [RouterLink, DecimalPipe, LoadingSpinnerComponent, ConfirmationModalComponent],
   templateUrl: './my-tools.component.html',
 })
 export class MyToolsComponent implements OnInit {
-  @ViewChild(ConfirmationModalComponent) private deleteModal!: ConfirmationModalComponent;
+  private readonly deleteModal = viewChild(ConfirmationModalComponent);
 
   private readonly toolsService = inject(ToolsService);
 
@@ -59,7 +59,7 @@ export class MyToolsComponent implements OnInit {
 
   confirmDelete(tool: Tool): void {
     this.toolToDelete.set(tool);
-    this.deleteModal.open();
+    this.deleteModal()?.open();
   }
 
   onDeleteConfirmed(): void {

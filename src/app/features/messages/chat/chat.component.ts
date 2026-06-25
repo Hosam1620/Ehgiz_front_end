@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   HostListener,
   inject,
   signal,
@@ -7,12 +8,12 @@ import {
   OnInit,
   OnDestroy,
   AfterViewChecked,
-  ViewChild,
   ElementRef,
+  viewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { MessageService } from '../../../core/services/message.service';
 import { ChatHubService } from '../../../core/services/chat-hub.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -24,17 +25,18 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   standalone: true,
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  imports: [RouterModule, FormsModule, TimeAgoPipe, LoadingSpinnerComponent],
+  imports: [FormsModule, TimeAgoPipe, LoadingSpinnerComponent],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @ViewChild('messagesEnd') private messagesEnd!: ElementRef<HTMLElement>;
-  @ViewChild('chatBody') private chatBodyRef!: ElementRef<HTMLElement>;
+  private readonly messagesEnd = viewChild<ElementRef<HTMLElement>>('messagesEnd');
+  private readonly chatBodyRef = viewChild<ElementRef<HTMLElement>>('chatBody');
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly messageService = inject(MessageService);
   private readonly chatHub = inject(ChatHubService);
   private readonly auth = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly conversationId = signal(0);
   readonly conversation = signal<ConversationDto | null>(null);
@@ -50,7 +52,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private currentPage = 1;
   private readonly PAGE_SIZE = 30;
-  private subs: Subscription[] = [];
   private typingTimer?: ReturnType<typeof setTimeout>;
   private isTypingSent = false;
   private shouldScrollToBottom = false;
@@ -78,15 +79,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
-    if (this.restoreScroll && this.chatBodyRef) {
-      const el = this.chatBodyRef.nativeElement;
+    const chatBody = this.chatBodyRef();
+    if (this.restoreScroll && chatBody) {
+      const el = chatBody.nativeElement;
       el.scrollTop = el.scrollHeight - this.scrollHeightBefore;
       this.restoreScroll = false;
     }
   }
 
   ngOnDestroy(): void {
-    this.subs.forEach(s => s.unsubscribe());
     this.clearTypingTimer();
     if (this.isTypingSent) {
       this.chatHub.stopTyping(this.conversationId());
@@ -126,7 +127,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   loadOlderMessages(): void {
     if (this.isLoadingMore() || !this.hasMore()) return;
     this.isLoadingMore.set(true);
-    this.scrollHeightBefore = this.chatBodyRef?.nativeElement.scrollHeight ?? 0;
+    this.scrollHeightBefore = this.chatBodyRef()?.nativeElement.scrollHeight ?? 0;
     this.currentPage++;
 
     this.messageService.getMessages(this.conversationId(), this.currentPage, this.PAGE_SIZE).subscribe({
@@ -152,38 +153,32 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private subscribeToHub(): void {
     // New message pushed by the server (could be from us or the other user)
-    this.subs.push(
-      this.chatHub.messageReceived$.subscribe(msg => {
-        if (msg.conversationId !== this.conversationId()) return;
-        // Skip if already in the list (e.g. our own message added via optimistic update)
-        if (this.messages().some(m => m.id === msg.id)) return;
-        this.messages.update(list => [...list, msg]);
-        this.shouldScrollToBottom = true;
-        this.markRead();
-      })
-    );
+    this.chatHub.messageReceived$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(msg => {
+      if (msg.conversationId !== this.conversationId()) return;
+      // Skip if already in the list (e.g. our own message added via optimistic update)
+      if (this.messages().some(m => m.id === msg.id)) return;
+      this.messages.update(list => [...list, msg]);
+      this.shouldScrollToBottom = true;
+      this.markRead();
+    });
 
     // Our messages were read by the other user
-    this.subs.push(
-      this.chatHub.messagesRead$.subscribe(({ conversationId }) => {
-        if (conversationId !== this.conversationId()) return;
-        this.messages.update(list =>
-          list.map(m =>
-            m.senderId === this.currentUserId() ? { ...m, status: 'Read' as const } : m
-          )
-        );
-      })
-    );
+    this.chatHub.messagesRead$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ conversationId }) => {
+      if (conversationId !== this.conversationId()) return;
+      this.messages.update(list =>
+        list.map(m =>
+          m.senderId === this.currentUserId() ? { ...m, status: 'Read' as const } : m
+        )
+      );
+    });
 
     // Typing indicator
-    this.subs.push(
-      this.chatHub.userTyping$.subscribe(({ conversationId, userId, isTyping }) => {
-        if (conversationId !== this.conversationId()) return;
-        if (userId === this.currentUserId()) return;
-        this.isOtherTyping.set(isTyping);
-        if (isTyping) this.shouldScrollToBottom = true;
-      })
-    );
+    this.chatHub.userTyping$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ conversationId, userId, isTyping }) => {
+      if (conversationId !== this.conversationId()) return;
+      if (userId === this.currentUserId()) return;
+      this.isOtherTyping.set(isTyping);
+      if (isTyping) this.shouldScrollToBottom = true;
+    });
   }
 
   // ─── Sending ─────────────────────────────────────────────────────────────────
@@ -283,7 +278,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private scrollToBottom(): void {
     try {
-      const el = this.chatBodyRef?.nativeElement;
+      const el = this.chatBodyRef()?.nativeElement;
       if (el) el.scrollTop = el.scrollHeight;
     } catch {}
   }

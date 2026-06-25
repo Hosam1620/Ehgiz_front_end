@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-insurance',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterLink],
   templateUrl: './insurance.component.html',
 })
 export class InsuranceComponent {}

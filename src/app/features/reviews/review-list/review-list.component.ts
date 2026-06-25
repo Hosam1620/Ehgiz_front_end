@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { ReviewService } from '../../../core/services/review.service';
@@ -11,7 +11,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 @Component({
   standalone: true,
   selector: 'app-review-list',
-  imports: [RouterModule, DatePipe, LoadingSpinnerComponent],
+  imports: [RouterLink, DatePipe, LoadingSpinnerComponent],
   templateUrl: './review-list.component.html',
 })
 export class ReviewListComponent implements OnInit {

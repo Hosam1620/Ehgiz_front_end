@@ -4,10 +4,10 @@ import {
   OnInit,
   AfterViewInit,
   OnDestroy,
-  ViewChild,
   ElementRef,
   signal,
   computed,
+  viewChild,
 } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ const DISPLAY_STEP = 20;
   templateUrl: './notification-list.component.html',
 })
 export class NotificationListComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('scrollSentinel') scrollSentinel!: ElementRef;
+  readonly scrollSentinel = viewChild<ElementRef>('scrollSentinel');
 
   private readonly notifService = inject(NotificationService);
   private readonly hubService = inject(NotificationHubService);
@@ -104,8 +104,9 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
       },
       { rootMargin: '100px' }
     );
-    if (this.scrollSentinel?.nativeElement) {
-      this.observer.observe(this.scrollSentinel.nativeElement);
+    const sentinel = this.scrollSentinel();
+    if (sentinel?.nativeElement) {
+      this.observer.observe(sentinel.nativeElement);
     }
   }
 

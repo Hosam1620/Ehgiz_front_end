@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -21,7 +21,7 @@ interface CalendarDay {
 @Component({
   standalone: true,
   selector: 'app-tool-detail',
-  imports: [RouterModule, DecimalPipe, DatePipe, NgClass, FormsModule, LoadingSpinnerComponent],
+  imports: [RouterLink, DecimalPipe, DatePipe, NgClass, FormsModule, LoadingSpinnerComponent],
   templateUrl: './tool-detail.component.html',
 })
 export class ToolDetailComponent implements OnInit {

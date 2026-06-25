@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './contact.component.html',
 })
 export class ContactComponent {

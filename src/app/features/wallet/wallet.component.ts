@@ -1,9 +1,7 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, finalize, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin, finalize, of, catchError } from 'rxjs';
 import type { StripeEmbeddedCheckout } from '@stripe/stripe-js';
 import { WalletService } from '../../core/services/wallet.service';
 import { Wallet, WalletTransaction } from '../../core/models/wallet.model';
@@ -14,7 +12,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   standalone: true,
   selector: 'app-wallet',
-  imports: [RouterModule, FormsModule, DatePipe, DecimalPipe, LoadingSpinnerComponent],
+  imports: [FormsModule, DatePipe, DecimalPipe, LoadingSpinnerComponent],
   templateUrl: './wallet.component.html',
 })
 export class WalletComponent implements OnInit, OnDestroy {
@@ -108,7 +106,7 @@ export class WalletComponent implements OnInit, OnDestroy {
       }
 
       this.destroyCheckout();
-      this.embeddedCheckout = await stripe.initEmbeddedCheckout({
+      this.embeddedCheckout = await stripe.createEmbeddedCheckoutPage({
         clientSecret,
       });
 

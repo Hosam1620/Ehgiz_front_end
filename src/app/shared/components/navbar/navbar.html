@@ -12,7 +12,7 @@
   <div class="nav-links">
     <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
 
-    @if (isLoggedIn) {
+    @if (isLoggedIn()) {
       @if (auth.isAdmin()) {
         <a class="nav-link nav-link-admin" routerLink="/admin" routerLinkActive="active">
           <i class="fas fa-shield-alt"></i> Admin
@@ -32,8 +32,8 @@
 
       <app-notification-dropdown />
 
-      <a class="nav-avatar" routerLink="/profile" [title]="userName">
-        {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
+      <a class="nav-avatar" routerLink="/profile" [title]="userName()">
+        {{ userName() ? userName().charAt(0).toUpperCase() : 'U' }}
       </a>
     } @else {
       <a class="nav-link" routerLink="/how-it-works" routerLinkActive="active">How it works</a>

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-how-it-works',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterLink],
   templateUrl: './how-it-works.component.html',
 })
 export class HowItWorksComponent {}

@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { CategoryOption, Tool } from '../../../core/models/tool.model';
 import { BrowseService } from '../browse.service';
 import { BrowseFilterStore } from '../browse-filter.store';
@@ -13,7 +13,7 @@ type SortBy = 'default' | 'price-asc' | 'price-desc';
 @Component({
   selector: 'app-browse-page',
   imports: [
-    RouterModule,
+    RouterLink,
     FilterPanelComponent,
     ToolCardComponent,
     PaginationComponent,
