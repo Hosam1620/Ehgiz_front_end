@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Subject, tap } from 'rxjs';
+import { Subject, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Notification, NotificationType } from '../models/notification.model';
 
@@ -79,16 +79,18 @@ export class NotificationService {
   }
 
   markAllAsRead() {
-    return this.http
-      .post<void>(`${this.api}/read-all`, {})
-      .pipe(
-        tap(() => {
-          this.notifications.update(list =>
-            list.map(n => ({ ...n, isRead: true }))
-          );
-          this._unreadCount.set(0);
-        })
-      );
+    const prevList = this.notifications();
+    const prevCount = this._unreadCount();
+    this.notifications.update(list => list.map(n => ({ ...n, isRead: true })));
+    this._unreadCount.set(0);
+
+    return this.http.post<void>(`${this.api}/read-all`, {}).pipe(
+      catchError(err => {
+        this.notifications.set(prevList);
+        this._unreadCount.set(prevCount);
+        return throwError(() => err);
+      })
+    );
   }
 
   delete(id: number) {
