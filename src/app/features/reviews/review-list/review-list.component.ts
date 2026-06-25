@@ -49,16 +49,16 @@ export class ReviewListComponent implements OnInit {
 
   private load(): void {
     this.isLoading.set(true);
+    this.error.set(null);
     this.bookingService.getMyBookings().subscribe({
       next: bookings => {
-        const completed = bookings.filter(b => b.status === 'Completed');
-        const pending = completed
+        const pending = bookings
           .filter(b => b.allowedActions.includes('LeaveReview'))
           .map(b => b.id);
         this.pendingBookingIds.set(pending);
 
-        const completedBookingIds = new Set(completed.map(b => b.id));
-        const toolIds = [...new Set(completed.map(b => b.toolId))];
+        const allBookingIds = new Set(bookings.map(b => b.id));
+        const toolIds = [...new Set(bookings.map(b => b.toolId))];
         if (!toolIds.length) {
           this.reviews.set([]);
           this.isLoading.set(false);
@@ -67,7 +67,7 @@ export class ReviewListComponent implements OnInit {
 
         forkJoin(toolIds.map(id => this.reviewService.getByTool(id))).subscribe({
           next: results => {
-            const myReviews = results.flat().filter(r => completedBookingIds.has(r.bookingId));
+            const myReviews = results.flat().filter(r => allBookingIds.has(r.bookingId));
             this.reviews.set(myReviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
             this.isLoading.set(false);
           },

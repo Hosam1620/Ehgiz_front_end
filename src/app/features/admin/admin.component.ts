@@ -142,25 +142,18 @@ export class AdminComponent implements OnInit {
 
     const id = details.booking.id;
     const notes = { resolutionNotes: this.resolutionNotes() || undefined };
-    let request$;
 
-    switch (action) {
-      case 'owner':
-        request$ = this.adminService.resolveForOwner(id, notes);
-        break;
-      case 'renter':
-        request$ = this.adminService.resolveForRenter(id, notes);
-        break;
-      case 'complete':
-        request$ = this.adminService.forceComplete(id, notes);
-        break;
-      case 'cancel':
-        request$ = this.adminService.forceCancel(id, notes);
-        break;
-    }
+    const request$ = (() => {
+      switch (action) {
+        case 'owner':   return this.adminService.resolveForOwner(id, notes);
+        case 'renter':  return this.adminService.resolveForRenter(id, notes);
+        case 'complete': return this.adminService.forceComplete(id, notes);
+        case 'cancel':  return this.adminService.forceCancel(id, notes);
+      }
+    })();
 
     this.isActing.set(true);
-    request$!
+    request$
       .pipe(finalize(() => this.isActing.set(false)))
       .subscribe({
         next: () => {

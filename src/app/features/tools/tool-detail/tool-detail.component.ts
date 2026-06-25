@@ -46,6 +46,7 @@ export class ToolDetailComponent implements OnInit {
   protected readonly reviewsLoading = signal(false);
 
   protected readonly completedBookingId = signal<number | null>(null);
+  private readonly myToolBookingIds = signal<Set<number>>(new Set());
   protected readonly reviewRating = signal(0);
   protected readonly reviewHoverRating = signal(0);
   protected readonly reviewComment = signal('');
@@ -337,9 +338,9 @@ export class ToolDetailComponent implements OnInit {
   private findEligibleBooking(toolId: number): void {
     this.bookingService.getMyBookings().subscribe({
       next: bookings => {
-        const eligible = bookings.find(
-          b => b.toolId === toolId && b.allowedActions.includes('LeaveReview')
-        );
+        const toolBookings = bookings.filter(b => b.toolId === toolId);
+        this.myToolBookingIds.set(new Set(toolBookings.map(b => b.id)));
+        const eligible = toolBookings.find(b => b.allowedActions.includes('LeaveReview'));
         this.completedBookingId.set(eligible?.id ?? null);
       },
       error: () => {},
@@ -399,9 +400,7 @@ export class ToolDetailComponent implements OnInit {
   }
 
   protected isMyReview(review: Review): boolean {
-    const user = this.auth.currentUser();
-    if (!user) return false;
-    return review.renterName === user.fullName;
+    return this.myToolBookingIds().has(review.bookingId);
   }
 
   protected readonly reviewStars5 = [1, 2, 3, 4, 5] as const;

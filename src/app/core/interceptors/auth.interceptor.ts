@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, skip, switchMap, take, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 let isRefreshing = false;
@@ -39,12 +39,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (isRefreshing) {
-        // Another request is already refreshing — queue until the new token arrives.
+        // Another request is already refreshing — queue until the refresh settles.
+        // skip(1) bypasses the BehaviorSubject's replayed current value (null) so
+        // we only react to the next emission: a new token on success, or null on
+        // failure — in which case we reject this queued request immediately.
         return refreshToken$.pipe(
-          filter((t): t is string => t !== null),
+          skip(1),
           take(1),
           switchMap(newToken =>
-            next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }))
+            newToken
+              ? next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }))
+              : throwError(() => error)
           )
         );
       }
