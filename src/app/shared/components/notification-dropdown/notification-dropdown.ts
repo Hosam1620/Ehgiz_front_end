@@ -4,6 +4,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { MessageService } from '../../../core/services/message.service';
 import { Notification } from '../../../core/models/notification.model';
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
+import { ToastService } from '../toast/toast.service';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -16,6 +17,7 @@ export class NotificationDropdownComponent {
   private readonly messageService = inject(MessageService);
   private readonly el = inject(ElementRef);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   readonly isOpen = signal(false);
   readonly notifications = this.notifService.notifications;
@@ -44,7 +46,9 @@ export class NotificationDropdownComponent {
   }
 
   markAllRead() {
-    this.notifService.markAllAsRead().subscribe();
+    this.notifService.markAllAsRead().subscribe({
+      error: () => this.toast.show('Error', 'Failed to mark all notifications as read.', 'error'),
+    });
   }
 
   markAsRead(n: Notification) {

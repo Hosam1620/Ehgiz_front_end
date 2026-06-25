@@ -15,6 +15,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { NotificationHubService } from '../../../core/services/notification-hub.service';
 import { Notification, NotificationType } from '../../../core/models/notification.model';
 import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
+import { ToastService } from '../../../shared/components/toast/toast.service';
 
 type TypeFilter = NotificationType | 'all';
 
@@ -32,6 +33,7 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
   private readonly notifService = inject(NotificationService);
   private readonly hubService = inject(NotificationHubService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   private observer?: IntersectionObserver;
 
   readonly isHubConnected = this.hubService.isConnected;
@@ -130,7 +132,9 @@ export class NotificationListComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   markAllRead() {
-    this.notifService.markAllAsRead().subscribe();
+    this.notifService.markAllAsRead().subscribe({
+      error: () => this.toast.show('Error', 'Failed to mark all notifications as read.', 'error'),
+    });
   }
 
   markAsRead(notification: Notification) {
