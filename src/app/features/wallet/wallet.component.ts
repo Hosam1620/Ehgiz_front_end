@@ -108,13 +108,8 @@ export class WalletComponent implements OnInit, OnDestroy {
       }
 
       this.destroyCheckout();
-      this.embeddedCheckout = await stripe.createEmbeddedCheckoutPage({
+      this.embeddedCheckout = await stripe.initEmbeddedCheckout({
         clientSecret,
-        onComplete: () => {
-          this.toast.show('Payment complete', 'Your wallet will update shortly.', 'success');
-          this.destroyCheckout();
-          this.reload();
-        },
       });
 
       const el = document.getElementById('stripe-checkout');
