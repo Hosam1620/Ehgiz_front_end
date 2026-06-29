@@ -1,0 +1,115 @@
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px;flex-wrap:wrap;">
+  <div>
+    <h2 style="font-size:22px;margin-bottom:4px;">Categories</h2>
+    <p style="font-size:13px;color:var(--text-2);">Create, rename, and remove tool categories</p>
+  </div>
+  @if (!showCreateForm()) {
+    <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">
+      <i class="fas fa-plus"></i> New category
+    </button>
+  }
+</div>
+
+@if (showCreateForm()) {
+  <div class="card-elevated" style="padding:20px;margin-bottom:20px;">
+    <h4 style="font-size:14px;font-weight:700;margin-bottom:14px;">New category</h4>
+    <div class="form-group">
+      <label class="form-label">Name <span style="color:var(--red);">*</span></label>
+      <input type="text" class="form-input" placeholder="e.g. Power Tools" [ngModel]="createName()" (ngModelChange)="createName.set($event)" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input type="text" class="form-input" placeholder="Short description (optional)" [ngModel]="createDescription()" (ngModelChange)="createDescription.set($event)" />
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button type="button" class="btn btn-primary btn-sm" [disabled]="isSaving()" (click)="submitCreate()">
+        @if (isSaving()) { Saving... } @else { Create }
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="cancelCreate()">Cancel</button>
+    </div>
+  </div>
+}
+
+@if (isLoading()) {
+  <app-loading-spinner message="Loading categories..." />
+} @else if (!categories().length) {
+  <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">No categories yet.</div>
+} @else {
+  <div class="card-elevated" style="padding:0;overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Tools</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (cat of categories(); track cat.id) {
+          @if (editId() === cat.id) {
+            <tr style="background:var(--green-light);">
+              <td style="color:var(--text-3);font-size:12px;">#{{ cat.id }}</td>
+              <td>
+                <input type="text" class="form-input" style="padding:6px 10px;font-size:13px;" [ngModel]="editName()" (ngModelChange)="editName.set($event)" />
+              </td>
+              <td>
+                <input type="text" class="form-input" style="padding:6px 10px;font-size:13px;" placeholder="Description" [ngModel]="editDescription()" (ngModelChange)="editDescription.set($event)" />
+              </td>
+              <td><span class="chip chip-gray">{{ cat.toolCount }}</span></td>
+              <td style="display:flex;gap:6px;">
+                <button type="button" class="btn btn-primary btn-sm" [disabled]="isSaving()" (click)="submitEdit()">
+                  @if (isSaving()) { … } @else { Save }
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
+              </td>
+            </tr>
+          } @else {
+            <tr>
+              <td style="color:var(--text-3);font-size:12px;">#{{ cat.id }}</td>
+              <td style="font-weight:600;">{{ cat.name }}</td>
+              <td style="font-size:13px;color:var(--text-2);">{{ cat.description ?? '—' }}</td>
+              <td><span class="chip chip-gray">{{ cat.toolCount }}</span></td>
+              <td style="display:flex;gap:6px;">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="startEdit(cat)">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  [disabled]="cat.toolCount > 0"
+                  [title]="cat.toolCount > 0 ? 'Cannot delete — has ' + cat.toolCount + ' tools assigned' : 'Delete category'"
+                  (click)="confirmDelete(cat.id)"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (deleteConfirmId() !== null) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Delete category</h3>
+        <button type="button" class="modal-close" (click)="cancelDelete()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:14px;color:var(--text-2);margin:0;">
+          Are you sure you want to permanently delete this category?
+          This will fail if any tools are still assigned to it.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" [disabled]="isSaving()" (click)="doDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+}

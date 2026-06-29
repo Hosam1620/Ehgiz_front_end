@@ -5,11 +5,21 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import { BookingDetail } from '../models/booking.model';
 import {
+  AdminCategory,
+  AdminDashboardStats,
+  AdminListing,
+  AdminPayment,
+  AdminUser,
+  CreateCategoryRequest,
   DisputeDetails,
   IssueReport,
   PartialRefundRequest,
   PlatformFeeResponse,
   ResolveDisputeRequest,
+  SetListingAvailabilityRequest,
+  SetUserActiveRequest,
+  SetUserRoleRequest,
+  UpdateCategoryRequest,
   UpdateIssueStatusRequest,
   UpdatePlatformFeeRequest,
 } from '../models/admin.model';
@@ -78,5 +88,91 @@ export class AdminService {
       `${this.base}/settings/platform-fee`,
       data
     );
+  }
+
+  // ── Dashboard ──────────────────────────────────────
+
+  getDashboardStats(): Observable<AdminDashboardStats> {
+    return this.http
+      .get<ApiResponse<AdminDashboardStats>>(`${this.base}/dashboard`)
+      .pipe(map(r => r.data!));
+  }
+
+  // ── Users ──────────────────────────────────────────
+
+  getUsers(): Observable<AdminUser[]> {
+    return this.http
+      .get<ApiResponse<AdminUser[]>>(`${this.base}/users`)
+      .pipe(map(r => r.data ?? []));
+  }
+
+  getUserById(id: number): Observable<AdminUser> {
+    return this.http
+      .get<ApiResponse<AdminUser>>(`${this.base}/users/${id}`)
+      .pipe(map(r => r.data!));
+  }
+
+  setUserActive(id: number, data: SetUserActiveRequest): Observable<ApiResponse<unknown>> {
+    return this.http.put<ApiResponse<unknown>>(`${this.base}/users/${id}/active`, data);
+  }
+
+  setUserRole(id: number, data: SetUserRoleRequest): Observable<ApiResponse<unknown>> {
+    return this.http.put<ApiResponse<unknown>>(`${this.base}/users/${id}/role`, data);
+  }
+
+  // ── Listings ───────────────────────────────────────
+
+  getListings(): Observable<AdminListing[]> {
+    return this.http
+      .get<ApiResponse<AdminListing[]>>(`${this.base}/listings`)
+      .pipe(map(r => r.data ?? []));
+  }
+
+  getListingById(id: number): Observable<AdminListing> {
+    return this.http
+      .get<ApiResponse<AdminListing>>(`${this.base}/listings/${id}`)
+      .pipe(map(r => r.data!));
+  }
+
+  setListingAvailability(id: number, data: SetListingAvailabilityRequest): Observable<ApiResponse<unknown>> {
+    return this.http.put<ApiResponse<unknown>>(`${this.base}/listings/${id}/availability`, data);
+  }
+
+  deleteListing(id: number): Observable<ApiResponse<unknown>> {
+    return this.http.delete<ApiResponse<unknown>>(`${this.base}/listings/${id}`);
+  }
+
+  // ── Categories ─────────────────────────────────────
+
+  getAdminCategories(): Observable<AdminCategory[]> {
+    return this.http
+      .get<ApiResponse<AdminCategory[]>>(`${this.base}/categories`)
+      .pipe(map(r => r.data ?? []));
+  }
+
+  createCategory(data: CreateCategoryRequest): Observable<ApiResponse<AdminCategory>> {
+    return this.http.post<ApiResponse<AdminCategory>>(`${this.base}/categories`, data);
+  }
+
+  updateCategory(id: number, data: UpdateCategoryRequest): Observable<ApiResponse<unknown>> {
+    return this.http.put<ApiResponse<unknown>>(`${this.base}/categories/${id}`, data);
+  }
+
+  deleteCategory(id: number): Observable<ApiResponse<unknown>> {
+    return this.http.delete<ApiResponse<unknown>>(`${this.base}/categories/${id}`);
+  }
+
+  // ── Payments ───────────────────────────────────────
+
+  getAdminPayments(): Observable<AdminPayment[]> {
+    return this.http
+      .get<ApiResponse<AdminPayment[]>>(`${this.base}/payments`)
+      .pipe(map(r => r.data ?? []));
+  }
+
+  getAdminPaymentById(id: number): Observable<AdminPayment> {
+    return this.http
+      .get<ApiResponse<AdminPayment>>(`${this.base}/payments/${id}`)
+      .pipe(map(r => r.data!));
   }
 }

@@ -33,6 +33,7 @@ export class App {
   readonly unreadCount = this.notifService.unreadCount;
   readonly unreadMessageCount = this.messageService.unreadCount;
   showSidebar = signal(true);
+  isAdminRoute = signal(false);
 
   constructor() {
     effect(() => {
@@ -69,6 +70,8 @@ export class App {
     while (route.firstChild) {
       route = route.firstChild;
     }
-    this.showSidebar.set(route.data['layout'] !== 'full');
+    const layout = route.data['layout'];
+    this.showSidebar.set(layout !== 'full' && layout !== 'admin');
+    this.isAdminRoute.set(layout === 'admin');
   }
 }

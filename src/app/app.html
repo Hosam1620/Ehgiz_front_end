@@ -1,94 +1,96 @@
-<div class="app-shell">
-  <app-navbar
-    [isLoggedIn]="auth.isLoggedIn()"
-    [userName]="userName()"
-    (logoutClicked)="auth.logout()"
-  />
+@if (auth.isAdmin() && isAdminRoute()) {
+  <!-- Admin: fully isolated, no navbar/footer -->
+  <router-outlet />
+  <app-toast-container />
+} @else {
+  <div class="app-shell">
+    <app-navbar
+      [isLoggedIn]="auth.isLoggedIn()"
+      [userName]="userName()"
+      (logoutClicked)="auth.logout()"
+    />
 
-  <div class="page-body">
-    @if (auth.isLoggedIn()) {
-      @if (auth.isAdmin()) {
-        <main class="content-full">
-          <router-outlet />
-        </main>
-      } @else if (showSidebar()) {
-        <div class="dash-layout">
-          <aside class="sidebar">
+    <div class="page-body">
+      @if (auth.isLoggedIn()) {
+        @if (showSidebar()) {
+          <div class="dash-layout">
+            <aside class="sidebar">
 
-            <!-- User identity -->
-            <div class="sidebar-user">
-              <div class="sidebar-avatar">{{ userInitials() }}</div>
-              <div class="sidebar-user-info">
-                <div class="sidebar-user-name">{{ userName() }}</div>
-                <div class="sidebar-user-role">Member</div>
+              <!-- User identity -->
+              <div class="sidebar-user">
+                <div class="sidebar-avatar">{{ userInitials() }}</div>
+                <div class="sidebar-user-info">
+                  <div class="sidebar-user-name">{{ userName() }}</div>
+                  <div class="sidebar-user-role">Member</div>
+                </div>
               </div>
-            </div>
-            <div class="sidebar-divider"></div>
+              <div class="sidebar-divider"></div>
 
-            <!-- Discover -->
-            <div class="sidebar-section">
-              <div class="sidebar-label">Discover</div>
-              <a class="sidebar-item" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-th-large"></i> Dashboard</a>
-              <a class="sidebar-item" routerLink="/browse" routerLinkActive="active"><i class="fas fa-search"></i> Browse tools</a>
-              <a class="sidebar-item" routerLink="/bookings" routerLinkActive="active"><i class="fas fa-calendar-check"></i> My bookings</a>
-            </div>
+              <!-- Discover -->
+              <div class="sidebar-section">
+                <div class="sidebar-label">Discover</div>
+                <a class="sidebar-item" routerLink="/dashboard" routerLinkActive="active"><i class="fas fa-th-large"></i> Dashboard</a>
+                <a class="sidebar-item" routerLink="/browse" routerLinkActive="active"><i class="fas fa-search"></i> Browse tools</a>
+                <a class="sidebar-item" routerLink="/bookings" routerLinkActive="active"><i class="fas fa-calendar-check"></i> My bookings</a>
+              </div>
 
-            <!-- Activity -->
-            <div class="sidebar-section">
-              <div class="sidebar-label">Activity</div>
-              <a class="sidebar-item" routerLink="/notifications" routerLinkActive="active">
-                <i class="fas fa-bell"></i> Notifications
-                @if (unreadCount() > 0) {
-                  <span class="sidebar-badge">{{ unreadCount() }}</span>
-                }
-              </a>
-              <a class="sidebar-item" routerLink="/messages" routerLinkActive="active">
-                <i class="fas fa-comment-dots"></i> Messages
-                @if (unreadMessageCount() > 0) {
-                  <span class="sidebar-badge">{{ unreadMessageCount() }}</span>
-                }
-              </a>
-              <a class="sidebar-item" routerLink="/reviews" routerLinkActive="active"><i class="fas fa-star"></i> Reviews</a>
-            </div>
+              <!-- Activity -->
+              <div class="sidebar-section">
+                <div class="sidebar-label">Activity</div>
+                <a class="sidebar-item" routerLink="/notifications" routerLinkActive="active">
+                  <i class="fas fa-bell"></i> Notifications
+                  @if (unreadCount() > 0) {
+                    <span class="sidebar-badge">{{ unreadCount() }}</span>
+                  }
+                </a>
+                <a class="sidebar-item" routerLink="/messages" routerLinkActive="active">
+                  <i class="fas fa-comment-dots"></i> Messages
+                  @if (unreadMessageCount() > 0) {
+                    <span class="sidebar-badge">{{ unreadMessageCount() }}</span>
+                  }
+                </a>
+                <a class="sidebar-item" routerLink="/reviews" routerLinkActive="active"><i class="fas fa-star"></i> Reviews</a>
+              </div>
 
-            <!-- Finance -->
-            <div class="sidebar-section">
-              <div class="sidebar-label">Finance</div>
-              <a class="sidebar-item" routerLink="/wallet" routerLinkActive="active"><i class="fas fa-wallet"></i> Wallet</a>
-            </div>
+              <!-- Finance -->
+              <div class="sidebar-section">
+                <div class="sidebar-label">Finance</div>
+                <a class="sidebar-item" routerLink="/wallet" routerLinkActive="active"><i class="fas fa-wallet"></i> Wallet</a>
+              </div>
 
-            <!-- Manage tools -->
-            <div class="sidebar-section">
-              <div class="sidebar-label">My tools</div>
-              <a class="sidebar-item" routerLink="/tools" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="fas fa-toolbox"></i> My listings</a>
-              <a class="sidebar-item" routerLink="/tools/create" routerLinkActive="active"><i class="fas fa-plus-circle"></i> Add new tool</a>
-            </div>
+              <!-- Manage tools -->
+              <div class="sidebar-section">
+                <div class="sidebar-label">My tools</div>
+                <a class="sidebar-item" routerLink="/tools" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="fas fa-toolbox"></i> My listings</a>
+                <a class="sidebar-item" routerLink="/tools/create" routerLinkActive="active"><i class="fas fa-plus-circle"></i> Add new tool</a>
+              </div>
 
-            <!-- Account pinned to bottom -->
-            <div class="sidebar-bottom">
-              <div class="sidebar-divider" style="margin-bottom:12px;"></div>
-              <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
-              <a class="sidebar-item sidebar-item-danger" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
-            </div>
+              <!-- Account pinned to bottom -->
+              <div class="sidebar-bottom">
+                <div class="sidebar-divider" style="margin-bottom:12px;"></div>
+                <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
+                <a class="sidebar-item sidebar-item-danger" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+              </div>
 
-          </aside>
+            </aside>
 
-          <main class="dash-content">
+            <main class="dash-content">
+              <router-outlet />
+            </main>
+          </div>
+        } @else {
+          <main class="content-full">
             <router-outlet />
           </main>
-        </div>
+        }
       } @else {
         <main class="content-full">
           <router-outlet />
         </main>
       }
-    } @else {
-      <main class="content-full">
-        <router-outlet />
-      </main>
-    }
-  </div>
+    </div>
 
-  <app-footer />
-  <app-toast-container />
-</div>
+    <app-footer />
+    <app-toast-container />
+  </div>
+}

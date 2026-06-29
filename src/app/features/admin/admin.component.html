@@ -1,28 +1,99 @@
 <div class="admin-layout">
   <div class="admin-sidebar">
-    <div style="padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px;">
-      <div style="font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">Admin panel</div>
-      <div style="font-size:14px;font-weight:600;color:white;">Ehgiz Platform</div>
+    <!-- Brand header -->
+    <div style="padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;">
+      <div style="font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;">Admin panel</div>
+      <div style="font-size:15px;font-weight:700;color:white;font-family:'Fraunces',serif;">Ehgiz Platform</div>
     </div>
-    <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'disputes'" (click)="setTab('disputes')">
-      <i class="fas fa-gavel" style="width:16px;"></i> Disputes
-      @if (disputes().length) {
-        <span style="margin-left:auto;background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:var(--radius-full);">{{ disputes().length }}</span>
-      }
-    </button>
-    <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'issues'" (click)="setTab('issues')">
-      <i class="fas fa-flag" style="width:16px;"></i> Issue reports
-      @if (openIssuesCount()) {
-        <span style="margin-left:auto;background:var(--orange);color:white;font-size:10px;padding:1px 6px;border-radius:var(--radius-full);">{{ openIssuesCount() }}</span>
-      }
-    </button>
-    <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'settings'" (click)="setTab('settings')">
-      <i class="fas fa-cog" style="width:16px;"></i> Platform settings
-    </button>
+
+    <!-- Nav (scrollable) -->
+    <div style="flex:1;overflow-y:auto;padding:10px 0;">
+      <!-- Overview -->
+      <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;">Overview</div>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'dashboard'" (click)="setTab('dashboard')">
+        <i class="fas fa-chart-pie" style="width:16px;"></i> Dashboard
+      </button>
+
+      <!-- People -->
+      <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;">People</div>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'users'" (click)="setTab('users')">
+        <i class="fas fa-users" style="width:16px;"></i> Users
+      </button>
+
+      <!-- Marketplace -->
+      <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;">Marketplace</div>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'listings'" (click)="setTab('listings')">
+        <i class="fas fa-tools" style="width:16px;"></i> Listings
+      </button>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'categories'" (click)="setTab('categories')">
+        <i class="fas fa-tags" style="width:16px;"></i> Categories
+      </button>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'payments'" (click)="setTab('payments')">
+        <i class="fas fa-credit-card" style="width:16px;"></i> Payments
+      </button>
+
+      <!-- Support -->
+      <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;">Support</div>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'disputes'" (click)="setTab('disputes')">
+        <i class="fas fa-gavel" style="width:16px;"></i> Disputes
+        @if (disputes().length) {
+          <span style="margin-left:auto;background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:var(--radius-full);">{{ disputes().length }}</span>
+        }
+      </button>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'issues'" (click)="setTab('issues')">
+        <i class="fas fa-flag" style="width:16px;"></i> Issue reports
+        @if (openIssuesCount()) {
+          <span style="margin-left:auto;background:var(--orange);color:white;font-size:10px;padding:1px 6px;border-radius:var(--radius-full);">{{ openIssuesCount() }}</span>
+        }
+      </button>
+
+      <!-- Config -->
+      <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;">Config</div>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'settings'" (click)="setTab('settings')">
+        <i class="fas fa-cog" style="width:16px;"></i> Platform settings
+      </button>
+    </div>
+
+    <!-- User footer -->
+    <div style="flex-shrink:0;border-top:1px solid rgba(255,255,255,.1);padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">
+          {{ userInitials() }}
+        </div>
+        <div style="min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ userName() }}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.45);">Administrator</div>
+        </div>
+      </div>
+      <button type="button" class="admin-sidebar-item" style="padding:8px 10px;border-radius:6px;color:rgba(255,100,100,.85);" (click)="auth.logout()">
+        <i class="fas fa-sign-out-alt" style="width:16px;"></i> Sign out
+      </button>
+    </div>
   </div>
 
   <div class="admin-content">
     @switch (activeTab()) {
+
+      @case ('dashboard') {
+        <app-admin-dashboard />
+      }
+
+      @case ('users') {
+        <app-admin-users />
+      }
+
+      @case ('listings') {
+        <app-admin-listings />
+      }
+
+      @case ('categories') {
+        <app-admin-categories />
+      }
+
+      @case ('payments') {
+        <app-admin-payments />
+      }
+
       @case ('disputes') {
         <div style="margin-bottom:24px;">
           <h2 style="font-size:22px;margin-bottom:4px;">Disputed bookings</h2>
