@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
-import { AdminPayment } from '../../../core/models/admin.model';
+import { AdminPayment, paymentStatusChipClass } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
 
@@ -57,13 +57,5 @@ export class AdminPaymentsComponent implements OnInit {
     this.selected.set(null);
   }
 
-  statusClass(status: string): string {
-    const map: Record<string, string> = {
-      completed: 'chip-green',
-      pending:   'chip-amber',
-      failed:    'chip-red',
-      refunded:  'chip-blue',
-    };
-    return map[status?.toLowerCase()] ?? 'chip-gray';
-  }
+  readonly statusClass = paymentStatusChipClass;
 }

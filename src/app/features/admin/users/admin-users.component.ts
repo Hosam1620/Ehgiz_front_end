@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -6,6 +6,8 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AdminUser } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
+
+type StatusFilter = 'all' | 'active' | 'inactive';
 
 @Component({
   selector: 'app-admin-users',
@@ -17,9 +19,21 @@ export class AdminUsersComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
 
-  protected readonly users = signal<AdminUser[]>([]);
+  protected readonly allUsers = signal<AdminUser[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly actingId = signal<number | null>(null);
+  protected readonly statusFilter = signal<StatusFilter>('all');
+
+  protected readonly users = computed(() => {
+    const filter = this.statusFilter();
+    const list = this.allUsers();
+    if (filter === 'active') return list.filter(u => u.isActive);
+    if (filter === 'inactive') return list.filter(u => !u.isActive);
+    return list;
+  });
+
+  protected readonly activeCount = computed(() => this.allUsers().filter(u => u.isActive).length);
+  protected readonly inactiveCount = computed(() => this.allUsers().filter(u => !u.isActive).length);
 
   /** ID of the user whose role picker is currently open */
   protected readonly rolePickerId = signal<number | null>(null);
@@ -33,7 +47,7 @@ export class AdminUsersComponent implements OnInit {
     this.isLoading.set(true);
     this.adminService.getUsers().subscribe({
       next: list => {
-        this.users.set(list);
+        this.allUsers.set(list);
         this.isLoading.set(false);
       },
       error: err => {
@@ -43,6 +57,11 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
+  setFilter(filter: StatusFilter): void {
+    this.statusFilter.set(filter);
+    this.closeRolePicker();
+  }
+
   toggleActive(user: AdminUser): void {
     this.actingId.set(user.id);
     this.adminService
@@ -50,7 +69,7 @@ export class AdminUsersComponent implements OnInit {
       .pipe(finalize(() => this.actingId.set(null)))
       .subscribe({
         next: () => {
-          this.users.update(list =>
+          this.allUsers.update(list =>
             list.map(u => (u.id === user.id ? { ...u, isActive: !u.isActive } : u))
           );
           this.toast.show('Updated', `User ${user.isActive ? 'deactivated' : 'activated'}.`, 'success');
@@ -77,7 +96,7 @@ export class AdminUsersComponent implements OnInit {
       .pipe(finalize(() => this.actingId.set(null)))
       .subscribe({
         next: () => {
-          this.users.update(list =>
+          this.allUsers.update(list =>
             list.map(u => (u.id === user.id ? { ...u, roles: [role] } : u))
           );
           this.toast.show('Updated', `Role changed to "${role}".`, 'success');

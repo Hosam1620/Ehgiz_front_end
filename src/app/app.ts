@@ -70,7 +70,10 @@ export class App {
     while (route.firstChild) {
       route = route.firstChild;
     }
-    const layout = route.data['layout'];
+    // On the very first call (before NavigationEnd fires) route.data is empty.
+    // Fall back to window.location so the initial render already has the right layout.
+    const layout: string | undefined =
+      route.data['layout'] ?? (window.location.pathname.startsWith('/admin') ? 'admin' : undefined);
     this.showSidebar.set(layout !== 'full' && layout !== 'admin');
     this.isAdminRoute.set(layout === 'admin');
   }

@@ -100,9 +100,11 @@ export class AdminService {
 
   // ── Users ──────────────────────────────────────────
 
-  getUsers(): Observable<AdminUser[]> {
+  getUsers(isActive?: boolean): Observable<AdminUser[]> {
+    const params: Record<string, string> = {};
+    if (isActive !== undefined) params['isActive'] = String(isActive);
     return this.http
-      .get<ApiResponse<AdminUser[]>>(`${this.base}/users`)
+      .get<ApiResponse<AdminUser[]>>(`${this.base}/users`, { params })
       .pipe(map(r => r.data ?? []));
   }
 

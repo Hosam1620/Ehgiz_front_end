@@ -115,6 +115,18 @@ export interface UpdateCategoryRequest {
   description?: string;
 }
 
+// ── Shared helpers ───────────────────────────────────
+
+export function paymentStatusChipClass(status: string): string {
+  const map: Record<string, string> = {
+    completed: 'chip-green',
+    pending:   'chip-amber',
+    failed:    'chip-red',
+    refunded:  'chip-blue',
+  };
+  return map[status?.toLowerCase()] ?? 'chip-gray';
+}
+
 // ── Payments ─────────────────────────────────────────
 
 export interface AdminPayment {

@@ -57,16 +57,13 @@ export class AdminComponent implements OnInit {
 
   protected readonly resolveMediaUrl = resolveMediaUrl;
 
+  private feeLoaded = false;
+
   ngOnInit(): void {
+    // Disputes + issues load eagerly — their counts drive the sidebar badges.
     this.loadDisputes();
     this.loadIssueReports();
-    this.adminService.getPlatformFee().subscribe({
-      next: fee => {
-        this.platformFee.set(fee);
-        this.feeInput.set(fee);
-      },
-      error: () => {},
-    });
+    // Platform fee has no sidebar badge; defer to first settings open.
   }
 
   setTab(tab: AdminTab): void {
@@ -74,6 +71,16 @@ export class AdminComponent implements OnInit {
     this.selectedDispute.set(null);
     this.selectedIssue.set(null);
     this.showPartialRefundModal.set(false);
+    if (tab === 'settings' && !this.feeLoaded) {
+      this.feeLoaded = true;
+      this.adminService.getPlatformFee().subscribe({
+        next: fee => {
+          this.platformFee.set(fee);
+          this.feeInput.set(fee);
+        },
+        error: () => {},
+      });
+    }
   }
 
   loadDisputes(): void {
