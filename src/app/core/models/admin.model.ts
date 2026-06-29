@@ -61,9 +61,14 @@ export interface AdminUser {
   fullName: string;
   phoneNumber: string | null;
   city: string | null;
+  address: string | null;
   isActive: boolean;
   roles: string[];
   createdAt: string;
+  totalListings: number;
+  totalBookings: number;
+  stripeCustomerId: string | null;
+  stripeAccountId: string | null;
 }
 
 export interface SetUserActiveRequest {

@@ -122,6 +122,10 @@ export class AdminService {
     return this.http.put<ApiResponse<unknown>>(`${this.base}/users/${id}/role`, data);
   }
 
+  deleteUser(id: number): Observable<ApiResponse<unknown>> {
+    return this.http.delete<ApiResponse<unknown>>(`${this.base}/users/${id}`);
+  }
+
   // ── Listings ───────────────────────────────────────
 
   getListings(): Observable<AdminListing[]> {

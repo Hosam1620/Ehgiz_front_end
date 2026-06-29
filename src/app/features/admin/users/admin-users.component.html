@@ -3,117 +3,279 @@
   <p style="font-size:13px;color:var(--text-2);">Manage accounts, activate/deactivate and assign roles</p>
 </div>
 
-<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-  <button
-    type="button"
-    class="btn btn-sm"
-    [ngClass]="statusFilter() === 'all' ? 'btn-primary' : 'btn-secondary'"
-    (click)="setFilter('all')"
-  >All <span style="font-size:11px;opacity:.75;">({{ allUsers().length }})</span></button>
-  <button
-    type="button"
-    class="btn btn-sm"
-    [ngClass]="statusFilter() === 'active' ? 'btn-primary' : 'btn-secondary'"
-    (click)="setFilter('active')"
-  >Active <span style="font-size:11px;opacity:.75;">({{ activeCount() }})</span></button>
-  <button
-    type="button"
-    class="btn btn-sm"
-    [ngClass]="statusFilter() === 'inactive' ? 'btn-primary' : 'btn-secondary'"
-    (click)="setFilter('inactive')"
-  >Inactive <span style="font-size:11px;opacity:.75;">({{ inactiveCount() }})</span></button>
-</div>
+@if (selectedUser(); as user) {
+  <!-- ── Detail view ── -->
+  <div class="card-elevated" style="padding:24px;">
+    <button type="button" class="btn btn-sm btn-secondary" style="margin-bottom:20px;" (click)="closeDetail()">← Back to list</button>
 
-@if (isLoading()) {
-  <app-loading-spinner message="Loading users..." />
-} @else if (!users().length) {
-  <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">
-    @if (statusFilter() === 'inactive') {
-      No inactive users.
-    } @else if (statusFilter() === 'active') {
-      No active users.
-    } @else {
-      No users found.
+    <!-- Header row -->
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;">
+        {{ user.fullName.charAt(0).toUpperCase() }}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:20px;font-weight:700;margin-bottom:4px;">{{ user.fullName }}</div>
+        <div style="font-size:13px;color:var(--text-2);">{{ user.email }}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="chip" [ngClass]="roleClass(primaryRole(user))">{{ primaryRole(user) }}</span>
+        @if (user.isActive) {
+          <span class="chip chip-green">Active</span>
+        } @else {
+          <span class="chip chip-red">Inactive</span>
+        }
+      </div>
+    </div>
+
+    <!-- Info grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px;">
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">User ID</div>
+        <div class="detail-spec-value">#{{ user.id }}</div>
+      </div>
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">Phone</div>
+        <div class="detail-spec-value">{{ user.phoneNumber ?? '—' }}</div>
+      </div>
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">City</div>
+        <div class="detail-spec-value">{{ user.city ?? '—' }}</div>
+      </div>
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">Address</div>
+        <div class="detail-spec-value">{{ user.address ?? '—' }}</div>
+      </div>
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">Joined</div>
+        <div class="detail-spec-value">{{ user.createdAt | date:'mediumDate' }}</div>
+      </div>
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">Total Listings</div>
+        <div class="detail-spec-value">{{ user.totalListings }}</div>
+      </div>
+      <div class="detail-spec-card">
+        <div class="detail-spec-label">Total Bookings</div>
+        <div class="detail-spec-value">{{ user.totalBookings }}</div>
+      </div>
+    </div>
+
+    <!-- Stripe section (only when at least one ID is present) -->
+    @if (user.stripeCustomerId || user.stripeAccountId) {
+      <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Stripe</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">
+          @if (user.stripeCustomerId) {
+            <div class="detail-spec-card">
+              <div class="detail-spec-label">Customer ID</div>
+              <div class="detail-spec-value" style="font-family:monospace;font-size:12px;word-break:break-all;">{{ user.stripeCustomerId }}</div>
+            </div>
+          }
+          @if (user.stripeAccountId) {
+            <div class="detail-spec-card">
+              <div class="detail-spec-label">Account ID</div>
+              <div class="detail-spec-value" style="font-family:monospace;font-size:12px;word-break:break-all;">{{ user.stripeAccountId }}</div>
+            </div>
+          }
+        </div>
+      </div>
     }
+
+    <!-- Actions -->
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:20px;">
+      <!-- Role picker -->
+      @if (rolePickerId() === user.id) {
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select
+            class="form-input form-select"
+            style="width:auto;font-size:13px;"
+            [ngModel]="roleInput()"
+            (ngModelChange)="roleInput.set($event)"
+          >
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            [disabled]="actingId() === user.id"
+            (click)="saveRole(user)"
+          >Save</button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()">✕</button>
+        </div>
+      } @else {
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          [disabled]="actingId() === user.id"
+          (click)="openRolePicker(user)"
+        >
+          <i class="fas fa-pen-to-square" style="margin-right:5px;"></i>Change Role
+        </button>
+      }
+
+      <!-- Active toggle -->
+      <label class="toggle" style="display:flex;align-items:center;gap:8px;cursor:pointer;" [title]="user.isActive ? 'Deactivate user' : 'Activate user'">
+        <input
+          type="checkbox"
+          [checked]="user.isActive"
+          [disabled]="actingId() === user.id"
+          (change)="toggleActive(user)"
+        />
+        <span class="toggle-slider"></span>
+        <span style="font-size:13px;color:var(--text-2);">{{ user.isActive ? 'Active' : 'Inactive' }}</span>
+      </label>
+
+      <!-- Delete -->
+      <button
+        type="button"
+        class="btn btn-sm"
+        style="background:#ef4444;color:#fff;border:none;margin-left:auto;"
+        [disabled]="deletingId() === user.id || actingId() === user.id"
+        (click)="deleteUser(user)"
+      >
+        @if (deletingId() === user.id) {
+          Deleting...
+        } @else {
+          <i class="fas fa-trash" style="margin-right:5px;"></i>Delete User
+        }
+      </button>
+    </div>
   </div>
+
 } @else {
-  <div class="card-elevated" style="padding:0;overflow:hidden;">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>City</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Joined</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (user of users(); track user.id) {
+  <!-- ── List view ── -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <button
+      type="button"
+      class="btn btn-sm"
+      [ngClass]="statusFilter() === 'all' ? 'btn-primary' : 'btn-secondary'"
+      (click)="setFilter('all')"
+    >All <span style="font-size:11px;opacity:.75;">({{ allUsers().length }})</span></button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      [ngClass]="statusFilter() === 'active' ? 'btn-primary' : 'btn-secondary'"
+      (click)="setFilter('active')"
+    >Active <span style="font-size:11px;opacity:.75;">({{ activeCount() }})</span></button>
+    <button
+      type="button"
+      class="btn btn-sm"
+      [ngClass]="statusFilter() === 'inactive' ? 'btn-primary' : 'btn-secondary'"
+      (click)="setFilter('inactive')"
+    >Inactive <span style="font-size:11px;opacity:.75;">({{ inactiveCount() }})</span></button>
+  </div>
+
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading users..." />
+  } @else if (!users().length) {
+    <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">
+      @if (statusFilter() === 'inactive') {
+        No inactive users.
+      } @else if (statusFilter() === 'active') {
+        No active users.
+      } @else {
+        No users found.
+      }
+    </div>
+  } @else {
+    <div class="card-elevated" style="padding:0;overflow:hidden;">
+      <table class="data-table">
+        <thead>
           <tr>
-            <td style="color:var(--text-3);font-size:12px;">#{{ user.id }}</td>
-            <td style="font-weight:600;">{{ user.fullName }}</td>
-            <td style="font-size:12px;color:var(--text-2);">{{ user.email }}</td>
-            <td style="font-size:12px;color:var(--text-3);">{{ user.city ?? '—' }}</td>
-            <td>
-              @if (rolePickerId() === user.id) {
-                <div style="display:flex;gap:6px;align-items:center;">
-                  <select
-                    class="form-input form-select"
-                    style="width:auto;font-size:12px;padding:4px 30px 4px 8px;"
-                    [ngModel]="roleInput()"
-                    (ngModelChange)="roleInput.set($event)"
-                  >
-                    <option value="user">user</option>
-                    <option value="admin">admin</option>
-                  </select>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Actions</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td style="color:var(--text-3);font-size:12px;">#{{ user.id }}</td>
+              <td style="font-weight:600;">{{ user.fullName }}</td>
+              <td style="font-size:12px;color:var(--text-2);">{{ user.email }}</td>
+              <td style="font-size:12px;color:var(--text-3);">{{ user.city ?? '—' }}</td>
+              <td>
+                @if (rolePickerId() === user.id) {
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <select
+                      class="form-input form-select"
+                      style="width:auto;font-size:12px;padding:4px 30px 4px 8px;"
+                      [ngModel]="roleInput()"
+                      (ngModelChange)="roleInput.set($event)"
+                    >
+                      <option value="user">user</option>
+                      <option value="admin">admin</option>
+                    </select>
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-sm"
+                      [disabled]="actingId() === user.id"
+                      (click)="saveRole(user)"
+                    >Save</button>
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()">✕</button>
+                  </div>
+                } @else {
                   <button
                     type="button"
-                    class="btn btn-primary btn-sm"
+                    class="chip"
+                    [ngClass]="roleClass(primaryRole(user))"
+                    style="cursor:pointer;border:none;"
+                    title="Click to change role"
+                    (click)="openRolePicker(user)"
+                  >
+                    {{ primaryRole(user) }}
+                    <i class="fas fa-pen-to-square" style="font-size:9px;margin-left:3px;opacity:.7;"></i>
+                  </button>
+                }
+              </td>
+              <td>
+                @if (user.isActive) {
+                  <span class="chip chip-green">Active</span>
+                } @else {
+                  <span class="chip chip-red">Inactive</span>
+                }
+              </td>
+              <td style="font-size:12px;color:var(--text-3);">{{ user.createdAt | date:'mediumDate' }}</td>
+              <td>
+                <label class="toggle" title="{{ user.isActive ? 'Deactivate' : 'Activate' }} user">
+                  <input
+                    type="checkbox"
+                    [checked]="user.isActive"
                     [disabled]="actingId() === user.id"
-                    (click)="saveRole(user)"
-                  >Save</button>
-                  <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()">✕</button>
+                    (change)="toggleActive(user)"
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+              <td>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <button type="button" class="btn btn-secondary btn-sm" (click)="openDetail(user)">View</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    style="background:#ef4444;color:#fff;border:none;"
+                    [disabled]="deletingId() === user.id || actingId() === user.id"
+                    title="Delete user"
+                    (click)="deleteUser(user)"
+                  >
+                    @if (deletingId() === user.id) {
+                      ...
+                    } @else {
+                      <i class="fas fa-trash"></i>
+                    }
+                  </button>
                 </div>
-              } @else {
-                <button
-                  type="button"
-                  class="chip"
-                  [ngClass]="roleClass(primaryRole(user))"
-                  style="cursor:pointer;border:none;"
-                  title="Click to change role"
-                  (click)="openRolePicker(user)"
-                >
-                  {{ primaryRole(user) }}
-                  <i class="fas fa-pen-to-square" style="font-size:9px;margin-left:3px;opacity:.7;"></i>
-                </button>
-              }
-            </td>
-            <td>
-              @if (user.isActive) {
-                <span class="chip chip-green">Active</span>
-              } @else {
-                <span class="chip chip-red">Inactive</span>
-              }
-            </td>
-            <td style="font-size:12px;color:var(--text-3);">{{ user.createdAt | date:'mediumDate' }}</td>
-            <td>
-              <label class="toggle" title="{{ user.isActive ? 'Deactivate' : 'Activate' }} user">
-                <input
-                  type="checkbox"
-                  [checked]="user.isActive"
-                  [disabled]="actingId() === user.id"
-                  (change)="toggleActive(user)"
-                />
-                <span class="toggle-slider"></span>
-              </label>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 }
