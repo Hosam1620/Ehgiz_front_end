@@ -56,6 +56,14 @@ export interface UploadToolImagesResponse {
   imageUrls: string[];
 }
 
+export interface ToolSuggestionResponse {
+  name: string;
+  description: string;
+  condition: ToolConditionValue;
+  categoryId: number;
+  categoryName?: string | null;
+}
+
 export interface CategoryOption {
   id: number;
   name: string;
