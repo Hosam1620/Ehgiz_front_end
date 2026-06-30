@@ -54,7 +54,7 @@ export const routes: Routes = [
   // AI Features
   { path: 'ai/classification', loadComponent: () => import('./features/ai/classification/classification.component').then(m => m.ClassificationComponent),  canActivate: [authGuard] },
   { path: 'ai/image-analysis', loadComponent: () => import('./features/ai/image-analysis/image-analysis.component').then(m => m.ImageAnalysisComponent),  canActivate: [authGuard] },
-  { path: 'ai/image-search',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        canActivate: [authGuard] },
+  { path: 'ai/image-search',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        data: { layout: 'full' } },
   { path: 'ai/rag-search',     loadComponent: () => import('./features/ai/rag-search/rag-search.component').then(m => m.RagSearchComponent),              canActivate: [authGuard] },
 
   // Static pages
