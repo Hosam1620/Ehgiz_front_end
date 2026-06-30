@@ -28,8 +28,13 @@
       <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'categories'" (click)="setTab('categories')">
         <i class="fas fa-tags" style="width:16px;"></i> Categories
       </button>
-      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'payments'" (click)="setTab('payments')">
-        <i class="fas fa-credit-card" style="width:16px;"></i> Payments
+      <!-- Finance -->
+      <div style="padding:8px 12px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;">Finance</div>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'wallets'" (click)="setTab('wallets')">
+        <i class="fas fa-wallet" style="width:16px;"></i> Wallets
+      </button>
+      <button type="button" class="admin-sidebar-item" [class.active]="activeTab() === 'transactions'" (click)="setTab('transactions')">
+        <i class="fas fa-exchange-alt" style="width:16px;"></i> Transactions
       </button>
 
       <!-- Support -->
@@ -90,8 +95,12 @@
         <app-admin-categories />
       }
 
-      @case ('payments') {
-        <app-admin-payments />
+      @case ('wallets') {
+        <app-admin-wallets />
+      }
+
+      @case ('transactions') {
+        <app-admin-transactions />
       }
 
       @case ('disputes') {
@@ -278,10 +287,8 @@
               <label class="form-label" style="margin:0;">Change status:</label>
               <select class="form-input form-select" style="width:auto;" [value]="issue.status" (change)="updateIssueStatus(issue, $any($event.target).value)">
                 <option value="Open">Open</option>
-                <option value="InReview">In Review</option>
+                <option value="UnderReview">Under Review</option>
                 <option value="Resolved">Resolved</option>
-                <option value="Closed">Closed</option>
-                <option value="Rejected">Rejected</option>
               </select>
             </div>
           </div>
@@ -312,10 +319,8 @@
                       <button type="button" class="btn btn-sm btn-secondary" (click)="viewIssue(report)">View</button>
                       <select class="form-input form-select" style="width:auto;font-size:12px;padding:4px 8px;" [value]="report.status" (change)="updateIssueStatus(report, $any($event.target).value)">
                         <option value="Open">Open</option>
-                        <option value="InReview">In Review</option>
+                        <option value="UnderReview">Under Review</option>
                         <option value="Resolved">Resolved</option>
-                        <option value="Closed">Closed</option>
-                        <option value="Rejected">Rejected</option>
                       </select>
                     </td>
                   </tr>

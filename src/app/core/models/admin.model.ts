@@ -1,7 +1,7 @@
 import { BookingDetail } from './booking.model';
 import { Handover } from './booking.model';
 
-export type IssueReportStatus = 'Open' | 'InReview' | 'Resolved' | 'Closed' | 'Rejected';
+export type IssueReportStatus = 'Open' | 'UnderReview' | 'Resolved';
 
 export interface IssueReport {
   id: number;
@@ -45,10 +45,12 @@ export interface AdminDashboardStats {
   totalUsers: number;
   activeUsers: number;
   totalListings: number;
-  availableListings: number;
+  activeListings: number;
+  totalBookings: number;
   activeBookings: number;
   disputedBookings: number;
   openIssueReports: number;
+  totalCategories: number;
   totalRevenue: number;
   pendingEscrow: number;
 }
@@ -120,26 +122,33 @@ export interface UpdateCategoryRequest {
   description?: string;
 }
 
-// ── Shared helpers ───────────────────────────────────
+// ── Wallets ───────────────────────────────────────────
 
-export function paymentStatusChipClass(status: string): string {
-  const map: Record<string, string> = {
-    completed: 'chip-green',
-    pending:   'chip-amber',
-    failed:    'chip-red',
-    refunded:  'chip-blue',
-  };
-  return map[status?.toLowerCase()] ?? 'chip-gray';
+export interface AdminWallet {
+  id: number;
+  userId: number;
+  userFullName: string;
+  userEmail: string;
+  balance: number;
+  heldBalance: number;
+  updatedAt: string;
 }
 
-// ── Payments ─────────────────────────────────────────
-
-export interface AdminPayment {
+export interface AdminWalletTransaction {
   id: number;
-  bookingId: number;
-  payerName: string | null;
+  walletId: number;
+  userId: number;
+  userFullName: string;
   amount: number;
-  status: string;
-  method: string | null;
+  type: string;
+  description: string | null;
+  reference: string | null;
   createdAt: string;
+}
+
+export function walletTransactionTypeClass(type: string): string {
+  const t = type?.toLowerCase();
+  if (['credit', 'deposit', 'refund', 'topup', 'top-up', 'release', 'payout'].includes(t)) return 'chip-green';
+  if (['debit', 'withdrawal', 'charge', 'fee', 'hold', 'escrow'].includes(t)) return 'chip-red';
+  return 'chip-gray';
 }

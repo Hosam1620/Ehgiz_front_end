@@ -13,7 +13,11 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   accessToken: string;
-  expiresAt: string; // ISO 8601 UTC
+  expiresAt: string;
+  userId: number;
+  email: string;
+  fullName: string;
+  role: string;
 }
 
 export interface UserProfile {

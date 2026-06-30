@@ -34,9 +34,9 @@
     </div>
     <div class="stat-card">
       <div class="stat-icon" style="background:var(--green-light);color:var(--green);float:right;"><i class="fas fa-check-circle"></i></div>
-      <div class="stat-label">Available</div>
-      <div class="stat-value">{{ s.availableListings | number }}</div>
-      <div class="stat-delta">{{ s.totalListings ? ((s.availableListings / s.totalListings) * 100 | number:'1.0-0') + '%' : '—' }} of total</div>
+      <div class="stat-label">Active</div>
+      <div class="stat-value">{{ s.activeListings | number }}</div>
+      <div class="stat-delta">{{ s.totalListings ? ((s.activeListings / s.totalListings) * 100 | number:'1.0-0') + '%' : '—' }} of total</div>
     </div>
   </div>
 

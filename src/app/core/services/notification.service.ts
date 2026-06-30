@@ -24,7 +24,7 @@ export class NotificationService {
 
   loadUnreadCount() {
     return this.http
-      .get<{ data: { count: number } }>(`${this.api}/unread-count`)
+      .get<{ data: { count: number } }>(`${this.api}/unread/count`)
       .pipe(
         tap(res => {
           if (res?.data) {
@@ -68,7 +68,7 @@ export class NotificationService {
 
   markAsRead(id: number) {
     return this.http
-      .post<void>(`${this.api}/${id}/read`, {})
+      .put<void>(`${this.api}/${id}/read`, {})
       .pipe(
         tap(() => {
           this.notifications.update(list =>
@@ -84,7 +84,7 @@ export class NotificationService {
     this.notifications.update(list => list.map(n => ({ ...n, isRead: true })));
     this._unreadCount.set(0);
 
-    return this.http.post<void>(`${this.api}/read-all`, {}).pipe(
+    return this.http.put<void>(`${this.api}/read-all`, {}).pipe(
       catchError(err => {
         this.notifications.set(prevList);
         this._unreadCount.set(prevCount);
@@ -98,7 +98,11 @@ export class NotificationService {
       .delete<void>(`${this.api}/${id}`)
       .pipe(
         tap(() => {
+          const wasUnread = this.notifications().find(n => n.id === id)?.isRead === false;
           this.notifications.update(list => list.filter(n => n.id !== id));
+          if (wasUnread) {
+            this._unreadCount.update(c => Math.max(0, c - 1));
+          }
         })
       );
   }

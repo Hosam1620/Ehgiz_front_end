@@ -1,0 +1,41 @@
+<div style="margin-bottom:24px;">
+  <h2 style="font-size:22px;margin-bottom:4px;">Wallet transactions</h2>
+  <p style="font-size:13px;color:var(--text-2);">All platform wallet movements, newest first</p>
+</div>
+
+@if (isLoading()) {
+  <app-loading-spinner message="Loading transactions..." />
+} @else if (!transactions().length) {
+  <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">No transactions found.</div>
+} @else {
+  <div class="card-elevated" style="padding:0;overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Description</th>
+          <th>Reference</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tx of transactions(); track tx.id) {
+          <tr>
+            <td style="color:var(--text-3);font-size:12px;">#{{ tx.id }}</td>
+            <td style="font-size:13px;">{{ tx.userFullName }}</td>
+            <td><span class="chip" [ngClass]="typeClass(tx.type)">{{ tx.type }}</span></td>
+            <td style="font-weight:600;">{{ tx.amount | number:'1.2-2' }} EGP</td>
+            <td style="font-size:12px;color:var(--text-2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              {{ tx.description ?? '—' }}
+            </td>
+            <td style="font-size:11px;color:var(--text-3);font-family:monospace;">{{ tx.reference ?? '—' }}</td>
+            <td style="font-size:12px;color:var(--text-3);">{{ tx.createdAt | date:'medium' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

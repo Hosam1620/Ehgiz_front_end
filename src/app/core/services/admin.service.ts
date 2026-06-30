@@ -8,8 +8,9 @@ import {
   AdminCategory,
   AdminDashboardStats,
   AdminListing,
-  AdminPayment,
   AdminUser,
+  AdminWallet,
+  AdminWalletTransaction,
   CreateCategoryRequest,
   DisputeDetails,
   IssueReport,
@@ -79,15 +80,14 @@ export class AdminService {
 
   getPlatformFee(): Observable<number> {
     return this.http
-      .get<PlatformFeeResponse>(`${this.base}/settings/platform-fee`)
-      .pipe(map(r => r.feePercent));
+      .get<ApiResponse<PlatformFeeResponse>>(`${this.base}/settings/platform-fee`)
+      .pipe(map(r => r.data?.feePercent ?? 0));
   }
 
   updatePlatformFee(data: UpdatePlatformFeeRequest): Observable<{ message: string; feePercent: number }> {
-    return this.http.put<{ message: string; feePercent: number }>(
-      `${this.base}/settings/platform-fee`,
-      data
-    );
+    return this.http
+      .put<ApiResponse<{ feePercent: number }>>(`${this.base}/settings/platform-fee`, data)
+      .pipe(map(r => ({ message: r.message, feePercent: r.data?.feePercent ?? data.feePercent })));
   }
 
   // ── Dashboard ──────────────────────────────────────
@@ -104,14 +104,19 @@ export class AdminService {
     const params: Record<string, string> = {};
     if (isActive !== undefined) params['isActive'] = String(isActive);
     return this.http
-      .get<ApiResponse<AdminUser[]>>(`${this.base}/users`, { params })
-      .pipe(map(r => r.data ?? []));
+      .get<ApiResponse<any[]>>(`${this.base}/users`, { params })
+      .pipe(map(r => (r.data ?? []).map(u => this.mapUserDto(u))));
   }
 
   getUserById(id: number): Observable<AdminUser> {
     return this.http
-      .get<ApiResponse<AdminUser>>(`${this.base}/users/${id}`)
-      .pipe(map(r => r.data!));
+      .get<ApiResponse<any>>(`${this.base}/users/${id}`)
+      .pipe(map(r => this.mapUserDto(r.data!)));
+  }
+
+  // Backend returns `role: string`; model expects `roles: string[]`
+  private mapUserDto(raw: any): AdminUser {
+    return { ...raw, roles: raw.role ? [raw.role] : [] };
   }
 
   setUserActive(id: number, data: SetUserActiveRequest): Observable<ApiResponse<unknown>> {
@@ -168,17 +173,17 @@ export class AdminService {
     return this.http.delete<ApiResponse<unknown>>(`${this.base}/categories/${id}`);
   }
 
-  // ── Payments ───────────────────────────────────────
+  // ── Wallets ────────────────────────────────────────
 
-  getAdminPayments(): Observable<AdminPayment[]> {
+  getWallets(): Observable<AdminWallet[]> {
     return this.http
-      .get<ApiResponse<AdminPayment[]>>(`${this.base}/payments`)
+      .get<ApiResponse<AdminWallet[]>>(`${this.base}/wallets`)
       .pipe(map(r => r.data ?? []));
   }
 
-  getAdminPaymentById(id: number): Observable<AdminPayment> {
+  getAllTransactions(): Observable<AdminWalletTransaction[]> {
     return this.http
-      .get<ApiResponse<AdminPayment>>(`${this.base}/payments/${id}`)
-      .pipe(map(r => r.data!));
+      .get<ApiResponse<AdminWalletTransaction[]>>(`${this.base}/transactions`)
+      .pipe(map(r => r.data ?? []));
   }
 }

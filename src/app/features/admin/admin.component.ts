@@ -13,9 +13,10 @@ import { AdminDashboardComponent } from './dashboard/admin-dashboard.component';
 import { AdminUsersComponent } from './users/admin-users.component';
 import { AdminListingsComponent } from './listings/admin-listings.component';
 import { AdminCategoriesComponent } from './categories/admin-categories.component';
-import { AdminPaymentsComponent } from './payments/admin-payments.component';
+import { AdminWalletsComponent } from './wallets/admin-wallets.component';
+import { AdminTransactionsComponent } from './transactions/admin-transactions.component';
 
-type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'listings' | 'categories' | 'payments';
+type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'listings' | 'categories' | 'wallets' | 'transactions';
 
 @Component({
   selector: 'app-admin',
@@ -26,7 +27,8 @@ type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'li
     AdminUsersComponent,
     AdminListingsComponent,
     AdminCategoriesComponent,
-    AdminPaymentsComponent,
+    AdminWalletsComponent,
+    AdminTransactionsComponent,
   ],
   templateUrl: './admin.component.html',
 })
@@ -240,16 +242,14 @@ export class AdminComponent implements OnInit {
   }
 
   readonly openIssuesCount = computed(() =>
-    this.issueReports().filter(r => r.status === 'Open' || r.status === 'InReview').length
+    this.issueReports().filter(r => r.status === 'Open' || r.status === 'UnderReview').length
   );
 
   issueStatusClass(status: IssueReportStatus): string {
     const map: Record<IssueReportStatus, string> = {
-      Open:     'chip-red',
-      InReview: 'chip-amber',
-      Resolved: 'chip-green',
-      Closed:   'chip-gray',
-      Rejected: 'chip-gray',
+      Open:        'chip-red',
+      UnderReview: 'chip-amber',
+      Resolved:    'chip-green',
     };
     return map[status] ?? 'chip-gray';
   }
