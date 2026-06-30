@@ -17,7 +17,7 @@ export interface LoginResponse {
   userId: number;
   email: string;
   fullName: string;
-  role: string;
+  roles: string[];
 }
 
 export interface UserProfile {
