@@ -33,8 +33,8 @@ export class AuthService {
 
   currentUser = signal<UserProfile | null>(null);
   roles = signal<string[]>([]);
-  isAdmin = computed(() => this.roles().includes('Admin'));
-  isUser = computed(() => this.roles().includes('User'));
+  isAdmin = computed(() => this.roles().some(r => r.toLowerCase() === 'admin'));
+  isUser = computed(() => this.roles().some(r => r.toLowerCase() === 'user'));
 
   login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {
     return this.http
@@ -109,7 +109,7 @@ export class AuthService {
 
   private setSession(data: LoginResponse): void {
     this._token.set(data.accessToken);
-    this.roles.set(data.roles ?? []);
+    this.roles.set(data.roles?.length ? data.roles : data.role ? [data.role] : []);
     localStorage.setItem(this.SESSION_HINT, '1');
   }
 }
