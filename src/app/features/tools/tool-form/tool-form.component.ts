@@ -1,4 +1,8 @@
 import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest, startWith, debounceTime, catchError, of } from 'rxjs';
+import { AiSuggestionBoxComponent } from './ai-suggestion-box/ai-suggestion-box.component';
+import { ClassificationService, ApiResponse, ClassifyResponseDto } from '../classification.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   CategoryOption,
@@ -23,12 +27,13 @@ export interface ToolFormSubmitPayload {
 
 @Component({
   selector: 'app-tool-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AiSuggestionBoxComponent],
   templateUrl: './tool-form.component.html',
 })
 export class ToolFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly browseService = inject(BrowseService);
+  private readonly classificationService = inject(ClassificationService);
 
   tool = input<Tool | null>(null);
   isSubmitting = input<boolean>(false);
@@ -55,13 +60,66 @@ export class ToolFormComponent implements OnInit {
     isAvailable: [true],
   });
 
+  isClassifying = signal(false);
+  suggestedCategoryName = signal<string | null>(null);
+  aiSuggestionDismissed = signal(false);
+  userManuallyChangedCategory = signal(false);
+  lastClassifiedText = signal('');
+
   constructor() {
     effect(() => {
       const tool = this.tool();
       if (tool) {
         this.patchForm(tool);
+        if (tool.categoryId) {
+          this.userManuallyChangedCategory.set(true);
+        }
       }
     });
+
+    this.form.controls.categoryId.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.userManuallyChangedCategory.set(true);
+      this.suggestedCategoryName.set(null);
+    });
+
+    combineLatest([
+      this.form.controls.name.valueChanges.pipe(startWith(this.form.getRawValue().name)),
+      this.form.controls.description.valueChanges.pipe(startWith(this.form.getRawValue().description))
+    ])
+      .pipe(
+        debounceTime(700),
+        takeUntilDestroyed()
+      )
+      .subscribe(([name, desc]) => {
+        const n = name ?? '';
+        const d = desc ?? '';
+        
+        if (n.length >= 3 && d.length >= 20) {
+          const currentText = `${n}|${d}`;
+          const last = this.lastClassifiedText();
+          const isSignificant = Math.abs(currentText.length - last.length) > 5 || last === '';
+          
+          if (!this.userManuallyChangedCategory() || isSignificant) {
+            this.lastClassifiedText.set(currentText);
+            this.userManuallyChangedCategory.set(false);
+            this.aiSuggestionDismissed.set(false);
+            this.isClassifying.set(true);
+            this.suggestedCategoryName.set(null);
+
+            this.classificationService.classify(n, d).pipe(
+              catchError(() => of(null as ApiResponse<ClassifyResponseDto> | null))
+            ).subscribe((res: ApiResponse<ClassifyResponseDto> | null) => {
+              this.isClassifying.set(false);
+              if (res?.succeeded && res.data?.category && !this.aiSuggestionDismissed()) {
+                this.suggestedCategoryName.set(res.data.category);
+              }
+            });
+          }
+        } else {
+          this.isClassifying.set(false);
+          this.suggestedCategoryName.set(null);
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -96,6 +154,22 @@ export class ToolFormComponent implements OnInit {
   removeNewImage(index: number): void {
     this.selectedFiles.update(files => files.filter((_, i) => i !== index));
     this.previewUrls.update(urls => urls.filter((_, i) => i !== index));
+  }
+
+  acceptAiSuggestion(): void {
+    const suggestedName = this.suggestedCategoryName();
+    if (!suggestedName) return;
+
+    const category = this.categories().find(c => c.name.toLowerCase() === suggestedName.toLowerCase());
+    if (category) {
+      this.form.controls.categoryId.setValue(String(category.id), { emitEvent: false });
+    }
+    this.suggestedCategoryName.set(null);
+  }
+
+  dismissAiSuggestion(): void {
+    this.aiSuggestionDismissed.set(true);
+    this.suggestedCategoryName.set(null);
   }
 
   onSubmit(): void {

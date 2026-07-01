@@ -1,0 +1,25 @@
+.ai-suggestion-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.ai-suggestion-box.loading {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  justify-content: flex-start;
+}
+
+.ai-suggestion-box.suggestion {
+  background-color: #e7f1ff;
+  border: 1px solid #b6d4fe;
+  color: #052c65;
+}
+
+.actions button {
+  font-size: 12px;
+}

@@ -50,6 +50,14 @@
       <div class="input-row">
         <div class="form-group">
           <label class="form-label">Category</label>
+          @if (isClassifying() || suggestedCategoryName()) {
+            <app-ai-suggestion-box 
+              [loading]="isClassifying()" 
+              [suggestion]="suggestedCategoryName()" 
+              (accept)="acceptAiSuggestion()" 
+              (dismiss)="dismissAiSuggestion()">
+            </app-ai-suggestion-box>
+          }
           <select class="form-input form-select" formControlName="categoryId" [class.is-invalid]="form.controls.categoryId.invalid && form.controls.categoryId.touched">
             <option value="">Select category</option>
             @for (category of categories(); track category.id) {

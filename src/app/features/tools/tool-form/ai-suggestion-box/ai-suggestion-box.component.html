@@ -1,0 +1,17 @@
+@if (loading()) {
+  <div class="ai-suggestion-box loading">
+    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+    <span>AI is suggesting a category...</span>
+  </div>
+} @else if (suggestion()) {
+  <div class="ai-suggestion-box suggestion">
+    <div class="d-flex align-items-center gap-2">
+      <i class="fas fa-magic text-primary"></i>
+      <span>Suggested category: <strong>{{ suggestion() }}</strong></span>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-sm btn-outline-primary me-2" (click)="accept.emit()">Accept</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="dismiss.emit()">Dismiss</button>
+    </div>
+  </div>
+}
