@@ -8,10 +8,9 @@ import {
   AdminCategory,
   AdminDashboardStats,
   AdminListing,
-  AdminTransactionPagedResult,
-  AdminTransactionQuery,
   AdminUser,
   AdminWallet,
+  AdminWalletTransaction,
   CreateCategoryRequest,
   DisputeDetails,
   IssueReport,
@@ -184,15 +183,10 @@ export class AdminService {
       .pipe(map(r => r.data ?? []));
   }
 
-  getAllTransactions(query: AdminTransactionQuery = {}): Observable<AdminTransactionPagedResult> {
-    const params: Record<string, string> = {
-      page: String(query.page ?? 1),
-      pageSize: String(query.pageSize ?? 200),
-    };
-
+  getAllTransactions(): Observable<AdminWalletTransaction[]> {
     return this.http
-      .get<ApiResponse<AdminTransactionPagedResult>>(`${this.base}/transactions`, { params })
-      .pipe(map(r => r.data ?? { items: [], pageNumber: 1, pageSize: query.pageSize ?? 200, totalCount: 0, totalPages: 0 }));
+      .get<ApiResponse<AdminWalletTransaction[]>>(`${this.base}/transactions`)
+      .pipe(map(r => r.data ?? []));
   }
 
   rollbackTransaction(id: number, data: RollbackTransactionRequest): Observable<ApiResponse<RollbackTransactionResponse>> {

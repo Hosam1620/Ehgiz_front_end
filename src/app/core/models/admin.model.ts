@@ -196,19 +196,6 @@ export function walletTransactionTypeClass(type: string): string {
 
 // ── Transaction list/rollback ─────────────────────────
 
-export interface AdminTransactionQuery {
-  page?: number;
-  pageSize?: number;
-}
-
-export interface AdminTransactionPagedResult {
-  items: AdminWalletTransaction[];
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-}
-
 export interface RollbackTransactionRequest {
   reason: string;
 }

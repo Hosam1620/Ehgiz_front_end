@@ -50,16 +50,6 @@
       </tbody>
     </table>
   </div>
-
-  <div style="margin-top:16px;">
-    <app-pagination
-      [currentPage]="currentPage()"
-      [totalPages]="totalPages()"
-      [totalItems]="totalCount()"
-      [pageSize]="pageSize()"
-      (pageChange)="onPageChange($event)"
-    />
-  </div>
 }
 
 @if (rollbackTarget(); as tx) {

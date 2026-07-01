@@ -9,13 +9,12 @@ import {
   walletTransactionTypeClass,
 } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
 
 @Component({
   selector: 'app-admin-transactions',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, NgClass, FormsModule, LoadingSpinnerComponent, PaginationComponent],
+  imports: [DatePipe, DecimalPipe, NgClass, FormsModule, LoadingSpinnerComponent],
   templateUrl: './admin-transactions.component.html',
 })
 export class AdminTransactionsComponent implements OnInit {
@@ -28,12 +27,6 @@ export class AdminTransactionsComponent implements OnInit {
   readonly typeClass = walletTransactionTypeClass;
   readonly isReversible = isReversibleTransactionType;
 
-  // Pagination
-  protected readonly currentPage = signal(1);
-  protected readonly pageSize = signal(200);
-  protected readonly totalCount = signal(0);
-  protected readonly totalPages = signal(1);
-
   // Rollback
   protected readonly rollbackTarget = signal<AdminWalletTransaction | null>(null);
   protected readonly rollbackReason = signal('');
@@ -45,30 +38,16 @@ export class AdminTransactionsComponent implements OnInit {
 
   load(): void {
     this.isLoading.set(true);
-    this.adminService
-      .getAllTransactions({
-        page: this.currentPage(),
-        pageSize: this.pageSize(),
-      })
-      .subscribe({
-        next: result => {
-          this.transactions.set(result.items ?? []);
-          this.totalCount.set(result.totalCount);
-          this.totalPages.set(result.totalPages);
-          this.currentPage.set(result.pageNumber);
-          this.pageSize.set(result.pageSize);
-          this.isLoading.set(false);
-        },
-        error: err => {
-          this.toast.show('Error', err.error?.message ?? 'Failed to load transactions.', 'error');
-          this.isLoading.set(false);
-        },
-      });
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage.set(page);
-    this.load();
+    this.adminService.getAllTransactions().subscribe({
+      next: transactions => {
+        this.transactions.set(transactions);
+        this.isLoading.set(false);
+      },
+      error: err => {
+        this.toast.show('Error', err.error?.message ?? 'Failed to load transactions.', 'error');
+        this.isLoading.set(false);
+      },
+    });
   }
 
   openRollback(tx: AdminWalletTransaction): void {
