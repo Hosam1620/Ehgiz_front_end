@@ -5,7 +5,6 @@ import { finalize } from 'rxjs';
 import { AdminService } from '../../../core/services/admin.service';
 import {
   AdminWalletTransaction,
-  TRANSACTION_TYPES,
   isReversibleTransactionType,
   walletTransactionTypeClass,
 } from '../../../core/models/admin.model';
@@ -26,13 +25,11 @@ export class AdminTransactionsComponent implements OnInit {
   protected readonly transactions = signal<AdminWalletTransaction[]>([]);
   protected readonly isLoading = signal(true);
 
-  protected readonly transactionTypes = TRANSACTION_TYPES;
   readonly typeClass = walletTransactionTypeClass;
   readonly isReversible = isReversibleTransactionType;
 
   // Filters
-  protected readonly email = signal('');
-  protected readonly typeFilter = signal('');
+  protected readonly transactionId = signal('');
 
   // Pagination — request a large page size so the table shows everything by default;
   // pagination controls only appear if totalCount actually exceeds this.
@@ -52,10 +49,10 @@ export class AdminTransactionsComponent implements OnInit {
 
   load(): void {
     this.isLoading.set(true);
+    const idInput = this.transactionId().trim();
     this.adminService
       .getAllTransactions({
-        email: this.email().trim() || undefined,
-        type: this.typeFilter() || undefined,
+        transactionId: idInput ? Number(idInput) : undefined,
         page: this.currentPage(),
         pageSize: this.pageSize(),
       })
@@ -81,8 +78,7 @@ export class AdminTransactionsComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.email.set('');
-    this.typeFilter.set('');
+    this.transactionId.set('');
     this.currentPage.set(1);
     this.load();
   }

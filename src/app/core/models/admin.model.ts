@@ -197,8 +197,7 @@ export function walletTransactionTypeClass(type: string): string {
 // ── Transaction search/rollback ───────────────────────
 
 export interface AdminTransactionQuery {
-  email?: string;
-  type?: string;
+  transactionId?: number;
   page?: number;
   pageSize?: number;
 }

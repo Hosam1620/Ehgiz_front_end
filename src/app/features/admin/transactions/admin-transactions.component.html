@@ -6,26 +6,17 @@
 <!-- Filter bar -->
 <div class="card-elevated" style="padding:16px;margin-bottom:16px;">
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
-    <div style="flex:1;min-width:220px;">
-      <label class="form-label">Email</label>
+    <div style="min-width:220px;">
+      <label class="form-label">Transaction ID</label>
       <input
-        type="text"
+        type="number"
         class="form-input"
-        placeholder="Search by user email…"
-        [ngModel]="email()"
-        (ngModelChange)="email.set($event)"
+        placeholder="Search by transaction ID…"
+        min="1"
+        [ngModel]="transactionId()"
+        (ngModelChange)="transactionId.set($event)"
         (keyup.enter)="search()"
       />
-    </div>
-
-    <div style="min-width:170px;">
-      <label class="form-label">Type</label>
-      <select class="form-input form-select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event); search()">
-        <option value="">All types</option>
-        @for (t of transactionTypes; track t) {
-          <option [value]="t">{{ t }}</option>
-        }
-      </select>
     </div>
 
     <div style="display:flex;gap:8px;">
