@@ -185,14 +185,14 @@ export class AdminService {
   }
 
   getAllTransactions(query: AdminTransactionQuery = {}): Observable<AdminTransactionPagedResult> {
-    const params: Record<string, string> = {};
-    if (query.transactionId !== undefined) params['transactionId'] = String(query.transactionId);
-    params['page'] = String(query.page ?? 1);
-    params['pageSize'] = String(query.pageSize ?? 50);
+    const params: Record<string, string> = {
+      page: String(query.page ?? 1),
+      pageSize: String(query.pageSize ?? 200),
+    };
 
     return this.http
       .get<ApiResponse<AdminTransactionPagedResult>>(`${this.base}/transactions`, { params })
-      .pipe(map(r => r.data ?? { items: [], pageNumber: 1, pageSize: query.pageSize ?? 50, totalCount: 0, totalPages: 0 }));
+      .pipe(map(r => r.data ?? { items: [], pageNumber: 1, pageSize: query.pageSize ?? 200, totalCount: 0, totalPages: 0 }));
   }
 
   rollbackTransaction(id: number, data: RollbackTransactionRequest): Observable<ApiResponse<RollbackTransactionResponse>> {

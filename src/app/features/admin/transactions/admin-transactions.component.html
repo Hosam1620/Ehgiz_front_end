@@ -3,31 +3,6 @@
   <p style="font-size:13px;color:var(--text-2);">All platform wallet movements, newest first</p>
 </div>
 
-<!-- Filter bar -->
-<div class="card-elevated" style="padding:16px;margin-bottom:16px;">
-  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
-    <div style="min-width:220px;">
-      <label class="form-label">Transaction ID</label>
-      <input
-        type="number"
-        class="form-input"
-        placeholder="Search by transaction ID…"
-        min="1"
-        [ngModel]="transactionId()"
-        (ngModelChange)="onIdInputChange($event)"
-        (keyup.enter)="search()"
-      />
-    </div>
-
-    <div style="display:flex;gap:8px;">
-      <button type="button" class="btn btn-primary btn-sm" (click)="search()">
-        <i class="fas fa-search"></i> Search
-      </button>
-      <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilters()">Clear</button>
-    </div>
-  </div>
-</div>
-
 @if (isLoading()) {
   <app-loading-spinner message="Loading transactions..." />
 } @else if (!transactions().length) {

@@ -1,8 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { AdminService } from '../../../core/services/admin.service';
 import {
   AdminWalletTransaction,
@@ -29,13 +28,9 @@ export class AdminTransactionsComponent implements OnInit {
   readonly typeClass = walletTransactionTypeClass;
   readonly isReversible = isReversibleTransactionType;
 
-  // Filters
-  protected readonly transactionId = signal('');
-  private readonly idInputChanges = new Subject<string>();
-
   // Pagination
   protected readonly currentPage = signal(1);
-  protected readonly pageSize = signal(50);
+  protected readonly pageSize = signal(200);
   protected readonly totalCount = signal(0);
   protected readonly totalPages = signal(1);
 
@@ -44,27 +39,14 @@ export class AdminTransactionsComponent implements OnInit {
   protected readonly rollbackReason = signal('');
   protected readonly isRollingBack = signal(false);
 
-  constructor() {
-    this.idInputChanges
-      .pipe(debounceTime(400), distinctUntilChanged(), takeUntilDestroyed())
-      .subscribe(() => this.search());
-  }
-
   ngOnInit(): void {
     this.load();
   }
 
-  onIdInputChange(value: string): void {
-    this.transactionId.set(value);
-    this.idInputChanges.next(value);
-  }
-
   load(): void {
     this.isLoading.set(true);
-    const idInput = this.transactionId().trim();
     this.adminService
       .getAllTransactions({
-        transactionId: idInput ? Number(idInput) : undefined,
         page: this.currentPage(),
         pageSize: this.pageSize(),
       })
@@ -82,17 +64,6 @@ export class AdminTransactionsComponent implements OnInit {
           this.isLoading.set(false);
         },
       });
-  }
-
-  search(): void {
-    this.currentPage.set(1);
-    this.load();
-  }
-
-  clearFilters(): void {
-    this.transactionId.set('');
-    this.currentPage.set(1);
-    this.load();
   }
 
   onPageChange(page: number): void {

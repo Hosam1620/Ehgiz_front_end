@@ -194,10 +194,9 @@ export function walletTransactionTypeClass(type: string): string {
   return TRANSACTION_TYPE_CLASSES[type] ?? 'chip-gray';
 }
 
-// ── Transaction search/rollback ───────────────────────
+// ── Transaction list/rollback ─────────────────────────
 
 export interface AdminTransactionQuery {
-  transactionId?: number;
   page?: number;
   pageSize?: number;
 }
