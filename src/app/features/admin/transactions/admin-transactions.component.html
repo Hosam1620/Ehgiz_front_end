@@ -1,6 +1,40 @@
-<div style="margin-bottom:24px;">
+<div style="margin-bottom:16px;">
   <h2 style="font-size:22px;margin-bottom:4px;">Wallet transactions</h2>
   <p style="font-size:13px;color:var(--text-2);">All platform wallet movements, newest first</p>
+</div>
+
+<!-- Filter bar -->
+<div class="card-elevated" style="padding:16px;margin-bottom:16px;">
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="flex:1;min-width:220px;">
+      <label class="form-label">Email</label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Search by user email…"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        (keyup.enter)="search()"
+      />
+    </div>
+
+    <div style="min-width:170px;">
+      <label class="form-label">Type</label>
+      <select class="form-input form-select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event); search()">
+        <option value="">All types</option>
+        @for (t of transactionTypes; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button type="button" class="btn btn-primary btn-sm" (click)="search()">
+        <i class="fas fa-search"></i> Search
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilters()">Clear</button>
+    </div>
+  </div>
 </div>
 
 @if (isLoading()) {
@@ -19,6 +53,7 @@
           <th>Description</th>
           <th>Reference</th>
           <th>Date</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -33,9 +68,66 @@
             </td>
             <td style="font-size:11px;color:var(--text-3);font-family:monospace;">{{ tx.reference ?? '—' }}</td>
             <td style="font-size:12px;color:var(--text-3);">{{ tx.createdAt | date:'medium' }}</td>
+            <td>
+              @if (isReversible(tx.type)) {
+                <button type="button" class="btn btn-danger btn-sm" (click)="openRollback(tx)">
+                  <i class="fas fa-rotate-left"></i> Rollback
+                </button>
+              } @else {
+                <button type="button" class="btn btn-secondary btn-sm" disabled title="This transaction type cannot be reversed">
+                  <i class="fas fa-rotate-left"></i> Rollback
+                </button>
+              }
+            </td>
           </tr>
         }
       </tbody>
     </table>
+  </div>
+
+  <div style="margin-top:16px;">
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [totalItems]="totalCount()"
+      [pageSize]="pageSize()"
+      (pageChange)="onPageChange($event)"
+    />
+  </div>
+}
+
+@if (rollbackTarget(); as tx) {
+  <div class="modal-overlay" (click)="cancelRollback()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Rollback transaction #{{ tx.id }}</h3>
+        <button type="button" class="modal-close" (click)="cancelRollback()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:16px;">
+          This will reverse <strong>{{ tx.amount | number:'1.2-2' }} EGP</strong> (<span class="chip" [ngClass]="typeClass(tx.type)">{{ tx.type }}</span>)
+          for <strong>{{ tx.userFullName }}</strong>. A new Admin Reversal entry will be created for both wallets involved. This cannot be undone.
+        </p>
+        <label class="form-label">Reason (required)</label>
+        <textarea
+          class="form-input"
+          rows="3"
+          placeholder="Why is this transaction being rolled back?"
+          [ngModel]="rollbackReason()"
+          (ngModelChange)="rollbackReason.set($event)"
+        ></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelRollback()">Cancel</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="isRollingBack() || !rollbackReason().trim()"
+          (click)="confirmRollback()"
+        >
+          @if (isRollingBack()) { Rolling back... } @else { Confirm rollback }
+        </button>
+      </div>
+    </div>
   </div>
 }

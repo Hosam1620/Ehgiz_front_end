@@ -8,15 +8,18 @@ import {
   AdminCategory,
   AdminDashboardStats,
   AdminListing,
+  AdminTransactionPagedResult,
+  AdminTransactionQuery,
   AdminUser,
   AdminWallet,
-  AdminWalletTransaction,
   CreateCategoryRequest,
   DisputeDetails,
   IssueReport,
   PartialRefundRequest,
   PlatformFeeResponse,
   ResolveDisputeRequest,
+  RollbackTransactionRequest,
+  RollbackTransactionResponse,
   SetListingAvailabilityRequest,
   SetUserActiveRequest,
   SetUserRoleRequest,
@@ -181,9 +184,19 @@ export class AdminService {
       .pipe(map(r => r.data ?? []));
   }
 
-  getAllTransactions(): Observable<AdminWalletTransaction[]> {
+  getAllTransactions(query: AdminTransactionQuery = {}): Observable<AdminTransactionPagedResult> {
+    const params: Record<string, string> = {};
+    if (query.email) params['email'] = query.email;
+    if (query.type) params['type'] = query.type;
+    params['page'] = String(query.page ?? 1);
+    params['pageSize'] = String(query.pageSize ?? 20);
+
     return this.http
-      .get<ApiResponse<AdminWalletTransaction[]>>(`${this.base}/transactions`)
-      .pipe(map(r => r.data ?? []));
+      .get<ApiResponse<AdminTransactionPagedResult>>(`${this.base}/transactions`, { params })
+      .pipe(map(r => r.data ?? { items: [], pageNumber: 1, pageSize: query.pageSize ?? 20, totalCount: 0, totalPages: 0 }));
+  }
+
+  rollbackTransaction(id: number, data: RollbackTransactionRequest): Observable<ApiResponse<RollbackTransactionResponse>> {
+    return this.http.post<ApiResponse<RollbackTransactionResponse>>(`${this.base}/transactions/${id}/rollback`, data);
   }
 }
