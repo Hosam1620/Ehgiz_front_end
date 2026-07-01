@@ -14,7 +14,7 @@
         placeholder="Search by transaction ID…"
         min="1"
         [ngModel]="transactionId()"
-        (ngModelChange)="transactionId.set($event)"
+        (ngModelChange)="onIdInputChange($event)"
         (keyup.enter)="search()"
       />
     </div>
@@ -39,8 +39,8 @@
         <tr>
           <th>ID</th>
           <th>User</th>
-          <th>Type</th>
           <th>Amount</th>
+          <th>Type</th>
           <th>Description</th>
           <th>Reference</th>
           <th>Date</th>
@@ -52,8 +52,8 @@
           <tr>
             <td style="color:var(--text-3);font-size:12px;">#{{ tx.id }}</td>
             <td style="font-size:13px;">{{ tx.userFullName }}</td>
-            <td><span class="chip" [ngClass]="typeClass(tx.type)">{{ tx.type }}</span></td>
             <td style="font-weight:600;">{{ tx.amount | number:'1.2-2' }} EGP</td>
+            <td><span class="chip" [ngClass]="typeClass(tx.type)">{{ tx.type }}</span></td>
             <td style="font-size:12px;color:var(--text-2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
               {{ tx.description ?? '—' }}
             </td>

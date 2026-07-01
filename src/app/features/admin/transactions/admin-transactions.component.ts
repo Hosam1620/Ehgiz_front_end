@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, finalize } from 'rxjs';
 import { AdminService } from '../../../core/services/admin.service';
 import {
   AdminWalletTransaction,
@@ -30,11 +31,11 @@ export class AdminTransactionsComponent implements OnInit {
 
   // Filters
   protected readonly transactionId = signal('');
+  private readonly idInputChanges = new Subject<string>();
 
-  // Pagination — request a large page size so the table shows everything by default;
-  // pagination controls only appear if totalCount actually exceeds this.
+  // Pagination
   protected readonly currentPage = signal(1);
-  protected readonly pageSize = signal(200);
+  protected readonly pageSize = signal(50);
   protected readonly totalCount = signal(0);
   protected readonly totalPages = signal(1);
 
@@ -43,8 +44,19 @@ export class AdminTransactionsComponent implements OnInit {
   protected readonly rollbackReason = signal('');
   protected readonly isRollingBack = signal(false);
 
+  constructor() {
+    this.idInputChanges
+      .pipe(debounceTime(400), distinctUntilChanged(), takeUntilDestroyed())
+      .subscribe(() => this.search());
+  }
+
   ngOnInit(): void {
     this.load();
+  }
+
+  onIdInputChange(value: string): void {
+    this.transactionId.set(value);
+    this.idInputChanges.next(value);
   }
 
   load(): void {
