@@ -33,15 +33,15 @@ export class AuthService {
 
   currentUser = signal<UserProfile | null>(null);
   roles = signal<string[]>([]);
-  isAdmin = computed(() => this.roles().includes('admin'));
-  isUser = computed(() => this.roles().includes('user'));
+  isAdmin = computed(() => this.roles().some(r => r.toLowerCase() === 'admin'));
+  isUser = computed(() => this.roles().some(r => r.toLowerCase() === 'user'));
 
   login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {
     return this.http
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/api/auth/login`, credentials, { withCredentials: true })
       .pipe(tap(res => {
         if (res.succeeded && res.data) {
-          this.setSession(res.data.accessToken, res.data.expiresAt);
+          this.setSession(res.data);
         }
       }));
   }
@@ -69,7 +69,7 @@ export class AuthService {
       tap(res => {
         if (res.succeeded && res.data) {
           this.currentUser.set(res.data);
-          this.roles.set(res.data.roles || []);
+          // Roles are set from login/refresh response; /auth/me does not return them
         }
       })
     );
@@ -80,7 +80,7 @@ export class AuthService {
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
       .pipe(tap(res => {
         if (res.succeeded && res.data) {
-          this.setSession(res.data.accessToken, res.data.expiresAt);
+          this.setSession(res.data);
         }
       }));
   }
@@ -107,8 +107,9 @@ export class AuthService {
     return !!localStorage.getItem(this.SESSION_HINT);
   }
 
-  private setSession(token: string, _expiresAt: string): void {
-    this._token.set(token);
+  private setSession(data: LoginResponse): void {
+    this._token.set(data.accessToken);
+    this.roles.set(data.roles?.length ? data.roles : data.role ? [data.role] : []);
     localStorage.setItem(this.SESSION_HINT, '1');
   }
 }

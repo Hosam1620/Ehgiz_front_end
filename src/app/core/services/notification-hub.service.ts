@@ -38,10 +38,16 @@ export class NotificationHubService implements OnDestroy {
       .configureLogging(LogLevel.Warning)
       .build();
 
-    this.connection.on('ReceiveNotification', (notification: Notification) => {
+    this.connection.on('NewNotification', (notification: Notification) => {
       this.ngZone.run(() => {
         this.notifService.prependNotification(notification);
         this.toastService.show(notification.title, notification.message, 'info');
+      });
+    });
+
+    this.connection.on('ReadStateChanged', () => {
+      this.ngZone.run(() => {
+        this.notifService.loadUnreadCount().subscribe({ error: () => {} });
       });
     });
 

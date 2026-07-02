@@ -33,6 +33,7 @@ export class App {
   readonly unreadCount = this.notifService.unreadCount;
   readonly unreadMessageCount = this.messageService.unreadCount;
   showSidebar = signal(true);
+  isAdminRoute = signal(false);
 
   constructor() {
     effect(() => {
@@ -69,6 +70,11 @@ export class App {
     while (route.firstChild) {
       route = route.firstChild;
     }
-    this.showSidebar.set(route.data['layout'] !== 'full');
+    // On the very first call (before NavigationEnd fires) route.data is empty.
+    // Fall back to window.location so the initial render already has the right layout.
+    const layout: string | undefined =
+      route.data['layout'] ?? (window.location.pathname.startsWith('/admin') ? 'admin' : undefined);
+    this.showSidebar.set(layout !== 'full' && layout !== 'admin');
+    this.isAdminRoute.set(layout === 'admin');
   }
 }

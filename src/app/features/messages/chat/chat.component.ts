@@ -68,9 +68,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.conversationId.set(id);
-    this.loadInitial();
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const id = Number(params.get('id'));
+      this.conversationId.set(id);
+      this.messages.set([]);
+      this.conversation.set(null);
+      this.currentPage = 1;
+      this.hasMore.set(false);
+      this.error.set(null);
+      this.isOtherTyping.set(false);
+      this.loadInitial();
+    });
     this.subscribeToHub();
   }
 

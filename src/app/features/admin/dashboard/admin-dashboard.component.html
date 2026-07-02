@@ -1,0 +1,75 @@
+<div style="margin-bottom:24px;">
+  <h2 style="font-size:22px;margin-bottom:4px;">Dashboard</h2>
+  <p style="font-size:13px;color:var(--text-2);">Platform-wide snapshot</p>
+</div>
+
+@if (isLoading()) {
+  <app-loading-spinner message="Loading stats..." />
+} @else if (error()) {
+  <div class="alert alert-danger">{{ error() }}</div>
+} @else if (stats(); as s) {
+
+  <!-- Users & Listings -->
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;">Users</div>
+  <div class="stat-grid" style="margin-bottom:24px;">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--green-light);color:var(--green);float:right;"><i class="fas fa-users"></i></div>
+      <div class="stat-label">Total users</div>
+      <div class="stat-value">{{ s.totalUsers | number }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--blue-light);color:var(--blue);float:right;"><i class="fas fa-user-check"></i></div>
+      <div class="stat-label">Active users</div>
+      <div class="stat-value">{{ s.activeUsers | number }}</div>
+      <div class="stat-delta">{{ s.totalUsers ? ((s.activeUsers / s.totalUsers) * 100 | number:'1.0-0') + '%' : '—' }} of total</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;">Listings</div>
+  <div class="stat-grid" style="margin-bottom:24px;">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--orange-light);color:var(--orange);float:right;"><i class="fas fa-tools"></i></div>
+      <div class="stat-label">Total listings</div>
+      <div class="stat-value">{{ s.totalListings | number }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--green-light);color:var(--green);float:right;"><i class="fas fa-check-circle"></i></div>
+      <div class="stat-label">Active</div>
+      <div class="stat-value">{{ s.activeListings | number }}</div>
+      <div class="stat-delta">{{ s.totalListings ? ((s.activeListings / s.totalListings) * 100 | number:'1.0-0') + '%' : '—' }} of total</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;">Bookings & Issues</div>
+  <div class="stat-grid" style="margin-bottom:24px;">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--blue-light);color:var(--blue);float:right;"><i class="fas fa-calendar-check"></i></div>
+      <div class="stat-label">Active bookings</div>
+      <div class="stat-value">{{ s.activeBookings | number }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--red-light);color:var(--red);float:right;"><i class="fas fa-gavel"></i></div>
+      <div class="stat-label">Disputed bookings</div>
+      <div class="stat-value" style="color:var(--red);">{{ s.disputedBookings | number }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--amber-light);color:var(--amber);float:right;"><i class="fas fa-flag"></i></div>
+      <div class="stat-label">Open issue reports</div>
+      <div class="stat-value" style="color:var(--amber);">{{ s.openIssueReports | number }}</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;">Revenue</div>
+  <div class="stat-grid" style="margin-bottom:0;">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--green-light);color:var(--green);float:right;"><i class="fas fa-coins"></i></div>
+      <div class="stat-label">Total platform revenue</div>
+      <div class="stat-value stat-value-text">{{ s.totalRevenue | number:'1.0-0' }} <span style="font-size:14px;font-weight:400;color:var(--text-3);">EGP</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:var(--amber-light);color:var(--amber);float:right;"><i class="fas fa-lock"></i></div>
+      <div class="stat-label">Pending escrow</div>
+      <div class="stat-value stat-value-text">{{ s.pendingEscrow | number:'1.0-0' }} <span style="font-size:14px;font-weight:400;color:var(--text-3);">EGP</span></div>
+    </div>
+  </div>
+}

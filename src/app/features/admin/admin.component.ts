@@ -3,25 +3,47 @@ import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AdminService } from '../../core/services/admin.service';
+import { AuthService } from '../../core/services/auth.service';
 import { BookingDetail, BookingStatus, Handover } from '../../core/models/booking.model';
 import { DisputeDetails, IssueReport, IssueReportStatus } from '../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { resolveMediaUrl } from '../../core/utils/media-url';
+import { AdminDashboardComponent } from './dashboard/admin-dashboard.component';
+import { AdminUsersComponent } from './users/admin-users.component';
+import { AdminListingsComponent } from './listings/admin-listings.component';
+import { AdminCategoriesComponent } from './categories/admin-categories.component';
+import { AdminWalletsComponent } from './wallets/admin-wallets.component';
+import { AdminTransactionsComponent } from './transactions/admin-transactions.component';
 
-type AdminTab = 'disputes' | 'issues' | 'settings';
+type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'listings' | 'categories' | 'wallets' | 'transactions';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent],
+  imports: [
+    FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent,
+    AdminDashboardComponent,
+    AdminUsersComponent,
+    AdminListingsComponent,
+    AdminCategoriesComponent,
+    AdminWalletsComponent,
+    AdminTransactionsComponent,
+  ],
   templateUrl: './admin.component.html',
 })
 export class AdminComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
+  protected readonly auth = inject(AuthService);
 
-  protected readonly activeTab = signal<AdminTab>('disputes');
+  protected readonly userInitials = computed(() => {
+    const name = this.auth.currentUser()?.fullName ?? '';
+    return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('') || '?';
+  });
+  protected readonly userName = computed(() => this.auth.currentUser()?.fullName ?? 'Admin');
+
+  protected readonly activeTab = signal<AdminTab>('dashboard');
   protected readonly disputes = signal<BookingDetail[]>([]);
   protected readonly issueReports = signal<IssueReport[]>([]);
   protected readonly selectedDispute = signal<DisputeDetails | null>(null);
@@ -37,16 +59,13 @@ export class AdminComponent implements OnInit {
 
   protected readonly resolveMediaUrl = resolveMediaUrl;
 
+  private feeLoaded = false;
+
   ngOnInit(): void {
+    // Disputes + issues load eagerly — their counts drive the sidebar badges.
     this.loadDisputes();
     this.loadIssueReports();
-    this.adminService.getPlatformFee().subscribe({
-      next: fee => {
-        this.platformFee.set(fee);
-        this.feeInput.set(fee);
-      },
-      error: () => {},
-    });
+    // Platform fee has no sidebar badge; defer to first settings open.
   }
 
   setTab(tab: AdminTab): void {
@@ -54,6 +73,16 @@ export class AdminComponent implements OnInit {
     this.selectedDispute.set(null);
     this.selectedIssue.set(null);
     this.showPartialRefundModal.set(false);
+    if (tab === 'settings' && !this.feeLoaded) {
+      this.feeLoaded = true;
+      this.adminService.getPlatformFee().subscribe({
+        next: fee => {
+          this.platformFee.set(fee);
+          this.feeInput.set(fee);
+        },
+        error: () => {},
+      });
+    }
   }
 
   loadDisputes(): void {
@@ -213,16 +242,14 @@ export class AdminComponent implements OnInit {
   }
 
   readonly openIssuesCount = computed(() =>
-    this.issueReports().filter(r => r.status === 'Open' || r.status === 'InReview').length
+    this.issueReports().filter(r => r.status === 'Open' || r.status === 'UnderReview').length
   );
 
   issueStatusClass(status: IssueReportStatus): string {
     const map: Record<IssueReportStatus, string> = {
-      Open:     'chip-red',
-      InReview: 'chip-amber',
-      Resolved: 'chip-green',
-      Closed:   'chip-gray',
-      Rejected: 'chip-gray',
+      Open:        'chip-red',
+      UnderReview: 'chip-amber',
+      Resolved:    'chip-green',
     };
     return map[status] ?? 'chip-gray';
   }

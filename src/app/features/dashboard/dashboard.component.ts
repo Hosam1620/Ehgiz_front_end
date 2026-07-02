@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { BookingService } from '../../core/services/booking.service';
 import { MessageService } from '../../core/services/message.service';
@@ -14,6 +14,7 @@ import { ToolsService } from '../../core/services/tools.service';
 })
 export class DashboardComponent implements OnInit {
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly bookingService = inject(BookingService);
   private readonly toolsService = inject(ToolsService);
   private readonly messageService = inject(MessageService);
@@ -49,6 +50,11 @@ export class DashboardComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (this.auth.isAdmin()) {
+      this.router.navigate(['/admin'], { replaceUrl: true });
+      return;
+    }
+
     this.toolsService.getMyTools().subscribe({
       next: tools => this.toolsListedCount.set(tools.length),
       error: () => {

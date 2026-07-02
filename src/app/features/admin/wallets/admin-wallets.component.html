@@ -1,0 +1,39 @@
+<div style="margin-bottom:24px;">
+  <h2 style="font-size:22px;margin-bottom:4px;">Wallets</h2>
+  <p style="font-size:13px;color:var(--text-2);">User wallet balances across the platform</p>
+</div>
+
+@if (isLoading()) {
+  <app-loading-spinner message="Loading wallets..." />
+} @else if (!wallets().length) {
+  <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">No wallets found.</div>
+} @else {
+  <div class="card-elevated" style="padding:0;overflow:hidden;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Email</th>
+          <th>Balance</th>
+          <th>Held</th>
+          <th>Available</th>
+          <th>Last updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (w of wallets(); track w.id) {
+          <tr>
+            <td style="color:var(--text-3);font-size:12px;">#{{ w.id }}</td>
+            <td style="font-weight:600;">{{ w.userFullName }}</td>
+            <td style="font-size:12px;color:var(--text-2);">{{ w.userEmail }}</td>
+            <td style="font-weight:600;">{{ w.balance | number:'1.2-2' }} EGP</td>
+            <td style="color:var(--orange-dark, #c05a00);">{{ w.heldBalance | number:'1.2-2' }} EGP</td>
+            <td style="color:var(--green-dark, #1a7a3f);font-weight:600;">{{ (w.balance - w.heldBalance) | number:'1.2-2' }} EGP</td>
+            <td style="font-size:12px;color:var(--text-3);">{{ w.updatedAt | date:'medium' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
