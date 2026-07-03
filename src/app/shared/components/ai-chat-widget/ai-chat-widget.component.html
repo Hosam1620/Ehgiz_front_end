@@ -1,7 +1,7 @@
 <!-- Floating Action Button -->
-<button 
-  class="ai-chat-fab" 
-  [class.open]="chatState.isOpen()" 
+<button
+  class="ai-chat-fab"
+  [class.open]="chatState.isOpen()"
   (click)="toggleChat()"
   aria-label="Toggle AI Assistant"
 >
@@ -14,24 +14,45 @@
 
 <!-- Chat Drawer / Panel -->
 @if (chatState.isOpen()) {
-  <div class="ai-chat-panel">
+  <div class="ai-chat-panel" role="dialog" aria-label="Ehgiz AI Assistant">
     <div class="ai-chat-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="ai-chat-avatar"><i class="fas fa-robot"></i></div>
         <div>
           <div style="font-weight:700;font-size:14px;">Ehgiz Assistant</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.7);">Tool recommendations</div>
+          <div class="ai-chat-status"><span class="ai-chat-status-dot"></span> Online · Tool recommendations</div>
         </div>
       </div>
-      <button class="ai-chat-close" (click)="closeChat()"><i class="fas fa-times"></i></button>
+      <div class="ai-chat-header-actions">
+        <button
+          class="ai-chat-icon-btn"
+          type="button"
+          (click)="clearChat()"
+          [disabled]="chatState.messages().length === 0"
+          aria-label="Start a new conversation"
+          title="New conversation"
+        >
+          <i class="fas fa-rotate-left"></i>
+        </button>
+        <button class="ai-chat-icon-btn" type="button" (click)="closeChat()" aria-label="Close chat">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
     </div>
 
-    <div class="ai-chat-body" #chatScrollContainer>
+    <div class="ai-chat-body" #chatScrollContainer aria-live="polite">
       @if (chatState.messages().length === 0) {
         <div class="ai-chat-empty">
           <div style="font-size:32px;margin-bottom:12px;color:var(--green);"><i class="fas fa-tools"></i></div>
           <h4 style="margin:0 0 8px;font-size:15px;color:var(--text);">How can I help you build?</h4>
-          <p style="margin:0;font-size:13px;color:var(--text-2);line-height:1.5;">Describe your DIY project or repair problem, and I'll find the right tools for you.</p>
+          <p style="margin:0 0 16px;font-size:13px;color:var(--text-2);line-height:1.5;">Describe your DIY project or repair problem, and I'll find the right tools for you.</p>
+          <div class="ai-chat-suggestions">
+            @for (suggestion of suggestions; track suggestion) {
+              <button type="button" class="ai-chat-suggestion-chip" (click)="sendSuggestion(suggestion)">
+                {{ suggestion }}
+              </button>
+            }
+          </div>
         </div>
       }
 
@@ -40,32 +61,47 @@
           @if (msg.role === 'assistant') {
             <div class="ai-chat-msg-avatar"><i class="fas fa-robot"></i></div>
           }
-          
-          <div class="ai-chat-msg-content">
-            @if (msg.loading) {
-              <div class="ai-chat-loading-dots">
-                <span></span><span></span><span></span>
-              </div>
-            } @else if (msg.error) {
-              <div style="color:var(--red);"><i class="fas fa-exclamation-circle"></i> {{ msg.error }}</div>
-            } @else {
-              <p style="margin:0;white-space:pre-wrap;">{{ msg.content }}</p>
-              
-              @if (msg.recommendedTools && msg.recommendedTools.length > 0) {
-                <div class="ai-chat-tools">
-                  <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;letter-spacing:0.5px;">Recommended Tools</div>
-                  <ul style="margin:0;padding-left:16px;list-style:disc;font-size:13px;">
-                    @for (tool of msg.recommendedTools; track tool.id) {
-                      <li style="margin-bottom:4px;">
-                        <a [routerLink]="['/tools', tool.id]" class="ai-chat-tool-link" style="color:var(--green);text-decoration:none;font-weight:600;">
-                          {{ tool.name }}
-                        </a>
-                        <span style="color:var(--text-2);"> — {{ tool.pricePerDay }} EGP/day</span>
-                      </li>
-                    }
-                  </ul>
+
+          <div class="ai-chat-msg-col">
+            <div class="ai-chat-msg-content">
+              @if (msg.loading) {
+                <div class="ai-chat-loading-dots" aria-label="Assistant is typing">
+                  <span></span><span></span><span></span>
                 </div>
+              } @else if (msg.error) {
+                <div class="ai-chat-msg-error"><i class="fas fa-exclamation-circle"></i> {{ msg.error }}</div>
+              } @else {
+                <div class="ai-chat-msg-text" [innerHTML]="msg.content | chatMarkdown"></div>
+
+                @if (msg.recommendedTools && msg.recommendedTools.length > 0) {
+                  <div class="ai-chat-tools">
+                    <div class="ai-chat-tools-label">Recommended Tools</div>
+                    <div class="ai-chat-tools-row">
+                      @for (tool of msg.recommendedTools; track tool.id) {
+                        <a [routerLink]="['/tools', tool.id]" class="ai-chat-tool-card">
+                          <div class="ai-chat-tool-thumb">
+                            @if (tool.imageUrls && tool.imageUrls.length > 0) {
+                              <img [src]="tool.imageUrls[0]" [alt]="tool.name" (error)="onToolImageError($event)" />
+                            } @else {
+                              <i class="fas fa-toolbox"></i>
+                            }
+                          </div>
+                          <div class="ai-chat-tool-info">
+                            <div class="ai-chat-tool-name">{{ tool.name }}</div>
+                            <div class="ai-chat-tool-price">{{ tool.pricePerDay | number }} EGP/day</div>
+                            @if (tool.location) {
+                              <div class="ai-chat-tool-location"><i class="fas fa-location-dot"></i> {{ tool.location }}</div>
+                            }
+                          </div>
+                        </a>
+                      }
+                    </div>
+                  </div>
+                }
               }
+            </div>
+            @if (!msg.loading) {
+              <div class="ai-chat-msg-time">{{ msg.timestamp | date:'shortTime' }}</div>
             }
           </div>
         </div>
@@ -73,28 +109,28 @@
     </div>
 
     <div class="ai-chat-footer">
-      <div style="font-size:10px;text-align:center;color:var(--text-3);margin-bottom:6px;">
-        Each message is a new question. History is not saved.
-      </div>
       <div class="ai-chat-input-row">
-        <textarea 
-          class="ai-chat-input" 
-          placeholder="I need to fix a loose screw..." 
+        <textarea
+          class="ai-chat-input"
+          placeholder="I need to fix a loose screw..."
           [(ngModel)]="inputValue"
           (keydown)="onKeyDown($event)"
           [disabled]="chatState.isWaiting()"
           rows="1"
         ></textarea>
-        <button 
-          class="ai-chat-send" 
+        <button
+          class="ai-chat-send"
           (click)="sendMessage()"
           [disabled]="inputValue.trim().length < 5 || chatState.isWaiting()"
+          aria-label="Send message"
         >
           <i class="fas fa-paper-plane"></i>
         </button>
       </div>
       @if (inputValue.trim().length > 0 && inputValue.trim().length < 5) {
-        <div style="font-size:10px;color:var(--orange);margin-top:4px;">Please type at least 5 characters.</div>
+        <div class="ai-chat-hint">Please type at least 5 characters.</div>
+      } @else {
+        <div class="ai-chat-hint">Each message is a new question. History is not saved.</div>
       }
     </div>
   </div>

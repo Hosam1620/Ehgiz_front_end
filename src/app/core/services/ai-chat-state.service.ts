@@ -36,6 +36,10 @@ export class AiChatStateService {
     this.isOpen.set(false);
   }
 
+  clearChat(): void {
+    this.messages.set([]);
+  }
+
   sendMessage(content: string): void {
     if (!content.trim() || content.trim().length < 5) return;
     
