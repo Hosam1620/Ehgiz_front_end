@@ -56,6 +56,22 @@ export interface UploadToolImagesResponse {
   imageUrls: string[];
 }
 
+export interface ToolSuggestionResponse {
+  name: string;
+  description: string;
+  condition: ToolConditionValue;
+  categoryId: number;
+  categoryName?: string | null;
+}
+
+export interface PhotoSearchResult {
+  identifiedObject: string;
+  brand?: string | null;
+  model?: string | null;
+  searchKeywords: string[];
+  matchingTools: ToolPagedResult;
+}
+
 export interface CategoryOption {
   id: number;
   name: string;

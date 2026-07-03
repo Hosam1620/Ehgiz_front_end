@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
 
@@ -13,7 +14,7 @@ export const routes: Routes = [
   { path: 'verify-email', loadComponent: () => import('./features/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent), canActivate: [guestGuard] },
 
   // Admin
-  { path: 'admin', loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent), canActivate: [authGuard, () => import('./core/guards/admin.guard').then(m => m.adminGuard)], data: { layout: 'admin' } },
+  { path: 'admin', loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent), canActivate: [authGuard, adminGuard], data: { layout: 'admin' } },
 
   // Dashboard & Profile
   { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard] },
@@ -54,7 +55,7 @@ export const routes: Routes = [
   // AI Features
   { path: 'ai/classification', loadComponent: () => import('./features/ai/classification/classification.component').then(m => m.ClassificationComponent),  canActivate: [authGuard] },
   { path: 'ai/image-analysis', loadComponent: () => import('./features/ai/image-analysis/image-analysis.component').then(m => m.ImageAnalysisComponent),  canActivate: [authGuard] },
-  { path: 'ai/image-search',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        canActivate: [authGuard] },
+  { path: 'ai/image-search',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        data: { layout: 'full' } },
   { path: 'ai/rag-search',     loadComponent: () => import('./features/ai/rag-search/rag-search.component').then(m => m.RagSearchComponent),              canActivate: [authGuard] },
 
   // Static pages

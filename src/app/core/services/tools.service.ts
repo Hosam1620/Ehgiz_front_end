@@ -6,6 +6,8 @@ import {
   Tool,
   ToolFilterParams,
   ToolPagedResult,
+  ToolSuggestionResponse,
+  PhotoSearchResult,
   UpdateToolRequest,
   UploadToolImagesResponse,
 } from '../models/tool.model';
@@ -44,6 +46,21 @@ export class ToolsService {
     const formData = new FormData();
     files.forEach(file => formData.append('images', file));
     return this.http.post<UploadToolImagesResponse>(`${this.base}/${id}/images`, formData);
+  }
+
+  suggestFromImages(files: File[]): Observable<ToolSuggestionResponse> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    return this.http.post<ToolSuggestionResponse>(`${this.base}/suggest-from-images`, formData);
+  }
+
+  searchByPhoto(files: File[], page = 1, pageSize = 10): Observable<PhotoSearchResult> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    const params = new HttpParams()
+      .set('page', page)
+      .set('pageSize', pageSize);
+    return this.http.post<PhotoSearchResult>(`${this.base}/search-by-photo`, formData, { params });
   }
 
   deleteImage(imageId: number): Observable<void> {

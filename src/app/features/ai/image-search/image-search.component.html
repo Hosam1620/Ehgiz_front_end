@@ -1,0 +1,132 @@
+<div style="max-width:960px;margin:0 auto;padding:32px 24px 48px;">
+  <div style="margin-bottom:28px;">
+    <h1 style="font-size:28px;margin-bottom:8px;">Search by Photo</h1>
+    <p style="font-size:14px;color:var(--text-2);max-width:560px;">
+      Upload a photo of a tool and AI will identify it and find matching rentals on Ehgiz.
+    </p>
+  </div>
+
+  <div class="edit-section-card" style="margin-bottom:24px;">
+    <div class="edit-section-header">
+      <div class="edit-section-title"><i class="fas fa-camera"></i> Upload photo</div>
+    </div>
+    <div class="edit-section-body">
+      @if (previewUrls().length) {
+        <div class="photo-grid" style="margin-bottom:16px;">
+          @for (url of previewUrls(); track url; let i = $index) {
+            <div class="photo-slot">
+              <img [src]="url" alt="Search photo preview" />
+              <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                style="position:absolute;top:6px;right:6px;"
+                (click)="removeImage(i)"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <label class="photo-drop">
+        <input type="file" accept="image/*" multiple hidden (change)="onFilesSelected($event)" />
+        <div><i class="fas fa-cloud-upload-alt" style="font-size:24px;margin-bottom:8px;"></i></div>
+        <div style="font-size:13px;font-weight:600;">Drag a photo here or click to upload</div>
+        <div style="font-size:11px;margin-top:4px;">JPG, PNG, WEBP, GIF · max 5 MB each</div>
+      </label>
+
+      @if (fileError()) {
+        <div class="invalid-feedback" style="display:block;margin-top:6px;">{{ fileError() }}</div>
+      }
+
+      <div style="margin-top:16px;">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onSearch()"
+          [disabled]="!selectedFiles().length || isSearching()"
+        >
+          @if (isSearching()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="fas fa-search"></i>
+          }
+          Search matching tools
+        </button>
+      </div>
+
+      @if (searchError()) {
+        <div class="alert alert-danger" style="margin-top:12px;font-size:13px;">{{ searchError() }}</div>
+      }
+    </div>
+  </div>
+
+  @if (isSearching()) {
+    <app-loading-spinner message="Analyzing photo and searching tools..." />
+  } @else if (result()) {
+    <div class="card" style="padding:20px;margin-bottom:24px;background:var(--green-light);border:1px solid #B8DEC9;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <i class="fas fa-robot" style="color:var(--green);font-size:18px;margin-top:2px;"></i>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:600;color:var(--green-dark);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">
+            AI identified
+          </div>
+          <div style="font-size:18px;font-weight:700;color:var(--green-dark);margin-bottom:6px;">
+            {{ result()!.identifiedObject }}
+          </div>
+          @if (result()!.brand || result()!.model) {
+            <div style="font-size:13px;color:var(--text-2);margin-bottom:10px;">
+              @if (result()!.brand) { <span>{{ result()!.brand }}</span> }
+              @if (result()!.brand && result()!.model) { <span> · </span> }
+              @if (result()!.model) { <span>{{ result()!.model }}</span> }
+            </div>
+          }
+          @if (result()!.searchKeywords.length) {
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              @for (keyword of result()!.searchKeywords; track keyword) {
+                <span class="chip chip-ai">{{ keyword }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (!matchingTools().length) {
+      <div class="card text-center" style="padding:48px 24px;">
+        <div style="font-size:40px;margin-bottom:12px;">🔍</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">No matching tools found</h3>
+        <p style="font-size:13px;color:var(--text-2);">
+          We identified your photo, but no available listings matched those keywords yet.
+        </p>
+        <a routerLink="/browse" class="btn btn-secondary btn-sm" style="margin-top:16px;">
+          Browse all tools
+        </a>
+      </div>
+    } @else {
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 style="font-size:16px;margin:0;">Matching tools</h2>
+        <span style="font-size:12px;color:var(--text-3);">{{ totalCount() }} found</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        @for (tool of matchingTools(); track tool.id) {
+          <app-tool-card [tool]="tool" [showAiMatch]="true" />
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <div style="margin-top:28px;">
+          <app-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages()"
+            [totalItems]="totalCount()"
+            [pageSize]="pageSize()"
+            (pageChange)="onPageChange($event)"
+          />
+        </div>
+      }
+    }
+  }
+</div>

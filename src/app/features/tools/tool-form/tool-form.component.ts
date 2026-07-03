@@ -8,6 +8,8 @@ import {
   UpdateToolRequest,
 } from '../../../core/models/tool.model';
 import { BrowseService } from '../browse.service';
+import { ToolsService } from '../../../core/services/tools.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const CONDITION_OPTIONS: { label: ToolCondition; value: ToolConditionValue }[] = [
   { label: 'New', value: 1 },
@@ -29,6 +31,7 @@ export interface ToolFormSubmitPayload {
 export class ToolFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly browseService = inject(BrowseService);
+  private readonly toolsService = inject(ToolsService);
 
   tool = input<Tool | null>(null);
   isSubmitting = input<boolean>(false);
@@ -43,6 +46,9 @@ export class ToolFormComponent implements OnInit {
   protected readonly existingImages = signal<string[]>([]);
   protected readonly previewUrls = signal<string[]>([]);
   protected readonly fileError = signal<string | null>(null);
+  protected readonly isAnalyzing = signal(false);
+  protected readonly suggestionError = signal<string | null>(null);
+  protected readonly suggestionSuccess = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -96,6 +102,44 @@ export class ToolFormComponent implements OnInit {
   removeNewImage(index: number): void {
     this.selectedFiles.update(files => files.filter((_, i) => i !== index));
     this.previewUrls.update(urls => urls.filter((_, i) => i !== index));
+  }
+
+  onAnalyzeImages(): void {
+    const files = this.selectedFiles();
+    if (!files.length || this.isAnalyzing()) {
+      return;
+    }
+
+    this.isAnalyzing.set(true);
+    this.suggestionError.set(null);
+    this.suggestionSuccess.set(null);
+
+    this.toolsService.suggestFromImages(files).subscribe({
+      next: suggestion => {
+        this.form.patchValue({
+          name: suggestion.name,
+          description: suggestion.description,
+          condition: String(suggestion.condition),
+          categoryId: String(suggestion.categoryId),
+        });
+        this.form.controls.name.markAsTouched();
+        this.form.controls.description.markAsTouched();
+        this.form.controls.categoryId.markAsTouched();
+        this.form.controls.condition.markAsTouched();
+        this.suggestionSuccess.set(
+          suggestion.categoryName
+            ? `Suggestions applied (${suggestion.categoryName}). Review and adjust before publishing.`
+            : 'Suggestions applied. Review and adjust before publishing.'
+        );
+        this.isAnalyzing.set(false);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.suggestionError.set(
+          err.error?.message ?? err.error?.title ?? 'Failed to analyze images. Please try again.'
+        );
+        this.isAnalyzing.set(false);
+      },
+    });
   }
 
   onSubmit(): void {
