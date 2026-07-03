@@ -1,14 +1,13 @@
-import { Component, inject, ElementRef, ViewChild, AfterViewChecked, computed } from '@angular/core';
+import { Component, inject, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AiChatStateService } from '../../../core/services/ai-chat-state.service';
-import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-ai-chat-widget',
   standalone: true,
-  imports: [FormsModule, DatePipe, NgClass, RouterLink, LoadingSpinnerComponent],
+  imports: [FormsModule, NgClass, RouterLink],
   templateUrl: './ai-chat-widget.component.html',
 })
 export class AiChatWidgetComponent implements AfterViewChecked {
