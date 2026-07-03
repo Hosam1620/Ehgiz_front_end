@@ -4,7 +4,16 @@
       "Bash(netstat -ano)",
       "Bash(npx ng *)",
       "Bash(npx tsc *)",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(git fetch *)",
+      "Bash(git merge *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ],
+    "additionalDirectories": [
+      "D:\\github\\Ehgiz_front_end\\.claude"
     ]
   }
 }
