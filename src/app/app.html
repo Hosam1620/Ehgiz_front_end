@@ -94,3 +94,7 @@
     <app-toast-container />
   </div>
 }
+
+@if (auth.isLoggedIn()) {
+  <app-ai-chat-widget />
+}

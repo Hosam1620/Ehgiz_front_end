@@ -10,11 +10,12 @@ import { MessageService } from './core/services/message.service';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
 import { ToastContainerComponent } from './shared/components/toast/toast.component';
+import { AiChatWidgetComponent } from './shared/components/ai-chat-widget/ai-chat-widget.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer, ToastContainerComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer, ToastContainerComponent, AiChatWidgetComponent],
   templateUrl: './app.html',
 })
 export class App {

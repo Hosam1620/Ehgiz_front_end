@@ -97,13 +97,32 @@ export class ToolDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (!id) {
-      this.error.set('Invalid tool id.');
-      this.isLoading.set(false);
-      return;
-    }
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      if (!id) {
+        this.error.set('Invalid tool id.');
+        this.isLoading.set(false);
+        return;
+      }
 
+      this.resetState();
+      this.loadTool(id);
+    });
+  }
+
+  private resetState(): void {
+    this.tool.set(null);
+    this.error.set(null);
+    this.isLoading.set(true);
+    this.selectedImageIndex.set(0);
+    this.failedImages.set(new Set());
+    this.selectedStart.set(null);
+    this.selectedEnd.set(null);
+    this.reviews.set([]);
+    this.availability.set(null);
+  }
+
+  private loadTool(id: number): void {
     this.toolsService.getById(id).subscribe({
       next: tool => {
         this.tool.set(tool);
