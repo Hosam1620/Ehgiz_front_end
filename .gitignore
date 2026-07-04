@@ -29,6 +29,11 @@ yarn-error.log
 !.vscode/mcp.json
 .history/*
 
+# AI assistant tooling (local only, never upload)
+.claude/
+.codex/
+.agents/
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/
