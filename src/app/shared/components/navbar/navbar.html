@@ -4,6 +4,17 @@
     <span class="nav-logo-text">Ehgiz</span>
   </a>
 
+  <form class="nav-search" role="search" (submit)="$event.preventDefault(); onSearch(searchInput.value)">
+    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+    <input
+      #searchInput
+      type="search"
+      placeholder="Search tools, brands…"
+      aria-label="Search tools"
+      autocomplete="off"
+    />
+  </form>
+
   <div class="nav-links">
     <a class="nav-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Home</a>
     <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
@@ -89,5 +100,44 @@
       <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
       <a class="nav-btn-primary" routerLink="/register">Sign Up</a>
     }
+
+    <button
+      type="button"
+      class="nav-icon-btn nav-menu-btn"
+      (click)="toggleMobileMenu()"
+      aria-label="Open navigation menu"
+      aria-controls="mobile-nav-menu"
+      [attr.aria-expanded]="mobileMenuOpen()"
+    >
+      <i [class]="mobileMenuOpen() ? 'fas fa-xmark' : 'fas fa-bars'"></i>
+    </button>
   </div>
+
+  @if (mobileMenuOpen()) {
+    <div class="nav-mobile-menu" id="mobile-nav-menu">
+      <a class="nav-mobile-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileMenu()">
+        <i class="fas fa-home"></i> Home
+      </a>
+      <a class="nav-mobile-link" routerLink="/browse" routerLinkActive="active" (click)="closeMobileMenu()">
+        <i class="fas fa-search"></i> Browse tools
+      </a>
+      @if (isLoggedIn()) {
+        <a class="nav-mobile-link" routerLink="/dashboard" routerLinkActive="active" (click)="closeMobileMenu()">
+          <i class="fas fa-th-large"></i> Dashboard
+        </a>
+        @if (auth.isAdmin()) {
+          <a class="nav-mobile-link" routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">
+            <i class="fas fa-shield-alt"></i> Admin
+          </a>
+        }
+      } @else {
+        <a class="nav-mobile-link" routerLink="/how-it-works" routerLinkActive="active" (click)="closeMobileMenu()">
+          <i class="fas fa-circle-question"></i> How it works
+        </a>
+        <a class="nav-mobile-link" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">
+          <i class="fas fa-right-to-bracket"></i> Login
+        </a>
+      }
+    </div>
+  }
 </nav>

@@ -1,12 +1,12 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CategoryOption, Tool } from '../../../core/models/tool.model';
 import { BrowseService } from '../browse.service';
 import { BrowseFilterStore } from '../browse-filter.store';
 import { FilterPanelComponent } from '../filter-panel/filter-panel.component';
 import { ToolCardComponent } from '../../../shared/components/tool-card/tool-card.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
-import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 type SortBy = 'default' | 'price-asc' | 'price-desc';
 
@@ -17,13 +17,16 @@ type SortBy = 'default' | 'price-asc' | 'price-desc';
     FilterPanelComponent,
     ToolCardComponent,
     PaginationComponent,
-    LoadingSpinnerComponent,
   ],
   templateUrl: './browse-page.component.html',
 })
 export class BrowsePageComponent implements OnInit {
   private readonly browseService = inject(BrowseService);
   private readonly filterStore = inject(BrowseFilterStore);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
+
+  protected readonly skeletonSlots = Array.from({ length: 8 }, (_, i) => i);
 
   protected readonly tools = signal<Tool[]>([]);
   protected readonly isLoading = signal(false);
@@ -50,7 +53,17 @@ export class BrowsePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories();
-    this.loadTools();
+
+    // Fires immediately on load and again whenever the navbar search updates ?search=.
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const search = params.get('search');
+        if (search !== null && search !== this.filterStore.searchTerm()) {
+          this.filterStore.patch({ searchTerm: search, page: 1 });
+        }
+        this.loadTools();
+      });
   }
 
   onFiltersChanged(): void {

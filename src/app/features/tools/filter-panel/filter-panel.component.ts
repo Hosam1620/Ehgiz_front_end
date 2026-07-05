@@ -44,6 +44,16 @@ export class FilterPanelComponent implements OnInit {
         this.form.controls.categoryId.setValue(newValue, { emitEvent: false });
       }
     });
+
+    // Keep the search box in sync when the navbar search patches the store.
+    // Trim-compare so the user's in-progress typing (trailing space) isn't clobbered.
+    effect(() => {
+      const term = this.filterStore.searchTerm();
+      if (this.form.controls.searchTerm.value.trim() !== term) {
+        this.form.controls.searchTerm.setValue(term, { emitEvent: false });
+        this.updateActiveCount();
+      }
+    });
   }
 
   ngOnInit(): void {

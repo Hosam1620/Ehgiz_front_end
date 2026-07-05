@@ -25,6 +25,7 @@
           class="form-input filter-icon-input"
           formControlName="searchTerm"
           placeholder="Tool name, brand…"
+          aria-label="Search tools"
           autocomplete="off"
         />
       </div>
@@ -33,7 +34,7 @@
     <!-- Category -->
     <div class="filter-section">
       <div class="filter-section-title">Category</div>
-      <select class="form-input form-select" formControlName="categoryId">
+      <select class="form-input form-select" formControlName="categoryId" aria-label="Category">
         <option value="">All categories</option>
         @for (category of categories(); track category.id) {
           <option [value]="category.id">{{ category.name }}</option>
@@ -51,6 +52,7 @@
           class="form-input filter-icon-input"
           formControlName="location"
           placeholder="City or area"
+          aria-label="Location"
           autocomplete="off"
         />
       </div>
@@ -64,8 +66,9 @@
       </div>
       <div class="filter-price-row">
         <div class="filter-price-col">
-          <label class="filter-price-label">Min</label>
+          <label class="filter-price-label" for="filter-price-min">Min</label>
           <input
+            id="filter-price-min"
             type="number"
             class="form-input"
             formControlName="minPrice"
@@ -75,8 +78,9 @@
         </div>
         <span class="filter-price-sep">—</span>
         <div class="filter-price-col">
-          <label class="filter-price-label">Max</label>
+          <label class="filter-price-label" for="filter-price-max">Max</label>
           <input
+            id="filter-price-max"
             type="number"
             class="form-input"
             formControlName="maxPrice"
@@ -90,7 +94,7 @@
     <!-- Condition -->
     <div class="filter-section">
       <div class="filter-section-title">Condition</div>
-      <select class="form-input form-select" formControlName="condition">
+      <select class="form-input form-select" formControlName="condition" aria-label="Condition">
         <option value="">All conditions</option>
         @for (option of conditionOptions; track option.name) {
           <option [value]="option.name">{{ option.label }}</option>

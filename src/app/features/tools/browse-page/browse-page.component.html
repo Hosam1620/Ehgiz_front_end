@@ -27,6 +27,7 @@
     <select
       class="form-input form-select"
       style="width:auto;padding:7px 32px 7px 10px;font-size:12px;"
+      aria-label="Sort tools"
       (change)="onSortChange($event)"
     >
       <option value="default">Default order</option>
@@ -54,7 +55,18 @@
     }
 
     @if (isLoading()) {
-      <app-loading-spinner message="Loading tools..." />
+      <div class="tools-grid" aria-busy="true" aria-label="Loading tools">
+        @for (slot of skeletonSlots; track slot) {
+          <div class="tool-card-skeleton">
+            <div class="tool-card-skeleton-img skeleton"></div>
+            <div class="tool-card-skeleton-body">
+              <span class="skeleton" style="width:70%;height:14px;"></span>
+              <span class="skeleton" style="width:45%;height:11px;"></span>
+              <span class="skeleton" style="width:35%;height:14px;margin-top:6px;"></span>
+            </div>
+          </div>
+        }
+      </div>
     } @else if (!sortedTools().length) {
       <div class="card text-center" style="padding:48px 24px;">
         <div style="font-size:40px;margin-bottom:12px;">🔍</div>
@@ -65,7 +77,7 @@
         </button>
       </div>
     } @else {
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div class="tools-grid">
         @for (tool of sortedTools(); track tool.id) {
           <app-tool-card [tool]="tool" [showAiMatch]="$first" />
         }

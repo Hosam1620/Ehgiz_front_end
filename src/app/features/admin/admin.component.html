@@ -352,7 +352,7 @@
 
 @if (showPartialRefundModal()) {
   <div class="modal-overlay" (click)="closePartialRefundModal()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-dialog" appFocusTrap role="dialog" aria-modal="true" aria-label="Partial refund" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Partial refund</h3>
         <button type="button" class="modal-close" (click)="closePartialRefundModal()" aria-label="Close">×</button>
@@ -368,6 +368,7 @@
             min="1"
             max="99"
             step="1"
+            aria-label="Refund percentage"
             [ngModel]="partialRefundPercent()"
             (ngModelChange)="partialRefundPercent.set($event)"
             style="flex:1;"
@@ -378,6 +379,7 @@
             min="1"
             max="99"
             style="width:80px;"
+            aria-label="Refund percentage"
             [ngModel]="partialRefundPercent()"
             (ngModelChange)="partialRefundPercent.set($event)"
           />

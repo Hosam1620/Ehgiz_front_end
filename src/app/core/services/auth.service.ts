@@ -74,6 +74,16 @@ export class AuthService {
     return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/verify-email`, { email, code });
   }
 
+  /** Sends a 6-digit reset code to the email if an account exists.
+   *  The backend must return 200 regardless, to prevent account enumeration. */
+  forgotPassword(email: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/forgot-password`, { email });
+  }
+
+  resetPassword(email: string, code: string, newPassword: string): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/reset-password`, { email, code, newPassword });
+  }
+
   resendVerification(email: string): Observable<ApiResponse<null>> {
     return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/resend-verification`, { email });
   }

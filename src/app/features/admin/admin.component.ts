@@ -17,6 +17,7 @@ import { AdminListingsComponent } from './listings/admin-listings.component';
 import { AdminCategoriesComponent } from './categories/admin-categories.component';
 import { AdminWalletsComponent } from './wallets/admin-wallets.component';
 import { AdminTransactionsComponent } from './transactions/admin-transactions.component';
+import { FocusTrapDirective } from '../../shared/directives/focus-trap.directive';
 
 type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'listings' | 'categories' | 'wallets' | 'transactions';
 
@@ -32,6 +33,7 @@ type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'li
     AdminCategoriesComponent,
     AdminWalletsComponent,
     AdminTransactionsComponent,
+    FocusTrapDirective,
   ],
   templateUrl: './admin.component.html',
 })

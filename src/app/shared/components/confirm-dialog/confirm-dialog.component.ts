@@ -1,14 +1,17 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, effect, inject, viewChild } from '@angular/core';
 import { ConfirmService } from './confirm.service';
+import { FocusTrapDirective } from '../../directives/focus-trap.directive';
 
 /** Renders the active ConfirmService dialog. Include once in the root template. */
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
+  imports: [FocusTrapDirective],
   template: `
     @if (confirmService.active(); as dialog) {
       <div class="modal-overlay" (click)="confirmService.settle(false)">
         <div
+          appFocusTrap
           class="modal-dialog confirm-dialog anim-fade"
           role="alertdialog"
           aria-modal="true"
@@ -28,7 +31,7 @@ import { ConfirmService } from './confirm.service';
             <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin:0;">{{ dialog.message }}</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="confirmService.settle(false)">{{ dialog.cancelLabel }}</button>
+            <button #cancelBtn type="button" class="btn btn-secondary" (click)="confirmService.settle(false)">{{ dialog.cancelLabel }}</button>
             <button
               type="button"
               class="btn"
@@ -44,6 +47,17 @@ import { ConfirmService } from './confirm.service';
 })
 export class ConfirmDialogComponent {
   protected readonly confirmService = inject(ConfirmService);
+
+  private readonly cancelBtn = viewChild<ElementRef<HTMLButtonElement>>('cancelBtn');
+
+  constructor() {
+    // Move keyboard focus into the dialog when it opens (safe default: cancel).
+    effect(() => {
+      if (this.confirmService.active()) {
+        setTimeout(() => this.cancelBtn()?.nativeElement.focus());
+      }
+    });
+  }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {

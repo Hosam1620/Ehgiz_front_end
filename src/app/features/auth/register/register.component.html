@@ -47,9 +47,11 @@
 
       <div class="input-row">
         <div class="form-group">
-          <label class="form-label">Full name</label>
+          <label class="form-label" for="reg-fullname">Full name</label>
           <input
+            id="reg-fullname"
             type="text"
+            autocomplete="name"
             class="form-input"
             [class.is-invalid]="registerForm.controls.fullName.invalid && registerForm.controls.fullName.touched"
             formControlName="fullName"
@@ -60,9 +62,11 @@
           }
         </div>
         <div class="form-group">
-          <label class="form-label">City</label>
+          <label class="form-label" for="reg-city">City</label>
           <input
+            id="reg-city"
             type="text"
+            autocomplete="address-level2"
             class="form-input"
             [class.is-invalid]="registerForm.controls.city.invalid && registerForm.controls.city.touched"
             formControlName="city"
@@ -75,9 +79,11 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Email address</label>
+        <label class="form-label" for="reg-email">Email address</label>
         <input
+          id="reg-email"
           type="email"
+          autocomplete="email"
           class="form-input"
           [class.is-invalid]="registerForm.controls.email.invalid && registerForm.controls.email.touched"
           formControlName="email"
@@ -89,9 +95,11 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Phone number</label>
+        <label class="form-label" for="reg-phone">Phone number</label>
         <input
+          id="reg-phone"
           type="tel"
+          autocomplete="tel"
           class="form-input"
           [class.is-invalid]="registerForm.controls.phoneNumber.invalid && registerForm.controls.phoneNumber.touched"
           formControlName="phoneNumber"
@@ -107,9 +115,11 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Password</label>
+        <label class="form-label" for="reg-password">Password</label>
         <input
+          id="reg-password"
           type="password"
+          autocomplete="new-password"
           class="form-input"
           [class.is-invalid]="registerForm.controls.password.invalid && registerForm.controls.password.touched"
           formControlName="password"
@@ -151,9 +161,9 @@
         <input type="checkbox" formControlName="termsAccepted" />
         <span>
           I agree to the
-          <a class="auth-forgot">Terms of Service</a>
+          <a class="auth-forgot" href="/terms" target="_blank" rel="noopener">Terms of Service</a>
           and
-          <a class="auth-forgot">Privacy Policy</a>
+          <a class="auth-forgot" href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>
         </span>
       </div>
       @if (registerForm.controls.termsAccepted.invalid && registerForm.controls.termsAccepted.touched) {

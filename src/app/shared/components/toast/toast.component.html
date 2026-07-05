@@ -1,28 +1,35 @@
-<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999;">
+<div class="toast-stack" aria-live="polite" aria-atomic="false">
   @for (toast of toastService.toasts(); track toast.id) {
     <div
-      class="toast show align-items-center border-0 mb-2 shadow"
-      [class.text-bg-success]="toast.type === 'success'"
-      [class.text-bg-info]="toast.type === 'info'"
-      [class.text-bg-warning]="toast.type === 'warning'"
-      [class.text-bg-danger]="toast.type === 'error'"
-      role="alert"
-      aria-live="assertive"
+      class="app-toast"
+      [class.app-toast--success]="toast.type === 'success'"
+      [class.app-toast--info]="toast.type === 'info'"
+      [class.app-toast--warning]="toast.type === 'warning'"
+      [class.app-toast--error]="toast.type === 'error'"
+      [attr.role]="toast.type === 'error' ? 'alert' : 'status'"
     >
-      <div class="d-flex">
-        <div class="toast-body">
-          <strong>{{ toast.title }}</strong>
-          @if (toast.body) {
-            <div class="small mt-1 opacity-75">{{ toast.body }}</div>
-          }
-        </div>
-        <button
-          type="button"
-          class="btn-close btn-close-white me-2 m-auto"
-          (click)="toastService.dismiss(toast.id)"
-          aria-label="Close"
-        ></button>
+      <i
+        class="app-toast-icon fas"
+        [class.fa-circle-check]="toast.type === 'success'"
+        [class.fa-circle-info]="toast.type === 'info'"
+        [class.fa-triangle-exclamation]="toast.type === 'warning'"
+        [class.fa-circle-exclamation]="toast.type === 'error'"
+        aria-hidden="true"
+      ></i>
+      <div class="app-toast-content">
+        <div class="app-toast-title">{{ toast.title }}</div>
+        @if (toast.body) {
+          <div class="app-toast-body">{{ toast.body }}</div>
+        }
       </div>
+      <button
+        type="button"
+        class="app-toast-close"
+        (click)="toastService.dismiss(toast.id)"
+        aria-label="Dismiss notification"
+      >
+        <i class="fas fa-xmark" aria-hidden="true"></i>
+      </button>
     </div>
   }
 </div>

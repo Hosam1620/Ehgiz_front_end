@@ -4,6 +4,7 @@
   <app-toast-container />
 } @else {
   <div class="app-shell">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <app-navbar
       [isLoggedIn]="auth.isLoggedIn()"
       [userName]="userName()"
@@ -69,22 +70,22 @@
               <div class="sidebar-bottom">
                 <div class="sidebar-divider" style="margin-bottom:12px;"></div>
                 <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
-                <a class="sidebar-item sidebar-item-danger" (click)="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+                <button type="button" class="sidebar-item sidebar-item-danger" (click)="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Sign out</button>
               </div>
 
             </aside>
 
-            <main class="dash-content">
+            <main class="dash-content" id="main-content">
               <router-outlet />
             </main>
           </div>
         } @else {
-          <main class="content-full">
+          <main class="content-full" id="main-content">
             <router-outlet />
           </main>
         }
       } @else {
-        <main class="content-full">
+        <main class="content-full" id="main-content">
           <router-outlet />
         </main>
       }
