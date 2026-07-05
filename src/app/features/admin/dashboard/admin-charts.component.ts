@@ -62,7 +62,7 @@ function monthKey(iso: string): string {
       </div>
       <div class="chart-card">
         <div class="chart-card-title"><i class="fas fa-coins"></i> Revenue over time</div>
-        <div class="chart-card-sub">Booking volume vs owner payouts — the gap approximates platform fees</div>
+        <div class="chart-card-sub">Booking volume vs owner payouts (the gap approximates platform fees)</div>
         <div class="chart-canvas-wrap"><canvas #revenueCanvas></canvas></div>
       </div>
       <div class="chart-card">

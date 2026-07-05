@@ -12,7 +12,7 @@ export class SettingsService {
 
   private feePercent$?: Observable<number>;
 
-  /** GET /api/settings/platform-fee — cached for the session. */
+  /** GET /api/settings/platform-fee (cached for the session). */
   getPlatformFeePercent(): Observable<number> {
     this.feePercent$ ??= this.http
       .get<ApiResponse<PlatformFeeResponse>>(`${environment.apiUrl}/api/settings/platform-fee`)

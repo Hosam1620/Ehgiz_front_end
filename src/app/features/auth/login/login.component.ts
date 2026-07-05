@@ -51,7 +51,7 @@ export class LoginComponent {
         this.isSubmitting = false;
         const msg: string = err.error?.message || '';
 
-        // Unverified account — redirect silently; verify page auto-resends the code
+        // Unverified account: redirect silently, the verify page auto-resends the code
         if (err.status === 401 && msg.toLowerCase().includes('verify your email')) {
           this.authService.pendingVerificationEmail.set(this.loginForm.value.email ?? '');
           this.authService.autoResendOnVerifyPage.set(true);
@@ -59,7 +59,7 @@ export class LoginComponent {
           return;
         }
 
-        // Deactivated account — surface the backend message verbatim instead of
+        // Deactivated account: show the backend message verbatim instead of
         // the generic invalid-credentials text.
         if (err.status === 401 && msg.toLowerCase().includes('deactivated')) {
           this.errorMessage = msg;

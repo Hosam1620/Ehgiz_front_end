@@ -39,7 +39,7 @@
         <i class="fas fa-circle-info"></i>
         <div class="fee-banner-text">
           <div class="fee-banner-line-ar">المنصة هتاخد عمولة {{ feePercent() }}٪ من قيمة الإيجار</div>
-          <div class="fee-banner-line-en">The platform takes a {{ feePercent() }}% commission from the rental price — earnings credited here are net of this fee.</div>
+          <div class="fee-banner-line-en">The platform takes a {{ feePercent() }}% commission from the rental price. Earnings credited here are net of this fee.</div>
         </div>
       </div>
     }
@@ -92,7 +92,7 @@
     <!-- Owner earnings (last 12 months) -->
     <div class="card-elevated" style="padding:20px;margin-bottom:24px;">
       <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-        <h3 style="font-size:14px;font-weight:700;">Earnings — last 12 months</h3>
+        <h3 style="font-size:14px;font-weight:700;">Earnings (last 12 months)</h3>
         <!-- Legend -->
         <div style="display:flex;gap:14px;margin-left:auto;font-size:11px;color:var(--text-2);">
           <span style="display:inline-flex;align-items:center;gap:5px;">
@@ -106,7 +106,7 @@
 
       @if (!hasEarnings()) {
         <div style="padding:28px 0;text-align:center;color:var(--text-3);font-size:13px;">
-          No earnings yet — list a tool and completed rentals will show up here.
+          No earnings yet. List a tool and completed rentals will show up here.
         </div>
       } @else {
         <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">

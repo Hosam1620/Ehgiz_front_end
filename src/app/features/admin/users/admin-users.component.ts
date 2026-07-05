@@ -55,7 +55,7 @@ export class AdminUsersComponent implements OnInit {
   openDetail(user: AdminUser): void {
     this.closeRolePicker();
     this.selectedUser.set(user);
-    // The list DTO has no nationalIdImageUrl — fetch full details for the ID image.
+    // The list DTO has no nationalIdImageUrl, so fetch the full details for the ID image.
     this.adminService.getUserById(user.id).subscribe({
       next: full => {
         if (this.selectedUser()?.id === user.id) this.selectedUser.set(full);

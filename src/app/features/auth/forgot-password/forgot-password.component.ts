@@ -81,7 +81,7 @@ export class ForgotPasswordComponent implements OnDestroy {
     if (this.countdown() > 0 || this.isSubmitting()) return;
     this.auth.forgotPassword(this.requestForm.getRawValue().email).subscribe({
       next: () => this.startCountdown(),
-      error: () => this.startCountdown(), // Generic behavior either way — no enumeration signal.
+      error: () => this.startCountdown(), // Same behavior either way so we don't leak which emails exist.
     });
   }
 

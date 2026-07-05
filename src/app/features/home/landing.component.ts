@@ -37,7 +37,7 @@ export class LandingComponent implements OnInit {
 
   protected readonly steps = [
     { icon: '📋', title: 'List', description: 'Owners photograph their idle tools and publish a listing with price and availability in minutes.' },
-    { icon: '📅', title: 'Book', description: 'Renters pick dates on the calendar and pay securely from their wallet — funds are held in escrow.' },
+    { icon: '📅', title: 'Book', description: 'Renters pick dates on the calendar and pay securely from their wallet. Funds are held in escrow.' },
     { icon: '🤝', title: 'Handover', description: 'Both parties document the handover with photos and notes, so everyone is protected.' },
     { icon: '✅', title: 'Return', description: 'Return the tool, confirm its condition, and the owner gets paid automatically.' },
   ];

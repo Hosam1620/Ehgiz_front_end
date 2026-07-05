@@ -20,10 +20,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  // Lightweight flag: exists when a valid refresh cookie is likely present.
-  // Never stores the actual token — only used to decide whether to attempt
-  // a silent refresh on startup so we don't call /auth/refresh on public pages
-  // for users who have never logged in.
+  // Set on login so we know a refresh cookie probably exists. Never holds the
+  // token itself, it just tells the app initializer whether a silent refresh
+  // is worth attempting (visitors who never logged in skip it).
   private readonly SESSION_HINT = 'ehgiz_session_hint';
 
   private readonly _token = signal<string | null>(null);
@@ -53,7 +52,7 @@ export class AuthService {
   autoResendOnVerifyPage = signal<boolean>(false);
 
   /** Register is multipart/form-data: text fields plus optional profile/national-ID images.
-   *  Content-Type is intentionally not set — the browser adds the multipart boundary. */
+   *  Don't set Content-Type here, the browser adds the multipart boundary itself. */
   register(data: RegisterRequest): Observable<ApiResponse<null>> {
     const formData = new FormData();
     formData.append('fullName', data.fullName);
@@ -154,10 +153,9 @@ export class AuthService {
     this.currentUser.set(null);
     this.roles.set([]);
     localStorage.removeItem(this.SESSION_HINT);
-    // Only redirect after the router has completed its initial navigation.
-    // During startup a failed silent refresh must not bounce visitors from
-    // public pages (e.g. the landing page) to /login — protected routes are
-    // still covered by authGuard on the initial navigation itself.
+    // Only redirect once the router has done its initial navigation. A failed
+    // silent refresh on startup shouldn't bounce visitors off public pages;
+    // protected routes are already covered by authGuard.
     if (this.router.navigated) {
       this.router.navigate(['/login']);
     }

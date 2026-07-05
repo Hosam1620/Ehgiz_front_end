@@ -26,7 +26,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   isSubmitting   = false;
   isResending    = false;
 
-  // Countdown timer (seconds) — starts after a resend
+  // Resend countdown in seconds
   countdown      = 0;
   private _timer: ReturnType<typeof setInterval> | null = null;
 

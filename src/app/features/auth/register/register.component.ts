@@ -76,7 +76,7 @@ export class RegisterComponent {
       return;
     }
     if (selected.size > MAX_IMAGE_BYTES) {
-      error.set('Image is too large — maximum size is 5 MB.');
+      error.set('Image is too large (max 5 MB).');
       return;
     }
 

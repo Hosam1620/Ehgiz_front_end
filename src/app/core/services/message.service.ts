@@ -54,7 +54,7 @@ export class MessageService {
       .pipe(map(r => r.data!));
   }
 
-  /** PUT /conversations/{id}/read — 204 No Content, no wrapper */
+  /** PUT /conversations/{id}/read. Returns 204 No Content, no ApiResponse wrapper. */
   markAsRead(conversationId: number) {
     return this.http.put<void>(`${this.base}/conversations/${conversationId}/read`, {}).pipe(
       tap(() => {

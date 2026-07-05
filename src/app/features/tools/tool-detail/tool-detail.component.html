@@ -117,7 +117,7 @@
       </div>
     </div>
 
-    <!-- Booking panel — hidden for tool owner -->
+    <!-- Booking panel (hidden for the tool owner) -->
     @if (!isOwnTool(item)) {
       <aside class="booking-panel">
         <div class="price-big">{{ item.pricePerDay | number:'1.0-0' }} EGP <span>/ day</span></div>
@@ -166,7 +166,7 @@
               <strong>{{ selectedStart() | date:'mediumDate' }}</strong> → <strong>{{ selectedEnd() | date:'mediumDate' }}</strong>
               · {{ rentalDays() }} day(s)
             } @else {
-              Start: <strong>{{ selectedStart() | date:'mediumDate' }}</strong> — select end date
+              Start: <strong>{{ selectedStart() | date:'mediumDate' }}</strong>, now select an end date
             }
           </div>
         }
@@ -210,7 +210,7 @@
     }
   </div>
 
-  <!-- Reviews — always shown at bottom of page -->
+  <!-- Reviews (always at the bottom of the page) -->
   <div class="reviews-section">
     <div class="reviews-section-inner">
       <div class="reviews-header">
@@ -229,7 +229,7 @@
         @if (completedBookingId() !== null && !reviewSubmitted()) {
           <div class="review-form-card">
             <h3 class="review-form-title"><i class="fas fa-pen" style="color:var(--green);font-size:14px;"></i> Leave a Review</h3>
-            <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;">You rented this tool — share your experience with others.</p>
+            <p style="font-size:13px;color:var(--text-2);margin-bottom:14px;">You rented this tool. Share your experience with others.</p>
 
             <div class="review-star-row">
               @for (star of reviewStars5; track star) {
@@ -288,7 +288,7 @@
       } @else if (!reviews().length) {
         <div class="reviews-empty">
           <div class="reviews-empty-icon">⭐</div>
-          <p>No reviews yet — be the first to rent and review.</p>
+          <p>No reviews yet. Be the first to rent and review.</p>
         </div>
       } @else {
         <div class="reviews-grid">

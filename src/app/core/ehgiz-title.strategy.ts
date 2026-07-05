@@ -9,6 +9,6 @@ export class EhgizTitleStrategy extends TitleStrategy {
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
     const pageTitle = this.buildTitle(snapshot);
-    this.title.setTitle(pageTitle ? `${pageTitle} · Ehgiz` : 'Ehgiz — P2P Tool Rental Platform');
+    this.title.setTitle(pageTitle ? `${pageTitle} · Ehgiz` : 'Ehgiz | P2P Tool Rental Platform');
   }
 }

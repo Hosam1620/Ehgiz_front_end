@@ -6,7 +6,7 @@
       <span
         class="signalr-dot"
         [class.signalr-dot--off]="!isHubConnected()"
-        [title]="isHubConnected() ? 'Connected — real-time updates active' : 'Reconnecting…'"
+        [title]="isHubConnected() ? 'Connected, real-time updates active' : 'Reconnecting…'"
       ></span>
       {{ isHubConnected() ? 'Real-time updates active' : 'Reconnecting…' }}
     </div>
@@ -98,7 +98,7 @@
           </div>
           <div class="notif-text">
             <strong>{{ notif.title }}</strong>
-            @if (notif.message) { — {{ notif.message }} }
+            @if (notif.message) { - {{ notif.message }} }
             @if (!notif.isRead) {
               <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:6px;vertical-align:middle;"></span>
             }

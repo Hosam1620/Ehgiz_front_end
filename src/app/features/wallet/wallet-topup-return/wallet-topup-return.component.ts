@@ -50,10 +50,10 @@ export class WalletTopupReturnComponent implements OnInit {
       if (redirectStatus === 'succeeded' || (!redirectStatus && sessionId)) {
         this.status.set('success');
       } else if (redirectStatus === 'processing') {
-        // Async payment methods (e.g. bank transfer) — payment is pending
+        // Async payment methods (bank transfer etc.) stay pending for a while
         this.status.set('processing');
       } else if (redirectStatus === 'requires_payment_method') {
-        // Payment intent failed — user needs to retry with a different method
+        // Payment intent failed, the user has to retry with a different method
         this.status.set('failed');
       } else if (redirectStatus === 'canceled' || redirectStatus === 'cancelled') {
         this.status.set('cancelled');

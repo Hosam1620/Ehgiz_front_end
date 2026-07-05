@@ -48,7 +48,7 @@ export class ConversationListComponent implements OnInit {
       this.conversations.update(list => {
         const exists = list.some(c => c.id === msg.conversationId);
         if (!exists) {
-          // New conversation appeared — reload
+          // New conversation, reload the list
           this.loadConversations();
           return list;
         }

@@ -1,5 +1,5 @@
-// Development environment — used by `ng serve` / `ng build -c development`
-// via the fileReplacements entry in angular.json.
+// Local dev config. ng serve and dev builds pick this file up via the
+// fileReplacements entry in angular.json.
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:5257',

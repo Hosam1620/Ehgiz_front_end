@@ -1,7 +1,6 @@
-// Production environment — the deployed API origin and the LIVE Stripe
-// publishable key belong here. Local development values live in
-// environment.development.ts (swapped in by angular.json fileReplacements),
-// so this file only ever needs to change when the deployment targets change.
+// Production config. Put the deployed API origin and the live Stripe
+// publishable key here before deploying. Dev values live in
+// environment.development.ts (swapped in by angular.json fileReplacements).
 export const environment = {
   production: true,
   apiUrl: 'http://localhost:5257', // deployed API origin, e.g. https://api.ehgiz.com

@@ -140,7 +140,7 @@ export class AdminCategoriesComponent implements OnInit {
           this.categories.update(list => list.filter(c => c.id !== category.id));
           this.toast.show('Deleted', 'Category removed.', 'success');
         },
-        error: err => this.toast.show('Error', err.error?.message ?? 'Delete failed — category may have tools assigned.', 'error'),
+        error: err => this.toast.show('Error', err.error?.message ?? 'Delete failed. The category may still have tools assigned.', 'error'),
       });
   }
 }

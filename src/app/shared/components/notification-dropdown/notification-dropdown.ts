@@ -98,7 +98,7 @@ export class NotificationDropdownComponent {
       return;
     }
 
-    // 3. We know the sender — ask the backend for (or create) the conversation
+    // 3. We know the sender: ask the backend for (or create) the conversation
     if (n.senderId) {
       this.messageService.startOrGetConversation(n.senderId).subscribe({
         next: conv => this.router.navigate(['/messages', conv.id]),
@@ -107,7 +107,7 @@ export class NotificationDropdownComponent {
       return;
     }
 
-    // 4. Nothing to go on — open the inbox
+    // 4. Nothing to go on, just open the inbox
     this.router.navigate(['/messages']);
   }
 

@@ -61,7 +61,7 @@ export class NotificationHubService implements OnDestroy {
         this.isConnected.set(true);
         this.notifService.loadUnreadCount().subscribe({ error: () => {} });
       });
-      if (!environment.production) console.log('[NotifHub] Reconnected — refreshing unread count');
+      if (!environment.production) console.log('[NotifHub] Reconnected, refreshing unread count');
     });
 
     this.connection.onclose(err => {

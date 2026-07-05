@@ -68,7 +68,7 @@ export class AdminComponent implements OnInit {
   private feeLoaded = false;
 
   ngOnInit(): void {
-    // Disputes + issues load eagerly — their counts drive the sidebar badges.
+    // Disputes + issues load eagerly since their counts drive the sidebar badges.
     this.loadDisputes();
     this.loadIssueReports();
     // Platform fee has no sidebar badge; defer to first settings open.

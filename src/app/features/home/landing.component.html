@@ -5,7 +5,7 @@
     <h1 class="landing-hero-title">Rent the tools you need, <em>from people nearby</em></h1>
     <p class="hero-sub">
       Why buy a drill you'll use twice? Ehgiz connects you with neighbours who own the tools
-      you need — insured, escrow-protected, and a fraction of the retail price.
+      you need: insured, escrow-protected, and a fraction of the retail price.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary btn-lg" routerLink="/browse">
@@ -56,7 +56,7 @@
 <!-- Categories -->
 <section class="landing-section">
   <h2 class="landing-section-title">Browse by category</h2>
-  <p class="landing-section-sub">From power tools to party gear — find it nearby.</p>
+  <p class="landing-section-sub">From power tools to party gear, find it nearby.</p>
   <div class="cat-grid">
     @for (category of categories(); track category.id) {
       <button type="button" class="cat-item" (click)="browseCategory(category)">
@@ -108,7 +108,7 @@
     </div>
   } @else {
     <div class="card" style="padding:40px;text-align:center;color:var(--text-3);margin-top:24px;">
-      No tools listed yet — be the first to <a routerLink="/tools/create" class="auth-link">list one</a>.
+      No tools listed yet. Be the first to <a routerLink="/tools/create" class="auth-link">list one</a>.
     </div>
   }
 </section>

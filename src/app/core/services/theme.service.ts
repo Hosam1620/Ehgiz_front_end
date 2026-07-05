@@ -31,7 +31,7 @@ export class ThemeService {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored === 'light' || stored === 'dark') return stored;
     } catch {
-      // storage unavailable — fall through to media query
+      // storage unavailable, fall back to the media query
     }
     return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }

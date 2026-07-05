@@ -5,7 +5,7 @@ import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
 
-  // Public landing page (default route) — logged-in users are sent to /dashboard
+  // Public landing page (default route). Logged-in users get sent to /dashboard.
   { path: '', title: 'Rent tools from your neighbors', loadComponent: () => import('./features/home/landing.component').then(m => m.LandingComponent), pathMatch: 'full', canActivate: [guestGuard], data: { layout: 'full' } },
 
   // Auth (public)
@@ -21,7 +21,7 @@ export const routes: Routes = [
   { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'profile', title: 'Profile',   loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),       canActivate: [authGuard] },
 
-  // Tools — browse & detail are public (API AllowAnonymous)
+  // Tools. Browse & detail are public (AllowAnonymous on the API).
   { path: 'browse', title: 'Browse tools',         loadComponent: () => import('./features/tools/browse-page/browse-page.component').then(m => m.BrowsePageComponent), data: { layout: 'full' } },
   { path: 'tools', title: 'My tools',          loadComponent: () => import('./features/tools/my-tools/my-tools.component').then(m => m.MyToolsComponent), canActivate: [authGuard] },
   { path: 'saved-searches', title: 'Saved searches', loadComponent: () => import('./features/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent), canActivate: [authGuard] },
@@ -30,7 +30,7 @@ export const routes: Routes = [
   { path: 'tools/:id', title: 'Tool details',      loadComponent: () => import('./features/tools/tool-detail/tool-detail.component').then(m => m.ToolDetailComponent), data: { layout: 'full' } },
   { path: 'add-tool',       redirectTo: 'tools/create', pathMatch: 'full' },
 
-  // Wallet — child route must be listed first so prefix matching on 'wallet' doesn't shadow it
+  // Wallet. The child route has to come first, otherwise prefix matching on 'wallet' shadows it.
   { path: 'wallet/topup/return', title: 'Wallet top-up', loadComponent: () => import('./features/wallet/wallet-topup-return/wallet-topup-return.component').then(m => m.WalletTopupReturnComponent), canActivate: [authGuard] },
   { path: 'wallet', title: 'Wallet', loadComponent: () => import('./features/wallet/wallet.component').then(m => m.WalletComponent), canActivate: [authGuard] },
 

@@ -146,7 +146,7 @@
             @if (feeAmount(); as amount) {
               <div class="fee-banner-calc">
                 <i class="fas fa-calculator" style="font-size:11px;margin-left:4px;"></i>
-                ≈ {{ amount | number:'1.0-2' }} EGP per day deducted — you receive {{ priceAfterFee() | number:'1.0-2' }} EGP/day
+                ≈ {{ amount | number:'1.0-2' }} EGP per day deducted, you receive {{ priceAfterFee() | number:'1.0-2' }} EGP/day
               </div>
             }
           </div>
@@ -182,7 +182,7 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Map position <span style="font-weight:400;color:var(--text-3);">(optional — lets renters find this tool with "Near me")</span></label>
+        <label class="form-label">Map position <span style="font-weight:400;color:var(--text-3);">(optional, lets renters find this tool with "Near me")</span></label>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <button type="button" class="btn btn-secondary btn-sm" [disabled]="isPinning()" (click)="useMyLocation()">
             @if (isPinning()) {

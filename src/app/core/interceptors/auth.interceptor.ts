@@ -39,10 +39,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (isRefreshing) {
-        // Another request is already refreshing — queue until the refresh settles.
-        // skip(1) bypasses the BehaviorSubject's replayed current value (null) so
-        // we only react to the next emission: a new token on success, or null on
-        // failure — in which case we reject this queued request immediately.
+        // Another request is already refreshing, so queue behind it. skip(1)
+        // jumps over the BehaviorSubject's replayed value and waits for the next
+        // real emission: a new token on success, or null on failure (in which
+        // case this queued request gets rejected right away).
         return refreshToken$.pipe(
           skip(1),
           take(1),

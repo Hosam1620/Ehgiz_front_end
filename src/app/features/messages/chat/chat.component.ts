@@ -120,7 +120,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.messageService.getMessages(this.conversationId(), 1, this.PAGE_SIZE).subscribe({
       next: data => {
-        // Backend returns newest-first — reverse so oldest is at the top
+        // Backend returns newest-first, reverse so the oldest is at the top
         this.messages.set([...(data ?? [])].reverse());
         this.hasMore.set((data?.length ?? 0) === this.PAGE_SIZE);
         this.isLoading.set(false);

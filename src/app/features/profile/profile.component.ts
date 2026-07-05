@@ -90,7 +90,7 @@ export class ProfileComponent {
       return;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      this.avatarError.set('Image is too large — maximum size is 5 MB.');
+      this.avatarError.set('Image is too large (max 5 MB).');
       return;
     }
 

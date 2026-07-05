@@ -79,7 +79,7 @@
                   type="button"
                   class="btn btn-danger btn-sm"
                   [disabled]="cat.toolCount > 0"
-                  [title]="cat.toolCount > 0 ? 'Cannot delete — has ' + cat.toolCount + ' tools assigned' : 'Delete category'"
+                  [title]="cat.toolCount > 0 ? 'Cannot delete: ' + cat.toolCount + ' tools still assigned' : 'Delete category'"
                   (click)="deleteCategory(cat)"
                 >
                   <i class="fas fa-trash"></i>
