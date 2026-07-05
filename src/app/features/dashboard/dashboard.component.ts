@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
+import { AiChatStateService } from '../../core/services/ai-chat-state.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BookingService } from '../../core/services/booking.service';
 import { MessageService } from '../../core/services/message.service';
@@ -19,6 +20,7 @@ export class DashboardComponent implements OnInit {
   private readonly toolsService = inject(ToolsService);
   private readonly messageService = inject(MessageService);
   private readonly notificationService = inject(NotificationService);
+  private readonly aiChat = inject(AiChatStateService);
 
   protected readonly toolsListedCount = signal<number | null>(null);
   protected readonly activeBookingsCount = signal<number | null>(null);
@@ -48,6 +50,10 @@ export class DashboardComponent implements OnInit {
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
   });
+
+  protected openAssistant(): void {
+    this.aiChat.openChat();
+  }
 
   ngOnInit(): void {
     if (this.auth.isAdmin()) {

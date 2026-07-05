@@ -16,7 +16,9 @@
   </form>
 
   <div class="nav-links">
-    <a class="nav-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Home</a>
+    @if (!isLoggedIn()) {
+      <a class="nav-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Home</a>
+    }
     <a class="nav-link" routerLink="/browse" routerLinkActive="active">Browse</a>
 
     @if (isLoggedIn()) {
@@ -118,9 +120,11 @@
 
   @if (mobileMenuOpen()) {
     <div class="nav-mobile-menu" id="mobile-nav-menu">
-      <a class="nav-mobile-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileMenu()">
-        <i class="fas fa-home"></i> Home
-      </a>
+      @if (!isLoggedIn()) {
+        <a class="nav-mobile-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active" (click)="closeMobileMenu()">
+          <i class="fas fa-home"></i> Home
+        </a>
+      }
       <a class="nav-mobile-link" routerLink="/browse" routerLinkActive="active" (click)="closeMobileMenu()">
         <i class="fas fa-search"></i> Browse tools
       </a>

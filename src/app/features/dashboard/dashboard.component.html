@@ -20,6 +20,9 @@
     <a class="btn btn-secondary" routerLink="/bookings">
       <i class="fas fa-calendar-check"></i> My bookings
     </a>
+    <button type="button" class="btn btn-ai" (click)="openAssistant()">
+      <i class="fas fa-robot"></i> Ask AI assistant
+    </button>
   </div>
 
   <!-- Stats -->
@@ -83,10 +86,10 @@
   </div>
 
   <!-- Getting started cards -->
-  <div class="grid-2">
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-        <div style="width:44px;height:44px;border-radius:var(--radius);background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
+  <div class="grid-3">
+    <div class="card dash-cta">
+      <div class="dash-cta-head">
+        <div class="dash-cta-icon" style="background:var(--green-light);">
           <i class="fas fa-search" style="color:var(--green);"></i>
         </div>
         <div>
@@ -99,9 +102,9 @@
       </a>
     </div>
 
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-        <div style="width:44px;height:44px;border-radius:var(--radius);background:var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
+    <div class="card dash-cta">
+      <div class="dash-cta-head">
+        <div class="dash-cta-icon" style="background:var(--orange-light);">
           <i class="fas fa-toolbox" style="color:var(--orange);"></i>
         </div>
         <div>
@@ -112,6 +115,21 @@
       <a class="btn btn-secondary btn-sm" routerLink="/tools/create">
         <i class="fas fa-plus"></i> Add a tool
       </a>
+    </div>
+
+    <div class="card dash-cta">
+      <div class="dash-cta-head">
+        <div class="dash-cta-icon" style="background:var(--blue-light);">
+          <i class="fas fa-robot" style="color:var(--blue);"></i>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;">Not sure what you need?</div>
+          <div style="font-size:12px;color:var(--text-2);">Describe your project and get instant tool recommendations</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-ai btn-sm" (click)="openAssistant()">
+        <i class="fas fa-comment-dots"></i> Ask the assistant
+      </button>
     </div>
   </div>
 

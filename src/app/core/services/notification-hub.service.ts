@@ -53,7 +53,7 @@ export class NotificationHubService implements OnDestroy {
 
     this.connection.onreconnecting(() => {
       this.ngZone.run(() => this.isConnected.set(false));
-      console.log('[NotifHub] Reconnecting…');
+      if (!environment.production) console.log('[NotifHub] Reconnecting…');
     });
 
     this.connection.onreconnected(() => {
@@ -61,7 +61,7 @@ export class NotificationHubService implements OnDestroy {
         this.isConnected.set(true);
         this.notifService.loadUnreadCount().subscribe({ error: () => {} });
       });
-      console.log('[NotifHub] Reconnected — refreshing unread count');
+      if (!environment.production) console.log('[NotifHub] Reconnected — refreshing unread count');
     });
 
     this.connection.onclose(err => {
@@ -75,7 +75,7 @@ export class NotificationHubService implements OnDestroy {
     try {
       await this.connection.start();
       this.ngZone.run(() => this.isConnected.set(true));
-      console.log('[NotifHub] Connected');
+      if (!environment.production) console.log('[NotifHub] Connected');
     } catch (err) {
       this.ngZone.run(() => this.isConnected.set(false));
       console.error('[NotifHub] Failed to start connection:', err);

@@ -154,7 +154,13 @@ export class AuthService {
     this.currentUser.set(null);
     this.roles.set([]);
     localStorage.removeItem(this.SESSION_HINT);
-    this.router.navigate(['/login']);
+    // Only redirect after the router has completed its initial navigation.
+    // During startup a failed silent refresh must not bounce visitors from
+    // public pages (e.g. the landing page) to /login — protected routes are
+    // still covered by authGuard on the initial navigation itself.
+    if (this.router.navigated) {
+      this.router.navigate(['/login']);
+    }
   }
 
   /** Returns true if the user previously authenticated in this browser, so the

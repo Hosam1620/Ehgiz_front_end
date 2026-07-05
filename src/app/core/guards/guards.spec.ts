@@ -62,9 +62,9 @@ describe('route guards', () => {
       expect(run(guestGuard)).toBe(true);
     });
 
-    it('redirects logged-in users to /profile', () => {
+    it('redirects logged-in users to /dashboard', () => {
       fakeLogin(['user']);
-      expect(run(guestGuard)).toEqual(router.createUrlTree(['/profile']));
+      expect(run(guestGuard)).toEqual(router.createUrlTree(['/dashboard']));
     });
   });
 });

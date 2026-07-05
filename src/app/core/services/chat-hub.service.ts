@@ -72,12 +72,12 @@ export class ChatHubService implements OnDestroy {
 
     this.connection.onreconnecting(() => {
       this.ngZone.run(() => this.isConnected.set(false));
-      console.log('[ChatHub] Reconnecting…');
+      if (!environment.production) console.log('[ChatHub] Reconnecting…');
     });
 
     this.connection.onreconnected(() => {
       this.ngZone.run(() => this.isConnected.set(true));
-      console.log('[ChatHub] Reconnected');
+      if (!environment.production) console.log('[ChatHub] Reconnected');
     });
 
     this.connection.onclose(err => {

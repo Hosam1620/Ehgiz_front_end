@@ -32,6 +32,10 @@ export class AiChatStateService {
     this.isOpen.update(v => !v);
   }
 
+  openChat(): void {
+    this.isOpen.set(true);
+  }
+
   closeChat(): void {
     this.isOpen.set(false);
   }

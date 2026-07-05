@@ -123,6 +123,7 @@ describe('AuthService', () => {
 
   it('logout clears the session even when the API call fails', () => {
     const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    router.navigated = true; // logout always happens after the initial navigation
     // establish session first
     service.login({ email: 'a@b.c', password: 'pw' }).subscribe();
     http.expectOne(`${api}/api/auth/login`)
@@ -136,5 +137,15 @@ describe('AuthService', () => {
     expect(service.roles()).toEqual([]);
     expect(service.hasSessionHint()).toBe(false);
     expect(navigate).toHaveBeenCalledWith(['/login']);
+  });
+
+  it('clearSession does not redirect before the initial navigation (startup silent-refresh failure)', () => {
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    router.navigated = false;
+
+    service.clearSession();
+
+    expect(service.isLoggedIn()).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
