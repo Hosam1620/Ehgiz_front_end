@@ -89,6 +89,73 @@
       </div>
     }
 
+    <!-- Owner earnings (last 12 months) -->
+    <div class="card-elevated" style="padding:20px;margin-bottom:24px;">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
+        <h3 style="font-size:14px;font-weight:700;">Earnings — last 12 months</h3>
+        <!-- Legend -->
+        <div style="display:flex;gap:14px;margin-left:auto;font-size:11px;color:var(--text-2);">
+          <span style="display:inline-flex;align-items:center;gap:5px;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--chart-net);"></span> Net earnings
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:5px;">
+            <span style="width:8px;height:8px;border-radius:2px;background:var(--chart-fees);"></span> Platform fees
+          </span>
+        </div>
+      </div>
+
+      @if (!hasEarnings()) {
+        <div style="padding:28px 0;text-align:center;color:var(--text-3);font-size:13px;">
+          No earnings yet — list a tool and completed rentals will show up here.
+        </div>
+      } @else {
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;">
+          12-month total: gross {{ earningsTotals().gross | number:'1.0-0' }}
+          · fees {{ earningsTotals().fees | number:'1.0-0' }}
+          · net {{ earningsTotals().net | number:'1.0-0' }} EGP
+        </div>
+
+        <div style="display:flex;align-items:flex-end;height:150px;border-bottom:1px solid var(--border);">
+          @for (m of earnings(); track m.month) {
+            <div
+              style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;cursor:default;"
+              (mouseenter)="hoveredMonth.set(m.month)"
+              (mouseleave)="hoveredMonth.set(null)"
+            >
+              @if (hoveredMonth() === m.month) {
+                <div style="position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--white);border:1px solid var(--border-2);border-radius:6px;box-shadow:var(--shadow);padding:8px 10px;font-size:11px;white-space:nowrap;z-index:5;pointer-events:none;">
+                  <div style="font-weight:700;margin-bottom:3px;">{{ monthTitle(m.month) }}</div>
+                  <div style="color:var(--text-2);">Gross <strong style="color:var(--text);">{{ m.gross | number:'1.2-2' }}</strong></div>
+                  <div style="color:var(--text-2);">Fees <strong style="color:var(--text);">{{ m.fees | number:'1.2-2' }}</strong></div>
+                  <div style="color:var(--text-2);">Net <strong style="color:var(--text);">{{ m.net | number:'1.2-2' }}</strong></div>
+                </div>
+              }
+              <div style="width:100%;max-width:26px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;height:100%;">
+                @if (m.fees > 0) {
+                  <div
+                    style="background:var(--chart-fees);border-radius:4px 4px 0 0;"
+                    [style.height.%]="barHeightPct(m.fees)"
+                  ></div>
+                }
+                @if (m.net > 0) {
+                  <div
+                    style="background:var(--chart-net);"
+                    [style.border-radius]="m.fees > 0 ? '0' : '4px 4px 0 0'"
+                    [style.height.%]="barHeightPct(m.net)"
+                  ></div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div style="display:flex;margin-top:6px;">
+          @for (m of earnings(); track m.month) {
+            <div style="flex:1;text-align:center;font-size:10px;color:var(--text-3);">{{ monthLabel(m.month) }}</div>
+          }
+        </div>
+      }
+    </div>
+
     <div class="card-elevated" style="padding:0;overflow:hidden;">
       <div style="padding:16px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:700;">
         Transaction history

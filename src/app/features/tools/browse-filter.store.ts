@@ -11,6 +11,10 @@ export interface BrowseFilterState {
   /** Backend enum name, or null for "All conditions" (param omitted). */
   condition: ToolCondition | null;
   insuredOnly: boolean;
+  /** Near-me search: both coordinates set = distance-sorted results. */
+  nearLat: number | null;
+  nearLng: number | null;
+  radiusKm: number | null;
   page: number;
   pageSize: number;
 }
@@ -24,6 +28,9 @@ const DEFAULT_STATE: BrowseFilterState = {
   isAvailable: null,
   condition: null,
   insuredOnly: false,
+  nearLat: null,
+  nearLng: null,
+  radiusKm: null,
   page: 1,
   pageSize: 12,
 };
@@ -40,6 +47,10 @@ export class BrowseFilterStore {
   readonly isAvailable = computed(() => this.state().isAvailable);
   readonly condition = computed(() => this.state().condition);
   readonly insuredOnly = computed(() => this.state().insuredOnly);
+  readonly nearMeActive = computed(() => {
+    const s = this.state();
+    return s.nearLat != null && s.nearLng != null;
+  });
   readonly page = computed(() => this.state().page);
   readonly pageSize = computed(() => this.state().pageSize);
   readonly snapshot = computed(() => this.state());
@@ -54,6 +65,9 @@ export class BrowseFilterStore {
       maxPrice: s.maxPrice ?? undefined,
       isAvailable: s.isAvailable ?? undefined,
       condition: s.condition ?? undefined,
+      nearLat: s.nearLat ?? undefined,
+      nearLng: s.nearLng ?? undefined,
+      radiusKm: s.nearLat != null && s.nearLng != null ? s.radiusKm ?? undefined : undefined,
       page: s.page,
       pageSize: s.pageSize,
     };

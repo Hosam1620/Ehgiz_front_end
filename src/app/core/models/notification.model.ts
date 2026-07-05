@@ -8,7 +8,8 @@ export type NotificationType =
   | 'handoverpending'
   | 'handoveraccepted'
   | 'handoverdisputed'
-  | 'disputeresolved';
+  | 'disputeresolved'
+  | 'savedsearchmatch';
 
 export interface Notification {
   id: number;

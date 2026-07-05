@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import {
   ConnectOnboardingResponse,
+  MonthlyEarnings,
   TopUpRequest,
   TopUpResponse,
   Wallet,
@@ -41,6 +42,12 @@ export class WalletService {
 
   withdraw(data: WithdrawalRequest): Observable<ApiResponse<unknown>> {
     return this.http.post<ApiResponse<unknown>>(`${this.base}/withdraw`, data);
+  }
+
+  getEarnings(months = 12): Observable<MonthlyEarnings[]> {
+    return this.http
+      .get<ApiResponse<MonthlyEarnings[]>>(`${this.base}/earnings`, { params: { months } })
+      .pipe(map(r => r.data ?? []));
   }
 
   getConnectOnboardingUrl(): Observable<ConnectOnboardingResponse> {

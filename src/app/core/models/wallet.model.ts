@@ -32,3 +32,11 @@ export interface WalletTransaction {
 export interface ConnectOnboardingResponse {
   onboardingUrl: string;
 }
+
+export interface MonthlyEarnings {
+  /** "yyyy-MM" */
+  month: string;
+  gross: number;
+  fees: number;
+  net: number;
+}

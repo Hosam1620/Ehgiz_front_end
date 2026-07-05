@@ -41,6 +41,9 @@
   --surface-inverse-hover: rgba(255,255,255,.1);
   --text-on-inverse:       rgba(255,255,255,.7);
   --overlay:     rgba(0,0,0,.45);
+  /* Chart series (CVD-validated pair against #FFFFFF) */
+  --chart-net:   #2E8B5F;
+  --chart-fees:  #2563EB;
   color-scheme: light;
 }
 
@@ -79,6 +82,9 @@
   --surface-inverse-hover: rgba(255,255,255,.08);
   --text-on-inverse:       rgba(236,238,234,.72);
   --overlay:     rgba(0,0,0,.65);
+  /* Chart series (CVD-validated pair against #1A1E1B) */
+  --chart-net:   #34A472;
+  --chart-fees:  #5B8DEF;
   color-scheme: dark;
 }
 

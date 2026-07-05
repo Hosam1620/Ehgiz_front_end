@@ -56,6 +56,12 @@ export class ToolFormComponent implements OnInit {
   protected readonly suggestionSuccess = signal<string | null>(null);
   protected readonly imageActionId = signal<number | null>(null);
 
+  // Optional map pin (sent as latitude/longitude, always together)
+  protected readonly pinnedLat = signal<number | null>(null);
+  protected readonly pinnedLng = signal<number | null>(null);
+  protected readonly isPinning = signal(false);
+  protected readonly pinError = signal<string | null>(null);
+
   // Platform commission banner
   protected readonly feePercent = signal<number | null>(null);
   private readonly priceValue = signal(0);
@@ -104,6 +110,34 @@ export class ToolFormComponent implements OnInit {
       next: fee => this.feePercent.set(fee),
       error: () => {},
     });
+  }
+
+  protected useMyLocation(): void {
+    if (!('geolocation' in navigator)) {
+      this.pinError.set('Location is not supported by this browser.');
+      return;
+    }
+
+    this.isPinning.set(true);
+    this.pinError.set(null);
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.isPinning.set(false);
+        this.pinnedLat.set(position.coords.latitude);
+        this.pinnedLng.set(position.coords.longitude);
+      },
+      () => {
+        this.isPinning.set(false);
+        this.pinError.set('Could not get your location. Check browser permissions.');
+      },
+      { enableHighAccuracy: false, timeout: 10_000 }
+    );
+  }
+
+  protected clearPin(): void {
+    this.pinnedLat.set(null);
+    this.pinnedLng.set(null);
+    this.pinError.set(null);
   }
 
   onFilesSelected(event: Event): void {
@@ -233,6 +267,8 @@ export class ToolFormComponent implements OnInit {
       insurancePrice: Number(value.insurancePrice) || 0,
       condition: Number(value.condition) as ToolConditionValue,
       location: value.location.trim(),
+      latitude: this.pinnedLat(),
+      longitude: this.pinnedLng(),
       isAvailable: value.isAvailable,
     };
 
@@ -254,6 +290,8 @@ export class ToolFormComponent implements OnInit {
       isAvailable: tool.isAvailable,
     });
     this.priceValue.set(tool.pricePerDay);
+    this.pinnedLat.set(tool.latitude);
+    this.pinnedLng.set(tool.longitude);
     this.existingImages.set(this.normalizeImages(tool));
   }
 

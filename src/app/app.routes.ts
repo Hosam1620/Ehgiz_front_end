@@ -24,6 +24,7 @@ export const routes: Routes = [
   // Tools — browse & detail are public (API AllowAnonymous)
   { path: 'browse', title: 'Browse tools',         loadComponent: () => import('./features/tools/browse-page/browse-page.component').then(m => m.BrowsePageComponent), data: { layout: 'full' } },
   { path: 'tools', title: 'My tools',          loadComponent: () => import('./features/tools/my-tools/my-tools.component').then(m => m.MyToolsComponent), canActivate: [authGuard] },
+  { path: 'saved-searches', title: 'Saved searches', loadComponent: () => import('./features/saved-searches/saved-searches.component').then(m => m.SavedSearchesComponent), canActivate: [authGuard] },
   { path: 'tools/create', title: 'Add a tool',   loadComponent: () => import('./features/tools/add-tool/add-tool.component').then(m => m.AddToolComponent), canActivate: [authGuard] },
   { path: 'tools/:id/edit', title: 'Edit tool', loadComponent: () => import('./features/tools/edit-tool/edit-tool.component').then(m => m.EditToolComponent), canActivate: [authGuard] },
   { path: 'tools/:id', title: 'Tool details',      loadComponent: () => import('./features/tools/tool-detail/tool-detail.component').then(m => m.ToolDetailComponent), data: { layout: 'full' } },

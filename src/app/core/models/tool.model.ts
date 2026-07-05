@@ -32,6 +32,10 @@ export interface Tool {
   insurancePrice: number;
   condition: string | null;
   location: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  /** Filled by the API only for near-me searches. */
+  distanceKm: number | null;
   isAvailable: boolean;
   createdAt: string;
   ownerId: number;
@@ -52,6 +56,9 @@ export interface CreateToolRequest {
   insurancePrice: number;
   condition: ToolConditionValue;
   location: string;
+  /** Must be sent together or both omitted. */
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface UpdateToolRequest extends CreateToolRequest {
@@ -67,6 +74,10 @@ export interface ToolFilterParams {
   searchTerm?: string;
   /** Backend enum name: New | LikeNew | Good | Fair | Poor. Omit for all conditions. */
   condition?: ToolCondition;
+  /** Near-me search: results are distance-sorted when both coordinates are set. */
+  nearLat?: number;
+  nearLng?: number;
+  radiusKm?: number;
   page?: number;
   pageSize?: number;
 }

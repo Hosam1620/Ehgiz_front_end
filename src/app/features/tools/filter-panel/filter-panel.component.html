@@ -58,6 +58,46 @@
       </div>
     </div>
 
+    <!-- Near me -->
+    <div class="filter-section">
+      <div class="filter-section-title">Distance</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button
+          type="button"
+          class="filter-seg-btn"
+          [class.active]="nearMeActive()"
+          style="flex:1;"
+          [disabled]="locating()"
+          (click)="toggleNearMe()"
+        >
+          @if (locating()) {
+            <i class="fas fa-spinner fa-spin"></i> Locating…
+          } @else if (nearMeActive()) {
+            <i class="fas fa-location-crosshairs"></i> Near me · on
+          } @else {
+            <i class="fas fa-location-crosshairs"></i> Near me
+          }
+        </button>
+        <select
+          class="form-input form-select"
+          style="width:auto;padding:7px 28px 7px 8px;font-size:12px;"
+          aria-label="Search radius"
+          [value]="selectedRadius()"
+          (change)="onRadiusChange($event)"
+        >
+          @for (radius of radiusOptions; track radius) {
+            <option [value]="radius">{{ radius }} km</option>
+          }
+        </select>
+      </div>
+      @if (nearMeActive()) {
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px;">Results sorted by distance</div>
+      }
+      @if (geoError()) {
+        <div style="font-size:11px;color:var(--red);margin-top:6px;">{{ geoError() }}</div>
+      }
+    </div>
+
     <!-- Price -->
     <div class="filter-section">
       <div class="filter-section-title">
@@ -145,4 +185,27 @@
     </div>
 
   </form>
+
+  <!-- Saved searches -->
+  @if (auth.isLoggedIn()) {
+    <div class="filter-section" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+      <button
+        type="button"
+        class="btn btn-secondary btn-sm"
+        style="width:100%;"
+        [disabled]="isSavingSearch()"
+        (click)="saveCurrentSearch()"
+      >
+        @if (isSavingSearch()) {
+          <i class="fas fa-spinner fa-spin"></i> Saving…
+        } @else {
+          <i class="fas fa-bookmark"></i> Save this search
+        }
+      </button>
+      <a
+        routerLink="/saved-searches"
+        style="display:block;text-align:center;font-size:12px;color:var(--green);margin-top:8px;text-decoration:none;"
+      >Manage saved searches</a>
+    </div>
+  }
 </aside>

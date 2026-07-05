@@ -136,6 +136,7 @@ export class NotificationDropdownComponent {
       handoveraccepted: 'fas fa-check-circle',
       handoverdisputed: 'fas fa-gavel',
       disputeresolved:  'fas fa-handshake',
+      savedsearchmatch: 'fas fa-bookmark',
     };
     return icons[type] ?? 'fas fa-bell';
   }

@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, finalize, of, catchError } from 'rxjs';
 import type { StripeEmbeddedCheckout } from '@stripe/stripe-js';
 import { WalletService } from '../../core/services/wallet.service';
 import { SettingsService } from '../../core/services/settings.service';
-import { Wallet, WalletTransaction } from '../../core/models/wallet.model';
+import { MonthlyEarnings, Wallet, WalletTransaction } from '../../core/models/wallet.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { environment } from '../../../environments/environment';
@@ -37,6 +37,37 @@ export class WalletComponent implements OnInit, OnDestroy {
   protected topUpAmount = 100;
   protected withdrawAmount = 0;
 
+  // ── Earnings chart (owner dashboard) ──
+  protected readonly earnings = signal<MonthlyEarnings[]>([]);
+  protected readonly hoveredMonth = signal<string | null>(null);
+
+  protected readonly hasEarnings = computed(() => this.earnings().some(m => m.gross > 0));
+
+  protected readonly maxGross = computed(() =>
+    Math.max(...this.earnings().map(m => m.gross), 1)
+  );
+
+  protected readonly earningsTotals = computed(() =>
+    this.earnings().reduce(
+      (acc, m) => ({ gross: acc.gross + m.gross, fees: acc.fees + m.fees, net: acc.net + m.net }),
+      { gross: 0, fees: 0, net: 0 }
+    )
+  );
+
+  protected barHeightPct(value: number): number {
+    return (value / this.maxGross()) * 100;
+  }
+
+  protected monthLabel(month: string): string {
+    const [year, monthNum] = month.split('-').map(Number);
+    return new Date(year, monthNum - 1, 1).toLocaleString('en', { month: 'short' });
+  }
+
+  protected monthTitle(month: string): string {
+    const [year, monthNum] = month.split('-').map(Number);
+    return new Date(year, monthNum - 1, 1).toLocaleString('en', { month: 'long', year: 'numeric' });
+  }
+
   ngOnInit(): void {
     this.reload();
     this.settingsService.getPlatformFeePercent().subscribe({
@@ -56,10 +87,12 @@ export class WalletComponent implements OnInit, OnDestroy {
     forkJoin({
       wallet: this.walletService.getWallet(),
       transactions: this.walletService.getTransactions().pipe(catchError(() => of([] as WalletTransaction[]))),
+      earnings: this.walletService.getEarnings(12).pipe(catchError(() => of([] as MonthlyEarnings[]))),
     }).subscribe({
-      next: ({ wallet, transactions }) => {
+      next: ({ wallet, transactions, earnings }) => {
         this.wallet.set(wallet);
         this.transactions.set(transactions);
+        this.earnings.set(earnings);
         this.isLoading.set(false);
       },
       error: err => {

@@ -95,6 +95,12 @@ export class ToolsService {
     if (params.condition) {
       httpParams = httpParams.set('Condition', params.condition);
     }
+    if (params.nearLat != null && params.nearLng != null) {
+      httpParams = httpParams.set('NearLat', params.nearLat).set('NearLng', params.nearLng);
+      if (params.radiusKm != null) {
+        httpParams = httpParams.set('RadiusKm', params.radiusKm);
+      }
+    }
     if (params.page != null) {
       httpParams = httpParams.set('Page', params.page);
     }
