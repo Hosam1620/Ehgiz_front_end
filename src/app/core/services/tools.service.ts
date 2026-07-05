@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import {
   CreateToolRequest,
   Tool,
@@ -11,31 +11,44 @@ import {
   UpdateToolRequest,
   UploadToolImagesResponse,
 } from '../models/tool.model';
+import { ApiResponse } from '../models/api-response.model';
 import { environment } from '../../../environments/environment';
 
+/** All tool endpoints return the shared ApiResponse envelope; this service
+ *  unwraps it so components keep working with the plain models. */
 @Injectable({ providedIn: 'root' })
 export class ToolsService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/api/Tools`;
 
   getAll(params: ToolFilterParams = {}): Observable<ToolPagedResult> {
-    return this.http.get<ToolPagedResult>(this.base, { params: this.buildParams(params) });
+    return this.http
+      .get<ApiResponse<ToolPagedResult>>(this.base, { params: this.buildParams(params) })
+      .pipe(map(r => this.unwrap(r, 'No tools returned')));
   }
 
   getById(id: number): Observable<Tool> {
-    return this.http.get<Tool>(`${this.base}/${id}`);
+    return this.http
+      .get<ApiResponse<Tool>>(`${this.base}/${id}`)
+      .pipe(map(r => this.unwrap(r, 'Tool not found')));
   }
 
   getMyTools(): Observable<Tool[]> {
-    return this.http.get<Tool[]>(`${this.base}/my`);
+    return this.http
+      .get<ApiResponse<Tool[]>>(`${this.base}/my`)
+      .pipe(map(r => r.data ?? []));
   }
 
   create(data: CreateToolRequest): Observable<Tool> {
-    return this.http.post<Tool>(this.base, data);
+    return this.http
+      .post<ApiResponse<Tool>>(this.base, data)
+      .pipe(map(r => this.unwrap(r, 'Tool creation returned no data')));
   }
 
   update(id: number, data: UpdateToolRequest): Observable<Tool> {
-    return this.http.put<Tool>(`${this.base}/${id}`, data);
+    return this.http
+      .put<ApiResponse<Tool>>(`${this.base}/${id}`, data)
+      .pipe(map(r => this.unwrap(r, 'Tool update returned no data')));
   }
 
   delete(id: number): Observable<void> {
@@ -45,13 +58,17 @@ export class ToolsService {
   uploadImages(id: number, files: File[]): Observable<UploadToolImagesResponse> {
     const formData = new FormData();
     files.forEach(file => formData.append('images', file));
-    return this.http.post<UploadToolImagesResponse>(`${this.base}/${id}/images`, formData);
+    return this.http
+      .post<ApiResponse<UploadToolImagesResponse>>(`${this.base}/${id}/images`, formData)
+      .pipe(map(r => this.unwrap(r, 'Image upload returned no data')));
   }
 
   suggestFromImages(files: File[]): Observable<ToolSuggestionResponse> {
     const formData = new FormData();
     files.forEach(file => formData.append('images', file));
-    return this.http.post<ToolSuggestionResponse>(`${this.base}/suggest-from-images`, formData);
+    return this.http
+      .post<ApiResponse<ToolSuggestionResponse>>(`${this.base}/suggest-from-images`, formData)
+      .pipe(map(r => this.unwrap(r, 'Suggestion returned no data')));
   }
 
   searchByPhoto(files: File[], page = 1, pageSize = 10): Observable<PhotoSearchResult> {
@@ -60,7 +77,9 @@ export class ToolsService {
     const params = new HttpParams()
       .set('page', page)
       .set('pageSize', pageSize);
-    return this.http.post<PhotoSearchResult>(`${this.base}/search-by-photo`, formData, { params });
+    return this.http
+      .post<ApiResponse<PhotoSearchResult>>(`${this.base}/search-by-photo`, formData, { params })
+      .pipe(map(r => this.unwrap(r, 'Photo search returned no data')));
   }
 
   deleteImage(imageId: number): Observable<void> {
@@ -69,6 +88,13 @@ export class ToolsService {
 
   setPrimaryImage(imageId: number): Observable<void> {
     return this.http.put<void>(`${this.base}/images/${imageId}/primary`, {});
+  }
+
+  private unwrap<T>(res: ApiResponse<T>, emptyMessage: string): T {
+    if (!res.data) {
+      throw new Error(res.message || emptyMessage);
+    }
+    return res.data;
   }
 
   private buildParams(params: ToolFilterParams): HttpParams {

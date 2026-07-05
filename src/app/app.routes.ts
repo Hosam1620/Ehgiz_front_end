@@ -47,18 +47,11 @@ export const routes: Routes = [
   { path: 'messages', title: 'Messages',     loadComponent: () => import('./features/messages/conversation-list/conversation-list.component').then(m => m.ConversationListComponent), canActivate: [authGuard] },
   { path: 'messages/:id', title: 'Chat', loadComponent: () => import('./features/messages/chat/chat.component').then(m => m.ChatComponent),                                       canActivate: [authGuard] },
 
-  // Payments
-  { path: 'payments/initiate', title: 'Payment', loadComponent: () => import('./features/payments/payment-initiate/payment-initiate.component').then(m => m.PaymentInitiateComponent), canActivate: [authGuard] },
-  { path: 'payments/:id', title: 'Payment status',      loadComponent: () => import('./features/payments/payment-status/payment-status.component').then(m => m.PaymentStatusComponent),       canActivate: [authGuard] },
-
   // Notifications
   { path: 'notifications', title: 'Notifications', loadComponent: () => import('./features/notifications/notification-list/notification-list.component').then(m => m.NotificationListComponent), canActivate: [authGuard] },
 
   // AI Features
-  { path: 'ai/classification', title: 'AI classification', loadComponent: () => import('./features/ai/classification/classification.component').then(m => m.ClassificationComponent),  canActivate: [authGuard] },
-  { path: 'ai/image-analysis', title: 'AI image analysis', loadComponent: () => import('./features/ai/image-analysis/image-analysis.component').then(m => m.ImageAnalysisComponent),  canActivate: [authGuard] },
   { path: 'ai/image-search', title: 'Search by photo',   loadComponent: () => import('./features/ai/image-search/image-search.component').then(m => m.ImageSearchComponent),        data: { layout: 'full' } },
-  { path: 'ai/rag-search', title: 'AI search',     loadComponent: () => import('./features/ai/rag-search/rag-search.component').then(m => m.RagSearchComponent),              canActivate: [authGuard] },
 
   // Static pages
   { path: 'how-it-works', title: 'How it works', loadComponent: () => import('./features/pages/how-it-works/how-it-works.component').then(m => m.HowItWorksComponent) },

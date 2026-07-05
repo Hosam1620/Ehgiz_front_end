@@ -6,6 +6,8 @@ import { environment } from '../../../environments/environment';
 
 const base = `${environment.apiUrl}/api/Tools`;
 
+const envelope = <T>(data: T) => ({ succeeded: true, message: '', data, errors: [] });
+
 describe('ToolsService', () => {
   let service: ToolsService;
   let http: HttpTestingController;
@@ -44,7 +46,7 @@ describe('ToolsService', () => {
     expect(p.get('SearchTerm')).toBe('drill');
     expect(p.get('Page')).toBe('2');
     expect(p.get('PageSize')).toBe('12');
-    req.flush({ items: [], totalCount: 0, pageNumber: 2, pageSize: 12 });
+    req.flush(envelope({ items: [], totalCount: 0, pageNumber: 2, pageSize: 12 }));
   });
 
   it('getAll omits geo params unless both coordinates are set', () => {
@@ -53,7 +55,7 @@ describe('ToolsService', () => {
     const req = http.expectOne(r => r.url === base);
     expect(req.request.params.has('NearLat')).toBe(false);
     expect(req.request.params.has('NearLng')).toBe(false);
-    req.flush({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10 });
+    req.flush(envelope({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10 }));
   });
 
   it('getAll sends radius only alongside both coordinates', () => {
@@ -63,7 +65,7 @@ describe('ToolsService', () => {
     expect(req.request.params.get('NearLat')).toBe('30.1');
     expect(req.request.params.get('NearLng')).toBe('31.2');
     expect(req.request.params.get('RadiusKm')).toBe('10');
-    req.flush({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10 });
+    req.flush(envelope({ items: [], totalCount: 0, pageNumber: 1, pageSize: 10 }));
   });
 
   it('uploadImages posts all files under the "images" field', () => {
@@ -75,7 +77,7 @@ describe('ToolsService', () => {
     expect(req.request.method).toBe('POST');
     const form = req.request.body as FormData;
     expect(form.getAll('images')).toEqual([a, b]);
-    req.flush({ urls: [] });
+    req.flush(envelope({ toolId: 7, imageUrls: [] }));
   });
 
   it('delete issues DELETE to the tool endpoint', () => {
