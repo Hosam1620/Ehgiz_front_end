@@ -110,7 +110,7 @@
             [disabled]="actingId() === user.id"
             (click)="saveRole(user)"
           >Save</button>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()">✕</button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()" aria-label="Cancel"><i class="fas fa-xmark"></i></button>
         </div>
       } @else {
         <button
@@ -233,7 +233,7 @@
                       [disabled]="actingId() === user.id"
                       (click)="saveRole(user)"
                     >Save</button>
-                    <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()">✕</button>
+                    <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()" aria-label="Cancel"><i class="fas fa-xmark"></i></button>
                   </div>
                 } @else {
                   <button

@@ -24,11 +24,11 @@
     <app-loading-spinner message="Loading your tools..." />
   } @else if (!filteredTools().length) {
     <div class="card" style="padding:48px 24px;text-align:center;">
-      <div style="font-size:40px;margin-bottom:12px;">
-        @if (activeTab() === 'all') { 🔧 }
-        @else if (activeTab() === 'available') { ✅ }
-        @else if (activeTab() === 'booked') { 📅 }
-        @else { 📦 }
+      <div class="empty-icon">
+        @if (activeTab() === 'all') { <i class="fas fa-screwdriver-wrench"></i> }
+        @else if (activeTab() === 'available') { <i class="fas fa-circle-check"></i> }
+        @else if (activeTab() === 'booked') { <i class="fas fa-calendar-days"></i> }
+        @else { <i class="fas fa-box-archive"></i> }
       </div>
       <h3 style="font-size:17px;font-weight:600;margin-bottom:8px;">
         @if (activeTab() === 'all') { No tools listed yet }
@@ -68,7 +68,7 @@
                     @if (toolThumbnail(tool)) {
                       <img [src]="toolThumbnail(tool)!" [alt]="tool.name ?? 'Tool'" style="width:100%;height:100%;object-fit:cover;" />
                     } @else {
-                      🔧
+                      <i class="fas fa-screwdriver-wrench" style="color:var(--text-3);"></i>
                     }
                   </div>
                   <div>

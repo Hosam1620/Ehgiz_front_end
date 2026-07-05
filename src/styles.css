@@ -607,14 +607,18 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 }
 .hero-float-1 { bottom: -16px; left: -24px; color: var(--green); }
 .hero-float-2 { top: -16px; right: -16px; color: var(--orange); }
-.tool-emoji { font-size: 56px; text-align: center; padding: 20px 0; }
+.hero-tool-thumb {
+  height: 140px; border-radius: var(--radius-lg); margin-bottom: 16px;
+  background: var(--green-light); color: var(--green);
+  display: flex; align-items: center; justify-content: center; font-size: 40px;
+}
 
 /* ── HOW IT WORKS ── */
 .how-section { padding: 64px; background: var(--surface); }
 .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
 .how-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 28px; text-align: center; }
 .how-num { width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: white; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-family: 'Fraunces', serif; }
-.how-icon { font-size: 32px; margin-bottom: 12px; }
+.how-icon { font-size: 26px; color: var(--green); margin-bottom: 12px; }
 .how-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
 .how-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; }
 
@@ -626,8 +630,20 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   cursor: pointer; transition: all .15s;
 }
 .cat-item:hover { border-color: var(--green); background: var(--green-light); }
-.cat-emoji { font-size: 28px; margin-bottom: 6px; }
+.cat-item:hover .cat-icon { background: var(--white); }
+.cat-icon {
+  width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 8px;
+  background: var(--green-light); color: var(--green);
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
 .cat-name { font-size: 11px; font-weight: 600; color: var(--text-2); }
+
+/* Empty-state icon: shared across list/empty views */
+.empty-icon {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 16px;
+  background: var(--green-light); color: var(--green);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
 
 /* ── FILTER SIDEBAR ── */
 .browse-layout { display: grid; grid-template-columns: 272px 1fr; gap: 24px; padding: 32px; }
@@ -816,7 +832,7 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .reviews-count { font-size: 15px; color: var(--text-3); font-family: 'DM Sans', sans-serif; font-weight: 400; }
 .reviews-loading { font-size: 13px; color: var(--text-3); }
 .reviews-empty { padding: 32px; text-align: center; background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); }
-.reviews-empty-icon { font-size: 32px; margin-bottom: 10px; }
+.reviews-empty-icon { font-size: 24px; color: var(--amber); margin-bottom: 10px; }
 .reviews-empty p { font-size: 14px; color: var(--text-2); }
 .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
 .review-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; transition: box-shadow .2s, border-color .2s; }
@@ -885,7 +901,7 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .chart-bar .bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-3); white-space: nowrap; }
 
 /* ── FOOTER ── */
-.footer { background: var(--surface-inverse); color: var(--text-on-inverse); padding: 48px 64px 32px; margin-top: 64px; }
+.footer { background: var(--surface-inverse); color: var(--text-on-inverse); padding: 48px 64px 32px; }
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
 .footer-brand { font-family: 'Fraunces', serif; font-size: 24px; color: white; margin-bottom: 12px; }
 .footer-desc { font-size: 13px; line-height: 1.7; }

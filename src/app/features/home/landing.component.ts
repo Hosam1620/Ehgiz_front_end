@@ -7,15 +7,15 @@ import { BrowseFilterStore } from '../tools/browse-filter.store';
 import { CategoryOption, Tool } from '../../core/models/tool.model';
 import { ToolCardComponent } from '../../shared/components/tool-card/tool-card.component';
 
-const CATEGORY_EMOJI: { match: RegExp; emoji: string }[] = [
-  { match: /power|drill/i, emoji: '🛠️' },
-  { match: /garden|lawn/i, emoji: '🌱' },
-  { match: /construct|build/i, emoji: '🏗️' },
-  { match: /clean|wash/i, emoji: '🧹' },
-  { match: /photo|camera/i, emoji: '📷' },
-  { match: /paint/i, emoji: '🎨' },
-  { match: /electric|generat/i, emoji: '⚡' },
-  { match: /wood|saw/i, emoji: '🪚' },
+const CATEGORY_ICONS: { match: RegExp; icon: string }[] = [
+  { match: /power|drill/i, icon: 'fa-screwdriver-wrench' },
+  { match: /garden|lawn/i, icon: 'fa-seedling' },
+  { match: /construct|build/i, icon: 'fa-trowel-bricks' },
+  { match: /clean|wash/i, icon: 'fa-broom' },
+  { match: /photo|camera/i, icon: 'fa-camera' },
+  { match: /paint/i, icon: 'fa-paint-roller' },
+  { match: /electric|generat/i, icon: 'fa-bolt' },
+  { match: /wood|saw/i, icon: 'fa-hammer' },
 ];
 
 @Component({
@@ -36,10 +36,10 @@ export class LandingComponent implements OnInit {
   protected readonly toolsLoading = signal(true);
 
   protected readonly steps = [
-    { icon: '📋', title: 'List', description: 'Owners photograph their idle tools and publish a listing with price and availability in minutes.' },
-    { icon: '📅', title: 'Book', description: 'Renters pick dates on the calendar and pay securely from their wallet. Funds are held in escrow.' },
-    { icon: '🤝', title: 'Handover', description: 'Both parties document the handover with photos and notes, so everyone is protected.' },
-    { icon: '✅', title: 'Return', description: 'Return the tool, confirm its condition, and the owner gets paid automatically.' },
+    { icon: 'fa-clipboard-list', title: 'List', description: 'Owners photograph their idle tools and publish a listing with price and availability in minutes.' },
+    { icon: 'fa-calendar-check', title: 'Book', description: 'Renters pick dates on the calendar and pay securely from their wallet. Funds are held in escrow.' },
+    { icon: 'fa-handshake', title: 'Handover', description: 'Both parties document the handover with photos and notes, so everyone is protected.' },
+    { icon: 'fa-circle-check', title: 'Return', description: 'Return the tool, confirm its condition, and the owner gets paid automatically.' },
   ];
 
   ngOnInit(): void {
@@ -56,8 +56,8 @@ export class LandingComponent implements OnInit {
     });
   }
 
-  categoryEmoji(name: string): string {
-    return CATEGORY_EMOJI.find(c => c.match.test(name))?.emoji ?? '🧰';
+  categoryIcon(name: string): string {
+    return CATEGORY_ICONS.find(c => c.match.test(name))?.icon ?? 'fa-toolbox';
   }
 
   browseCategory(category: CategoryOption): void {

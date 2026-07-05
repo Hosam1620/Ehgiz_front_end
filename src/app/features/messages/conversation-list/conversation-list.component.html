@@ -33,7 +33,7 @@
     <app-loading-spinner message="Loading conversations..." />
   } @else if (!filteredConversations().length) {
     <div class="card" style="padding:56px 24px;text-align:center;">
-      <div style="font-size:44px;margin-bottom:14px;">💬</div>
+      <div class="empty-icon"><i class="fas fa-comments"></i></div>
       <h3 style="font-size:17px;font-weight:600;margin-bottom:8px;">
         @if (searchQuery()) {
           No conversations match "{{ searchQuery() }}"

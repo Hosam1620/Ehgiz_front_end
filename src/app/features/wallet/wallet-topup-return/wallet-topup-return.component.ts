@@ -9,25 +9,25 @@ import { take } from 'rxjs';
   template: `
     <div class="card-elevated" style="max-width:480px;margin:48px auto;padding:32px;text-align:center;">
       @if (status() === 'success') {
-        <div style="font-size:48px;margin-bottom:16px;">✅</div>
+        <div style="font-size:44px;margin-bottom:16px;color:var(--green);"><i class="fas fa-circle-check"></i></div>
         <h2 style="font-size:20px;margin-bottom:8px;">Top-up processing</h2>
         <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
           Your wallet balance will update shortly.
         </p>
       } @else if (status() === 'processing') {
-        <div style="font-size:48px;margin-bottom:16px;">⏳</div>
+        <div style="font-size:44px;margin-bottom:16px;color:var(--amber);"><i class="fas fa-clock"></i></div>
         <h2 style="font-size:20px;margin-bottom:8px;">Payment pending</h2>
         <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
           Your payment is being processed. Your balance will update once confirmed.
         </p>
       } @else if (status() === 'failed') {
-        <div style="font-size:48px;margin-bottom:16px;">❌</div>
+        <div style="font-size:44px;margin-bottom:16px;color:var(--red);"><i class="fas fa-circle-xmark"></i></div>
         <h2 style="font-size:20px;margin-bottom:8px;">Payment failed</h2>
         <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
           Your payment was not processed. Please try again with a different method.
         </p>
       } @else {
-        <div style="font-size:48px;margin-bottom:16px;">↩️</div>
+        <div style="font-size:44px;margin-bottom:16px;color:var(--text-3);"><i class="fas fa-rotate-left"></i></div>
         <h2 style="font-size:20px;margin-bottom:8px;">Payment cancelled</h2>
         <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">
           You cancelled the top-up. No funds were charged.
