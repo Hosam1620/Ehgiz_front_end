@@ -59,7 +59,15 @@ export class LoginComponent {
           return;
         }
 
-        this.errorMessage = msg || 'An error occurred during login.';
+        // Deactivated account — surface the backend message verbatim instead of
+        // the generic invalid-credentials text.
+        if (err.status === 401 && msg.toLowerCase().includes('deactivated')) {
+          this.errorMessage = msg;
+        } else if (err.status === 401) {
+          this.errorMessage = msg || 'Invalid email or password.';
+        } else {
+          this.errorMessage = msg || 'An error occurred during login.';
+        }
         this.cdr.detectChanges();
       }
     });

@@ -88,18 +88,14 @@
     </div>
 
     <!-- Condition -->
-    <div class="filter-section" formGroupName="conditions">
+    <div class="filter-section">
       <div class="filter-section-title">Condition</div>
-      <div class="filter-pills">
-        @for (option of conditionOptions; track option) {
-          <button
-            type="button"
-            class="filter-pill"
-            [class.active]="conditionActive(option)"
-            (click)="toggleCondition(option)"
-          >{{ option }}</button>
+      <select class="form-input form-select" formControlName="condition">
+        <option value="">All conditions</option>
+        @for (option of conditionOptions; track option.name) {
+          <option [value]="option.name">{{ option.label }}</option>
         }
-      </div>
+      </select>
     </div>
 
     <!-- Availability -->

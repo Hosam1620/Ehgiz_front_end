@@ -20,12 +20,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ConversationDto, MessageDto } from '../../../core/models/message.model';
 import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 
 @Component({
   standalone: true,
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  imports: [FormsModule, TimeAgoPipe, LoadingSpinnerComponent],
+  imports: [FormsModule, TimeAgoPipe, LoadingSpinnerComponent, AvatarComponent],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private readonly messagesEnd = viewChild<ElementRef<HTMLElement>>('messagesEnd');

@@ -7,7 +7,7 @@
     <app-navbar
       [isLoggedIn]="auth.isLoggedIn()"
       [userName]="userName()"
-      (logoutClicked)="auth.logout()"
+      (logoutClicked)="confirmLogout()"
     />
 
     <div class="page-body">
@@ -18,7 +18,7 @@
 
               <!-- User identity -->
               <div class="sidebar-user">
-                <div class="sidebar-avatar">{{ userInitials() }}</div>
+                <app-avatar [src]="auth.currentUser()?.profileImageUrl" [name]="userName()" [size]="36" />
                 <div class="sidebar-user-info">
                   <div class="sidebar-user-name">{{ userName() }}</div>
                   <div class="sidebar-user-role">Member</div>
@@ -69,7 +69,7 @@
               <div class="sidebar-bottom">
                 <div class="sidebar-divider" style="margin-bottom:12px;"></div>
                 <a class="sidebar-item" routerLink="/profile" routerLinkActive="active"><i class="fas fa-user-circle"></i> Profile</a>
-                <a class="sidebar-item sidebar-item-danger" (click)="auth.logout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+                <a class="sidebar-item sidebar-item-danger" (click)="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Sign out</a>
               </div>
 
             </aside>
@@ -98,3 +98,5 @@
 @if (auth.isLoggedIn()) {
   <app-ai-chat-widget />
 }
+
+<app-confirm-dialog />

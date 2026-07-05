@@ -2,12 +2,9 @@ import { Component, DestroyRef, OnInit, effect, inject, output, signal } from '@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { CategoryOption } from '../../../core/models/tool.model';
+import { CategoryOption, TOOL_CONDITIONS, ToolCondition } from '../../../core/models/tool.model';
 import { BrowseFilterStore } from '../browse-filter.store';
 import { BrowseService } from '../browse.service';
-
-const CONDITION_OPTIONS = ['New', 'Good', 'Fair', 'Poor'] as const;
-type ConditionKey = typeof CONDITION_OPTIONS[number];
 
 @Component({
   selector: 'app-filter-panel',
@@ -23,7 +20,7 @@ export class FilterPanelComponent implements OnInit {
   readonly filtersChanged = output<void>();
 
   protected readonly categories = signal<CategoryOption[]>([]);
-  protected readonly conditionOptions = CONDITION_OPTIONS;
+  protected readonly conditionOptions = TOOL_CONDITIONS;
   protected readonly activeFilterCount = signal(0);
 
   protected readonly form = this.fb.nonNullable.group({
@@ -35,12 +32,8 @@ export class FilterPanelComponent implements OnInit {
     availableOnly: [true],
     includeUnavailable: [false],
     insuredOnly: [false],
-    conditions: this.fb.nonNullable.group({
-      New: [false],
-      Good: [true],
-      Fair: [false],
-      Poor: [false],
-    }),
+    /** '' = All conditions (Condition param omitted). */
+    condition: [''],
   });
 
   constructor() {
@@ -77,15 +70,6 @@ export class FilterPanelComponent implements OnInit {
     this.filtersChanged.emit();
   }
 
-  protected toggleCondition(option: ConditionKey): void {
-    const ctrl = this.form.controls.conditions.controls[option];
-    ctrl.setValue(!ctrl.value);
-  }
-
-  protected conditionActive(option: ConditionKey): boolean {
-    return this.form.controls.conditions.controls[option].value;
-  }
-
   protected setAvailability(availableOnly: boolean): void {
     this.form.patchValue({
       availableOnly,
@@ -102,9 +86,7 @@ export class FilterPanelComponent implements OnInit {
     if (v.minPrice || v.maxPrice) count++;
     if (!v.availableOnly) count++;
     if (v.insuredOnly) count++;
-    const active = CONDITION_OPTIONS.filter(o => v.conditions[o]);
-    const isDefault = active.length === 1 && active[0] === 'Good';
-    if (!isDefault) count++;
+    if (v.condition) count++;
     this.activeFilterCount.set(count);
   }
 
@@ -127,26 +109,14 @@ export class FilterPanelComponent implements OnInit {
         availableOnly: s.isAvailable === true,
         includeUnavailable: s.isAvailable === null,
         insuredOnly: s.insuredOnly,
-        conditions: {
-          New: s.conditions.includes('New'),
-          Good: s.conditions.includes('Good'),
-          Fair: s.conditions.includes('Fair'),
-          Poor: s.conditions.includes('Poor'),
-        },
+        condition: s.condition ?? '',
       },
       { emitEvent: false }
     );
-
-    CONDITION_OPTIONS.forEach(option => {
-      if (!s.conditions.length && option === 'Good') {
-        this.form.controls.conditions.controls[option].setValue(true, { emitEvent: false });
-      }
-    });
   }
 
   private applyFormToStore(): void {
     const value = this.form.getRawValue();
-    const selectedConditions = CONDITION_OPTIONS.filter(option => value.conditions[option]);
 
     let isAvailable: boolean | null = null;
     if (value.availableOnly && !value.includeUnavailable) {
@@ -165,7 +135,7 @@ export class FilterPanelComponent implements OnInit {
       maxPrice: value.maxPrice ? Number(value.maxPrice) : null,
       isAvailable,
       insuredOnly: value.insuredOnly,
-      conditions: selectedConditions,
+      condition: (value.condition || null) as ToolCondition | null,
       page: 1,
     });
   }

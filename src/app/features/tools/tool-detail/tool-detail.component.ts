@@ -6,10 +6,11 @@ import { finalize } from 'rxjs';
 import { ToolsService } from '../../../core/services/tools.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { ReviewService } from '../../../core/services/review.service';
-import { Tool } from '../../../core/models/tool.model';
+import { Tool, toolConditionLabel } from '../../../core/models/tool.model';
 import { BookedDateRange, ToolAvailability } from '../../../core/models/booking.model';
 import { Review } from '../../../core/models/review.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { MessageService } from '../../../core/services/message.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -21,7 +22,7 @@ interface CalendarDay {
 @Component({
   standalone: true,
   selector: 'app-tool-detail',
-  imports: [RouterLink, DecimalPipe, DatePipe, NgClass, FormsModule, LoadingSpinnerComponent],
+  imports: [RouterLink, DecimalPipe, DatePipe, NgClass, FormsModule, LoadingSpinnerComponent, AvatarComponent],
   templateUrl: './tool-detail.component.html',
 })
 export class ToolDetailComponent implements OnInit {
@@ -307,9 +308,7 @@ export class ToolDetailComponent implements OnInit {
   }
 
   protected conditionLabel(condition: string | null): string | null {
-    if (!condition) return null;
-    const map: Record<string, string> = { '1': 'New', '2': 'Good', '3': 'Fair', '4': 'Poor' };
-    return map[condition] ?? condition;
+    return toolConditionLabel(condition);
   }
 
   protected onImageError(url: string): void {

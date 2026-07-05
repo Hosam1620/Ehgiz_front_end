@@ -7,12 +7,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ConversationDto } from '../../../core/models/message.model';
 import { TimeAgoPipe } from '../../../shared/pipes/time-ago.pipe';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 
 @Component({
   standalone: true,
   selector: 'app-conversation-list',
   templateUrl: './conversation-list.component.html',
-  imports: [RouterLink, TimeAgoPipe, LoadingSpinnerComponent],
+  imports: [RouterLink, TimeAgoPipe, LoadingSpinnerComponent, AvatarComponent],
 })
 export class ConversationListComponent implements OnInit {
   private readonly messageService = inject(MessageService);

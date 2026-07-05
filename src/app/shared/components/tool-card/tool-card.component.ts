@@ -1,11 +1,13 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Tool } from '../../../core/models/tool.model';
+import { Tool, toolConditionLabel } from '../../../core/models/tool.model';
+import { AvatarComponent } from '../avatar/avatar.component';
+import { resolveMediaUrl } from '../../../core/utils/media-url';
 
 @Component({
   selector: 'app-tool-card',
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink, DecimalPipe, AvatarComponent],
   templateUrl: './tool-card.component.html',
 })
 export class ToolCardComponent {
@@ -14,9 +16,16 @@ export class ToolCardComponent {
 
   private readonly failedImages = signal<Set<string>>(new Set());
 
+  /** Primary image first: images[] is ordered primary-first by the API. */
   protected readonly primaryImage = computed(() => {
     const failed = this.failedImages();
-    return this.tool().imageUrls?.find(url => !failed.has(url)) ?? null;
+    const tool = this.tool();
+    const orderedUrls = (tool.images?.length
+      ? tool.images.map(i => i.imageUrl)
+      : tool.imageUrls ?? [])
+      .map(u => resolveMediaUrl(u))
+      .filter((u): u is string => !!u);
+    return orderedUrls.find(u => !failed.has(u)) ?? null;
   });
 
   protected readonly statusLabel = computed(() =>
@@ -27,12 +36,7 @@ export class ToolCardComponent {
     this.tool().isAvailable ? 'chip-green' : 'chip-red'
   );
 
-  protected readonly conditionLabel = computed(() => {
-    const c = this.tool().condition;
-    if (!c) return null;
-    const map: Record<string, string> = { '1': 'New', '2': 'Good', '3': 'Fair', '4': 'Poor' };
-    return map[c] ?? c;
-  });
+  protected readonly conditionLabel = computed(() => toolConditionLabel(this.tool().condition));
 
   protected readonly placeholderTitle = computed(() => this.tool().categoryName ?? 'Tool photo');
   protected readonly placeholderSubtitle = computed(() => this.tool().name ?? 'Image coming soon');

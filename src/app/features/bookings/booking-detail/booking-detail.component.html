@@ -103,7 +103,7 @@
               <button type="button" class="btn btn-secondary btn-sm" (click)="openModal('issue')">Report issue</button>
             }
             @if (can('LeaveReview') && !b.hasReview) {
-              <button type="button" class="btn btn-sm" style="background:var(--amber-light);color:#7a5400;" (click)="leaveReview()">
+              <button type="button" class="btn btn-sm" style="background:var(--amber-light);color:var(--amber-text);" (click)="leaveReview()">
                 <i class="fas fa-star"></i> Leave review
               </button>
             }
@@ -122,7 +122,7 @@
   </div>
 
   @if (activeModal()) {
-    <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;" (click)="closeModal()">
+    <div style="position:fixed;inset:0;background:var(--overlay);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;" (click)="closeModal()">
       <div class="card-elevated" style="width:100%;max-width:480px;padding:24px;" (click)="$event.stopPropagation()">
         @switch (activeModal()) {
           @case ('delivery') {

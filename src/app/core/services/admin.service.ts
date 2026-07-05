@@ -17,8 +17,6 @@ import {
   PartialRefundRequest,
   PlatformFeeResponse,
   ResolveDisputeRequest,
-  RollbackTransactionRequest,
-  RollbackTransactionResponse,
   SetListingAvailabilityRequest,
   SetUserActiveRequest,
   SetUserRoleRequest,
@@ -187,9 +185,5 @@ export class AdminService {
     return this.http
       .get<ApiResponse<AdminWalletTransaction[]>>(`${this.base}/transactions`)
       .pipe(map(r => r.data ?? []));
-  }
-
-  rollbackTransaction(id: number, data: RollbackTransactionRequest): Observable<ApiResponse<RollbackTransactionResponse>> {
-    return this.http.post<ApiResponse<RollbackTransactionResponse>>(`${this.base}/transactions/${id}/rollback`, data);
   }
 }

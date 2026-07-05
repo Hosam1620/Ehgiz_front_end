@@ -21,6 +21,30 @@
     }
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <!-- Profile picture (optional) -->
+      <div class="form-group" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <label class="avatar-preview-ring" title="Choose a profile picture">
+          <input type="file" class="avatar-picker-input" accept="image/*" (change)="onProfileImageSelected($event)" />
+          @if (profileImagePreview(); as preview) {
+            <img [src]="preview" alt="Profile picture preview" />
+          } @else {
+            <i class="fas fa-camera"></i>
+          }
+        </label>
+        <div style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:10px;">
+          <span>Profile picture (optional)</span>
+          @if (profileImage()) {
+            <button type="button" class="filter-reset-btn" style="color:var(--red);" (click)="removeProfileImage()">
+              <i class="fas fa-times"></i> Remove
+            </button>
+          }
+        </div>
+        @if (profileImageError()) {
+          <div class="invalid-feedback" style="display:block;">{{ profileImageError() }}</div>
+        }
+      </div>
+
       <div class="input-row">
         <div class="form-group">
           <label class="form-label">Full name</label>
@@ -97,6 +121,29 @@
           </div>
         } @else {
           <div class="form-hint">At least 8 characters · 1 digit · 1 lowercase · 1 special character</div>
+        }
+      </div>
+
+      <!-- National ID image (optional) -->
+      <div class="form-group">
+        <label class="form-label">National ID image (optional)</label>
+        @if (nationalIdPreview(); as preview) {
+          <div class="id-upload-preview" style="margin-bottom:8px;">
+            <img [src]="preview" alt="National ID preview" />
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="removeNationalIdImage()">
+            <i class="fas fa-times"></i> Remove image
+          </button>
+        } @else {
+          <label class="photo-drop" style="padding:20px;">
+            <input type="file" accept="image/*" hidden (change)="onNationalIdSelected($event)" />
+            <div><i class="fas fa-id-card" style="font-size:22px;margin-bottom:6px;"></i></div>
+            <div style="font-size:13px;font-weight:600;">Upload your national ID</div>
+            <div style="font-size:11px;margin-top:4px;">JPG or PNG · max 5 MB · speeds up verification</div>
+          </label>
+        }
+        @if (nationalIdError()) {
+          <div class="invalid-feedback" style="display:block;margin-top:6px;">{{ nationalIdError() }}</div>
         }
       </div>
 

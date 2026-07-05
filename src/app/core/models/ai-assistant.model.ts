@@ -25,4 +25,6 @@ export interface ChatMessage {
   timestamp: Date;
   loading?: boolean;
   error?: string;
+  /** The original user question, kept on failed assistant messages so they can be retried. */
+  retryPrompt?: string;
 }

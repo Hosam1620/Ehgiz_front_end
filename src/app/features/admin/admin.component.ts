@@ -8,6 +8,8 @@ import { BookingDetail, BookingStatus, Handover } from '../../core/models/bookin
 import { DisputeDetails, IssueReport, IssueReportStatus } from '../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
+import { ConfirmService } from '../../shared/components/confirm-dialog/confirm.service';
+import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 import { resolveMediaUrl } from '../../core/utils/media-url';
 import { AdminDashboardComponent } from './dashboard/admin-dashboard.component';
 import { AdminUsersComponent } from './users/admin-users.component';
@@ -23,6 +25,7 @@ type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'li
   standalone: true,
   imports: [
     FormsModule, DatePipe, DecimalPipe, NgClass, LoadingSpinnerComponent,
+    AvatarComponent,
     AdminDashboardComponent,
     AdminUsersComponent,
     AdminListingsComponent,
@@ -35,6 +38,7 @@ type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'li
 export class AdminComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
+  private readonly confirmService = inject(ConfirmService);
   protected readonly auth = inject(AuthService);
 
   protected readonly userInitials = computed(() => {
@@ -66,6 +70,18 @@ export class AdminComponent implements OnInit {
     this.loadDisputes();
     this.loadIssueReports();
     // Platform fee has no sidebar badge; defer to first settings open.
+  }
+
+  async confirmLogout(): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Sign out',
+      message: 'Are you sure you want to sign out of the admin panel?',
+      confirmLabel: 'Sign out',
+      danger: true,
+    });
+    if (confirmed) {
+      this.auth.logout();
+    }
   }
 
   setTab(tab: AdminTab): void {

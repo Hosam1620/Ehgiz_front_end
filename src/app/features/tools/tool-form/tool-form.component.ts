@@ -1,22 +1,22 @@
-import { Component, OnInit, effect, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, input, output, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   CategoryOption,
+  TOOL_CONDITIONS,
   Tool,
-  ToolCondition,
   ToolConditionValue,
+  ToolImage,
   UpdateToolRequest,
 } from '../../../core/models/tool.model';
 import { BrowseService } from '../browse.service';
 import { ToolsService } from '../../../core/services/tools.service';
+import { SettingsService } from '../../../core/services/settings.service';
+import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
+import { ToastService } from '../../../shared/components/toast/toast.service';
+import { resolveMediaUrl } from '../../../core/utils/media-url';
 import { HttpErrorResponse } from '@angular/common/http';
-
-const CONDITION_OPTIONS: { label: ToolCondition; value: ToolConditionValue }[] = [
-  { label: 'New', value: 1 },
-  { label: 'Good', value: 2 },
-  { label: 'Fair', value: 3 },
-  { label: 'Poor', value: 4 },
-];
 
 export interface ToolFormSubmitPayload {
   request: UpdateToolRequest;
@@ -25,13 +25,16 @@ export interface ToolFormSubmitPayload {
 
 @Component({
   selector: 'app-tool-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DecimalPipe],
   templateUrl: './tool-form.component.html',
 })
 export class ToolFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly browseService = inject(BrowseService);
   private readonly toolsService = inject(ToolsService);
+  private readonly settingsService = inject(SettingsService);
+  private readonly confirmService = inject(ConfirmService);
+  private readonly toast = inject(ToastService);
 
   tool = input<Tool | null>(null);
   isSubmitting = input<boolean>(false);
@@ -39,16 +42,35 @@ export class ToolFormComponent implements OnInit {
 
   submitted = output<ToolFormSubmitPayload>();
   cancelled = output<void>();
+  /** Emitted whenever the server-side image list changes (delete / set primary). */
+  imagesChanged = output<ToolImage[]>();
 
   protected readonly categories = signal<CategoryOption[]>([]);
-  protected readonly conditionOptions = CONDITION_OPTIONS;
+  protected readonly conditionOptions = TOOL_CONDITIONS;
   protected readonly selectedFiles = signal<File[]>([]);
-  protected readonly existingImages = signal<string[]>([]);
+  protected readonly existingImages = signal<ToolImage[]>([]);
   protected readonly previewUrls = signal<string[]>([]);
   protected readonly fileError = signal<string | null>(null);
   protected readonly isAnalyzing = signal(false);
   protected readonly suggestionError = signal<string | null>(null);
   protected readonly suggestionSuccess = signal<string | null>(null);
+  protected readonly imageActionId = signal<number | null>(null);
+
+  // Platform commission banner
+  protected readonly feePercent = signal<number | null>(null);
+  private readonly priceValue = signal(0);
+  protected readonly feeAmount = computed(() => {
+    const fee = this.feePercent();
+    const price = this.priceValue();
+    if (fee === null || !price || price <= 0) return null;
+    return (price * fee) / 100;
+  });
+  protected readonly priceAfterFee = computed(() => {
+    const amount = this.feeAmount();
+    return amount === null ? null : this.priceValue() - amount;
+  });
+
+  protected readonly resolveMediaUrl = resolveMediaUrl;
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -56,7 +78,7 @@ export class ToolFormComponent implements OnInit {
     description: ['', [Validators.required, Validators.minLength(20)]],
     pricePerDay: [0, [Validators.required, Validators.min(1)]],
     insurancePrice: [0, [Validators.min(0)]],
-    condition: ['2', Validators.required],
+    condition: ['3', Validators.required],
     location: ['', Validators.required],
     isAvailable: [true],
   });
@@ -68,11 +90,19 @@ export class ToolFormComponent implements OnInit {
         this.patchForm(tool);
       }
     });
+
+    this.form.controls.pricePerDay.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(value => this.priceValue.set(Number(value) || 0));
   }
 
   ngOnInit(): void {
     this.browseService.loadCategoryOptions().subscribe({
       next: categories => this.categories.set(categories),
+    });
+    this.settingsService.getPlatformFeePercent().subscribe({
+      next: fee => this.feePercent.set(fee),
+      error: () => {},
     });
   }
 
@@ -102,6 +132,52 @@ export class ToolFormComponent implements OnInit {
   removeNewImage(index: number): void {
     this.selectedFiles.update(files => files.filter((_, i) => i !== index));
     this.previewUrls.update(urls => urls.filter((_, i) => i !== index));
+  }
+
+  async deleteExistingImage(image: ToolImage): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Delete photo',
+      message: 'This photo will be permanently removed from the listing.',
+      confirmLabel: 'Delete photo',
+      danger: true,
+    });
+    if (!confirmed) return;
+
+    this.imageActionId.set(image.id);
+    this.toolsService.deleteImage(image.id).subscribe({
+      next: () => {
+        this.existingImages.update(list => list.filter(i => i.id !== image.id));
+        this.imageActionId.set(null);
+        this.imagesChanged.emit(this.existingImages());
+        this.toast.show('Deleted', 'Photo removed from listing.', 'success');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.imageActionId.set(null);
+        this.toast.show('Error', err.error?.message ?? 'Could not delete photo.', 'error');
+      },
+    });
+  }
+
+  setPrimaryImage(image: ToolImage): void {
+    if (image.isPrimary || this.imageActionId() !== null) return;
+
+    this.imageActionId.set(image.id);
+    this.toolsService.setPrimaryImage(image.id).subscribe({
+      next: () => {
+        this.existingImages.update(list => {
+          const updated = list.map(i => ({ ...i, isPrimary: i.id === image.id }));
+          // Keep the API ordering contract: primary first.
+          return [...updated.filter(i => i.isPrimary), ...updated.filter(i => !i.isPrimary)];
+        });
+        this.imageActionId.set(null);
+        this.imagesChanged.emit(this.existingImages());
+        this.toast.show('Updated', 'Primary photo changed.', 'success');
+      },
+      error: (err: HttpErrorResponse) => {
+        this.imageActionId.set(null);
+        this.toast.show('Error', err.error?.message ?? 'Could not set primary photo.', 'error');
+      },
+    });
   }
 
   onAnalyzeImages(): void {
@@ -177,17 +253,36 @@ export class ToolFormComponent implements OnInit {
       location: tool.location ?? '',
       isAvailable: tool.isAvailable,
     });
-    this.existingImages.set(tool.imageUrls ?? []);
+    this.priceValue.set(tool.pricePerDay);
+    this.existingImages.set(this.normalizeImages(tool));
+  }
+
+  /** Prefer the images collection (has ids for management); fall back to bare URLs. */
+  private normalizeImages(tool: Tool): ToolImage[] {
+    if (tool.images?.length) return [...tool.images];
+    return (tool.imageUrls ?? []).map((url, index) => ({
+      id: 0,
+      imageUrl: url,
+      isPrimary: index === 0,
+    }));
+  }
+
+  protected canManageImage(image: ToolImage): boolean {
+    return image.id > 0;
   }
 
   private toConditionValue(condition: string | null): ToolConditionValue {
     const numericValue = Number(condition);
-    if ([1, 2, 3, 4].includes(numericValue)) {
+    if ([1, 2, 3, 4, 5].includes(numericValue)) {
       return numericValue as ToolConditionValue;
     }
 
     const normalizedCondition = condition?.toLowerCase();
-    const match = CONDITION_OPTIONS.find(option => option.label.toLowerCase() === normalizedCondition);
-    return match?.value ?? 2;
+    const match = TOOL_CONDITIONS.find(
+      option =>
+        option.name.toLowerCase() === normalizedCondition ||
+        option.label.toLowerCase() === normalizedCondition
+    );
+    return match?.value ?? 3;
   }
 }

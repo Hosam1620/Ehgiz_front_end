@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin, finalize, of, catchError } from 'rxjs';
 import type { StripeEmbeddedCheckout } from '@stripe/stripe-js';
 import { WalletService } from '../../core/services/wallet.service';
+import { SettingsService } from '../../core/services/settings.service';
 import { Wallet, WalletTransaction } from '../../core/models/wallet.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
@@ -17,7 +18,10 @@ import { environment } from '../../../environments/environment';
 })
 export class WalletComponent implements OnInit, OnDestroy {
   private readonly walletService = inject(WalletService);
+  private readonly settingsService = inject(SettingsService);
   private readonly toast = inject(ToastService);
+
+  protected readonly feePercent = signal<number | null>(null);
 
   private embeddedCheckout: StripeEmbeddedCheckout | null = null;
 
@@ -35,6 +39,10 @@ export class WalletComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.reload();
+    this.settingsService.getPlatformFeePercent().subscribe({
+      next: fee => this.feePercent.set(fee),
+      error: () => {},
+    });
   }
 
   ngOnDestroy(): void {

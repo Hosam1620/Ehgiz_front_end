@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
-import { LoginRequest, RegisterRequest, LoginResponse, UserProfile } from '../models/user.model';
+import { LoginRequest, RegisterRequest, LoginResponse, UserProfile, UpdateProfileRequest } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 
 export interface VerifyEmailRequest {
@@ -52,8 +52,22 @@ export class AuthService {
   /** When true the verify-email page will auto-trigger resend on init (set by login 401). */
   autoResendOnVerifyPage = signal<boolean>(false);
 
+  /** Register is multipart/form-data: text fields plus optional profile/national-ID images.
+   *  Content-Type is intentionally not set — the browser adds the multipart boundary. */
   register(data: RegisterRequest): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/register`, data);
+    const formData = new FormData();
+    formData.append('fullName', data.fullName);
+    formData.append('email', data.email);
+    formData.append('phoneNumber', data.phoneNumber);
+    formData.append('city', data.city);
+    formData.append('password', data.password);
+    if (data.profileImage) {
+      formData.append('profileImage', data.profileImage);
+    }
+    if (data.nationalIdImage) {
+      formData.append('nationalIdImage', data.nationalIdImage);
+    }
+    return this.http.post<ApiResponse<null>>(`${environment.apiUrl}/api/auth/register`, formData);
   }
 
   verifyEmail(email: string, code: string): Observable<ApiResponse<null>> {
@@ -73,6 +87,38 @@ export class AuthService {
         }
       })
     );
+  }
+
+  updateMe(data: UpdateProfileRequest): Observable<ApiResponse<UserProfile>> {
+    return this.http.put<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me`, data).pipe(
+      tap(res => {
+        if (res.succeeded && res.data) {
+          this.currentUser.set(res.data);
+        }
+      })
+    );
+  }
+
+  uploadProfileImage(file: File): Observable<ApiResponse<UserProfile>> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http
+      .post<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me/profile-image`, formData)
+      .pipe(tap(res => {
+        if (res.succeeded && res.data) {
+          this.currentUser.set(res.data);
+        }
+      }));
+  }
+
+  deleteProfileImage(): Observable<ApiResponse<UserProfile>> {
+    return this.http
+      .delete<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me/profile-image`)
+      .pipe(tap(res => {
+        if (res.succeeded && res.data) {
+          this.currentUser.set(res.data);
+        }
+      }));
   }
 
   refresh(): Observable<ApiResponse<LoginResponse>> {

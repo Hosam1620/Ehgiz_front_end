@@ -4,12 +4,17 @@
 
     <div class="card-elevated" style="padding:0;overflow:hidden;">
 
-      <!-- Profile header -->
-      <div style="padding:28px 32px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:20px;">
-        <div style="width:72px;height:72px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;flex-shrink:0;box-shadow:var(--shadow);">
-          {{ profile.fullName.charAt(0).toUpperCase() }}
+      <!-- Profile header with avatar management -->
+      <div style="padding:28px 32px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+        <div class="profile-avatar-edit">
+          <app-avatar [src]="profile.profileImageUrl" [name]="profile.fullName" [size]="84" />
+          @if (isUploadingAvatar()) {
+            <div style="position:absolute;inset:0;border-radius:50%;background:var(--overlay);display:flex;align-items:center;justify-content:center;">
+              <span class="spinner-border" style="color:#fff;"></span>
+            </div>
+          }
         </div>
-        <div style="flex:1;min-width:0;">
+        <div style="flex:1;min-width:200px;">
           <div style="font-weight:700;font-size:20px;font-family:'Fraunces',serif;margin-bottom:4px;">{{ profile.fullName }}</div>
           <div style="font-size:12px;color:var(--text-3);display:flex;gap:12px;flex-wrap:wrap;">
             <span><i class="fas fa-calendar-alt" style="margin-right:4px;"></i>Member since {{ profile.createdAt | date:'yyyy' }}</span>
@@ -18,48 +23,93 @@
             }
           </div>
         </div>
-        <button class="btn btn-secondary btn-sm" style="flex-shrink:0;">
-          <i class="fas fa-camera"></i> Change photo
-        </button>
+        <div style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;">
+          <label class="btn btn-secondary btn-sm" style="cursor:pointer;">
+            <input type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" [disabled]="isUploadingAvatar()" />
+            <i class="fas fa-camera"></i> {{ profile.profileImageUrl ? 'Change photo' : 'Upload photo' }}
+          </label>
+          @if (profile.profileImageUrl) {
+            <button type="button" class="btn btn-danger btn-sm" [disabled]="isUploadingAvatar()" (click)="removeAvatar()">
+              <i class="fas fa-trash-alt"></i> Remove
+            </button>
+          }
+        </div>
+        @if (avatarError()) {
+          <div class="invalid-feedback" style="display:block;width:100%;">{{ avatarError() }}</div>
+        }
       </div>
 
-      <!-- Personal information -->
-      <div style="padding:28px 32px;border-bottom:1px solid var(--border);">
-        <h3 style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Personal information</h3>
-        <div class="input-row">
-          <div class="form-group">
-            <label class="form-label">Full name</label>
-            <input class="form-input" style="background:var(--surface);color:var(--text-2);cursor:default;" [value]="profile.fullName" readonly />
+      <!-- Personal information (editable) -->
+      <form [formGroup]="form" (ngSubmit)="saveProfile()">
+        <div style="padding:28px 32px;border-bottom:1px solid var(--border);">
+          <h3 style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Personal information</h3>
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Full name</label>
+              <input
+                class="form-input"
+                formControlName="fullName"
+                [class.is-invalid]="form.controls.fullName.invalid && form.controls.fullName.touched"
+              />
+              @if (form.controls.fullName.invalid && form.controls.fullName.touched) {
+                <div class="invalid-feedback">Full name is required.</div>
+              }
+            </div>
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input class="form-input" formControlName="city" placeholder="Cairo" />
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">City</label>
-            <input class="form-input" style="background:var(--surface);color:var(--text-2);cursor:default;" [value]="profile.city || ''" readonly />
+          <div class="input-row">
+            <div class="form-group">
+              <label class="form-label">Phone number</label>
+              <input class="form-input" formControlName="phoneNumber" placeholder="+201234567890" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address</label>
+              <input class="form-input" formControlName="address" placeholder="Street, building, district" />
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email address</label>
-          <input class="form-input" style="background:var(--surface);color:var(--text-2);cursor:default;" [value]="profile.email" readonly />
-        </div>
-        <div class="form-group" style="margin-bottom:8px;">
-          <label class="form-label">Phone number</label>
-          <input class="form-input" style="background:var(--surface);color:var(--text-2);cursor:default;" [value]="profile.phoneNumber || '—'" readonly />
-        </div>
-        <div style="font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:6px;">
-          <i class="fas fa-lock" style="font-size:11px;"></i>
-          Contact support to update your account information.
-        </div>
-      </div>
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label">Email address</label>
+            <input class="form-input" style="background:var(--surface);color:var(--text-2);cursor:default;" [value]="profile.email" readonly />
+            <div class="form-hint"><i class="fas fa-lock" style="font-size:10px;margin-right:4px;"></i>Email cannot be changed.</div>
+          </div>
 
-      <!-- Identity verification -->
+          <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+            <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
+              @if (isSaving()) {
+                <span class="spinner-border spinner-border-sm"></span> Saving…
+              } @else {
+                <i class="fas fa-check"></i> Save changes
+              }
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Identity verification (image only — set at signup) -->
       <div style="padding:28px 32px;">
         <h3 style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">Identity verification</h3>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;">
-          <div style="width:40px;height:40px;border-radius:var(--radius);background:var(--white);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">
-            🪪
-          </div>
-          <div style="flex:1;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          @if (profile.nationalIdImageUrl) {
+            <a [href]="resolveMediaUrl(profile.nationalIdImageUrl)!" target="_blank" rel="noopener" class="handover-thumb" style="width:72px;height:48px;flex-shrink:0;" title="View uploaded ID">
+              <img [src]="resolveMediaUrl(profile.nationalIdImageUrl)!" alt="National ID" />
+            </a>
+          } @else {
+            <div style="width:40px;height:40px;border-radius:var(--radius);background:var(--white);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">
+              🪪
+            </div>
+          }
+          <div style="flex:1;min-width:180px;">
             <div style="font-weight:600;font-size:14px;margin-bottom:2px;">National ID</div>
-            <div style="font-size:12px;color:var(--text-2);">Required to rent out tools or borrow items over 500 EGP.</div>
+            <div style="font-size:12px;color:var(--text-2);">
+              @if (profile.nationalIdImageUrl) {
+                Your ID document is on file.
+              } @else {
+                No ID uploaded. Contact support to complete verification.
+              }
+            </div>
           </div>
           @if (!profile.isActive) {
             <span class="chip chip-amber">

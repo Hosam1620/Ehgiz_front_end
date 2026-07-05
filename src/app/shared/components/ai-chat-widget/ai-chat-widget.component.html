@@ -70,6 +70,16 @@
                 </div>
               } @else if (msg.error) {
                 <div class="ai-chat-msg-error"><i class="fas fa-exclamation-circle"></i> {{ msg.error }}</div>
+                @if (msg.retryPrompt) {
+                  <button
+                    type="button"
+                    class="ai-chat-retry-btn"
+                    [disabled]="chatState.isWaiting()"
+                    (click)="chatState.retryMessage(msg)"
+                  >
+                    <i class="fas fa-rotate-right"></i> Try again
+                  </button>
+                }
               } @else {
                 <div class="ai-chat-msg-text" [innerHTML]="msg.content | chatMarkdown"></div>
 

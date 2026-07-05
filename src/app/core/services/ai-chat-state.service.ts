@@ -42,7 +42,7 @@ export class AiChatStateService {
 
   sendMessage(content: string): void {
     if (!content.trim() || content.trim().length < 5) return;
-    
+
     // Add user message
     this.messages.update(msgs => [
       ...msgs,
@@ -54,6 +54,18 @@ export class AiChatStateService {
       }
     ]);
 
+    this.requestAnswer(content.trim());
+  }
+
+  /** Re-asks the question from a failed assistant message, replacing it in place. */
+  retryMessage(message: ChatMessage): void {
+    if (!message.retryPrompt || this.isWaiting()) return;
+    const prompt = message.retryPrompt;
+    this.messages.update(msgs => msgs.filter(m => m.id !== message.id));
+    this.requestAnswer(prompt);
+  }
+
+  private requestAnswer(content: string): void {
     // Add temporary loading assistant message
     const tempAssistantId = crypto.randomUUID();
     this.messages.update(msgs => [
@@ -69,7 +81,7 @@ export class AiChatStateService {
 
     this.isWaiting.set(true);
 
-    this.aiService.askAssistant(content.trim()).subscribe({
+    this.aiService.askAssistant(content).subscribe({
       next: (res) => {
         this.isWaiting.set(false);
         this.messages.update(msgs => 
@@ -91,11 +103,12 @@ export class AiChatStateService {
           errorMsg = err.error.message;
         }
 
-        this.messages.update(msgs => 
+        this.messages.update(msgs =>
           msgs.map(m => m.id === tempAssistantId ? {
             ...m,
             loading: false,
             error: errorMsg,
+            retryPrompt: content,
             timestamp: new Date()
           } : m)
         );

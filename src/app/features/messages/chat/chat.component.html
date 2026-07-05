@@ -7,13 +7,7 @@
     </button>
 
     @if (conversation(); as convo) {
-      <div style="width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;overflow:hidden;">
-        @if (convo.otherUserAvatarUrl) {
-          <img [src]="convo.otherUserAvatarUrl" [alt]="convo.otherUserName" style="width:100%;height:100%;object-fit:cover;" />
-        } @else {
-          {{ initialsOf(convo.otherUserName) }}
-        }
-      </div>
+      <app-avatar [src]="convo.otherUserAvatarUrl" [name]="convo.otherUserName" [size]="36" />
       <div style="flex:1;min-width:0;">
         <div style="font-size:14px;font-weight:700;color:var(--text);">{{ convo.otherUserName }}</div>
         @if (isOtherTyping()) {
@@ -67,9 +61,7 @@
       <div class="chat-msg-group" [style.align-items]="isMe(msg) ? 'flex-end' : 'flex-start'">
         <div style="display:flex;align-items:flex-end;gap:8px;" [style.flex-direction]="isMe(msg) ? 'row-reverse' : 'row'">
           @if (!isMe(msg)) {
-            <div style="width:28px;height:28px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);flex-shrink:0;">
-              {{ initialsOf(msg.senderName) }}
-            </div>
+            <app-avatar [src]="msg.senderAvatarUrl" [name]="msg.senderName" [size]="28" />
           }
           <div>
             <div class="msg-bubble" [class.sent]="isMe(msg)" [class.recv]="!isMe(msg)">
@@ -90,9 +82,7 @@
     @if (isOtherTyping()) {
       <div class="chat-msg-group" style="align-items:flex-start;">
         <div style="display:flex;align-items:flex-end;gap:8px;">
-          <div style="width:28px;height:28px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--green);flex-shrink:0;">
-            {{ initialsOf(conversation()?.otherUserName ?? '?') }}
-          </div>
+          <app-avatar [src]="conversation()?.otherUserAvatarUrl" [name]="conversation()?.otherUserName ?? '?'" [size]="28" />
           <div class="msg-bubble recv" style="padding:10px 14px;">
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>

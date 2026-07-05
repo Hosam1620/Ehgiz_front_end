@@ -80,7 +80,7 @@
                   class="btn btn-danger btn-sm"
                   [disabled]="cat.toolCount > 0"
                   [title]="cat.toolCount > 0 ? 'Cannot delete — has ' + cat.toolCount + ' tools assigned' : 'Delete category'"
-                  (click)="confirmDelete(cat.id)"
+                  (click)="deleteCategory(cat)"
                 >
                   <i class="fas fa-trash"></i>
                 </button>
@@ -90,26 +90,5 @@
         }
       </tbody>
     </table>
-  </div>
-}
-
-@if (deleteConfirmId() !== null) {
-  <div class="modal-overlay" (click)="cancelDelete()">
-    <div class="modal-dialog" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Delete category</h3>
-        <button type="button" class="modal-close" (click)="cancelDelete()" aria-label="Close">×</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size:14px;color:var(--text-2);margin:0;">
-          Are you sure you want to permanently delete this category?
-          This will fail if any tools are still assigned to it.
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-        <button type="button" class="btn btn-danger" [disabled]="isSaving()" (click)="doDelete()">Delete</button>
-      </div>
-    </div>
   </div>
 }

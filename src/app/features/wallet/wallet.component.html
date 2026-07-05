@@ -34,6 +34,16 @@
       </div>
     </div>
 
+    @if (feePercent() !== null) {
+      <div class="fee-banner" style="margin-bottom:24px;">
+        <i class="fas fa-circle-info"></i>
+        <div class="fee-banner-text">
+          <div class="fee-banner-line-ar">المنصة هتاخد عمولة {{ feePercent() }}٪ من قيمة الإيجار</div>
+          <div class="fee-banner-line-en">The platform takes a {{ feePercent() }}% commission from the rental price — earnings credited here are net of this fee.</div>
+        </div>
+      </div>
+    }
+
     <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
       <button type="button" class="btn btn-primary" (click)="openTopUpPanel()">
         <i class="fas fa-plus"></i> Top up

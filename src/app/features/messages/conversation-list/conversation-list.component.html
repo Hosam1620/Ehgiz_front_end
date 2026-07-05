@@ -63,15 +63,9 @@
         >
           <!-- Avatar -->
           <div style="position:relative;flex-shrink:0;">
-            <div style="width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--green);overflow:hidden;">
-              @if (convo.otherUserAvatarUrl) {
-                <img [src]="convo.otherUserAvatarUrl" [alt]="convo.otherUserName" style="width:100%;height:100%;object-fit:cover;" />
-              } @else {
-                {{ initialsOf(convo.otherUserName) }}
-              }
-            </div>
+            <app-avatar [src]="convo.otherUserAvatarUrl" [name]="convo.otherUserName" [size]="44" />
             @if (convo.unreadCount > 0) {
-              <span style="position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;border-radius:var(--radius-full);background:var(--orange);color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white;">
+              <span style="position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;border-radius:var(--radius-full);background:var(--orange);color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid var(--white);">
                 {{ convo.unreadCount > 9 ? '9+' : convo.unreadCount }}
               </span>
             }

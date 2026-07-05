@@ -7,6 +7,7 @@ export interface Review {
   toolId: number;
   toolName: string;
   renterName: string;
+  renterProfileImageUrl: string | null;
 }
 
 export interface CreateReviewRequest {

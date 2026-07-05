@@ -1,22 +1,21 @@
-import { Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ToolsService } from '../../../core/services/tools.service';
 import { Tool } from '../../../core/models/tool.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { ConfirmationModalComponent } from '../../../shared/components/confirmation-modal/confirmation-modal.component';
+import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 
 type ToolTab = 'all' | 'available' | 'booked' | 'inactive';
 
 @Component({
   selector: 'app-my-tools',
-  imports: [RouterLink, DecimalPipe, LoadingSpinnerComponent, ConfirmationModalComponent],
+  imports: [RouterLink, DecimalPipe, LoadingSpinnerComponent],
   templateUrl: './my-tools.component.html',
 })
 export class MyToolsComponent implements OnInit {
-  private readonly deleteModal = viewChild(ConfirmationModalComponent);
-
   private readonly toolsService = inject(ToolsService);
+  private readonly confirmService = inject(ConfirmService);
 
   protected readonly tools = signal<Tool[]>([]);
   protected readonly isLoading = signal(true);
@@ -57,12 +56,19 @@ export class MyToolsComponent implements OnInit {
     this.activeTab.set(tab);
   }
 
-  confirmDelete(tool: Tool): void {
+  async confirmDelete(tool: Tool): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Delete tool',
+      message: `Are you sure you want to delete "${tool.name ?? 'this listing'}"? This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!confirmed) return;
     this.toolToDelete.set(tool);
-    this.deleteModal()?.open();
+    this.onDeleteConfirmed();
   }
 
-  onDeleteConfirmed(): void {
+  private onDeleteConfirmed(): void {
     const tool = this.toolToDelete();
     if (!tool) return;
 

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap, of } from 'rxjs';
 import { ToolsService } from '../../../core/services/tools.service';
-import { Tool, UpdateToolRequest } from '../../../core/models/tool.model';
+import { Tool, ToolImage, UpdateToolRequest } from '../../../core/models/tool.model';
 import { ToolFormComponent, ToolFormSubmitPayload } from '../tool-form/tool-form.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
@@ -72,6 +72,14 @@ export class EditToolComponent implements OnInit {
           this.isSubmitting.set(false);
         },
       });
+  }
+
+  onImagesChanged(images: ToolImage[]): void {
+    this.tool.update(tool =>
+      tool
+        ? { ...tool, images: [...images], imageUrls: images.map(i => i.imageUrl) }
+        : tool
+    );
   }
 
   onCancel(): void {

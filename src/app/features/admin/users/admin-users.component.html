@@ -10,9 +10,7 @@
 
     <!-- Header row -->
     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
-      <div style="width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;">
-        {{ (user.fullName || '?').charAt(0).toUpperCase() }}
-      </div>
+      <app-avatar [src]="user.profileImageUrl" [name]="user.fullName" [size]="52" />
       <div style="flex:1;min-width:0;">
         <div style="font-size:20px;font-weight:700;margin-bottom:4px;">{{ user.fullName }}</div>
         <div style="font-size:13px;color:var(--text-2);">{{ user.email }}</div>
@@ -57,6 +55,18 @@
         <div class="detail-spec-label">Total Bookings</div>
         <div class="detail-spec-value">{{ user.totalBookings }}</div>
       </div>
+    </div>
+
+    <!-- Identity document -->
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">National ID</div>
+      @if (user.nationalIdImageUrl) {
+        <a [href]="resolveMediaUrl(user.nationalIdImageUrl)!" target="_blank" rel="noopener" class="handover-thumb" style="width:180px;height:110px;" title="Open full size">
+          <img [src]="resolveMediaUrl(user.nationalIdImageUrl)!" alt="National ID document" />
+        </a>
+      } @else {
+        <div style="font-size:13px;color:var(--text-3);">No ID document uploaded.</div>
+      }
     </div>
 
     <!-- Stripe section (only when at least one ID is present) -->
@@ -119,7 +129,7 @@
           type="checkbox"
           [checked]="user.isActive"
           [disabled]="actingId() === user.id"
-          (change)="toggleActive(user)"
+          (change)="toggleActive(user, $event)"
         />
         <span class="toggle-slider"></span>
         <span style="font-size:13px;color:var(--text-2);">{{ user.isActive ? 'Active' : 'Inactive' }}</span>
@@ -128,8 +138,8 @@
       <!-- Delete -->
       <button
         type="button"
-        class="btn btn-sm"
-        style="background:#ef4444;color:#fff;border:none;margin-left:auto;"
+        class="btn btn-sm btn-danger-solid"
+        style="margin-left:auto;"
         [disabled]="deletingId() === user.id || actingId() === user.id"
         (click)="deleteUser(user)"
       >
@@ -197,7 +207,12 @@
           @for (user of users(); track user.id) {
             <tr>
               <td style="color:var(--text-3);font-size:12px;">#{{ user.id }}</td>
-              <td style="font-weight:600;">{{ user.fullName }}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <app-avatar [src]="user.profileImageUrl" [name]="user.fullName" [size]="30" />
+                  <span style="font-weight:600;">{{ user.fullName }}</span>
+                </div>
+              </td>
               <td style="font-size:12px;color:var(--text-2);">{{ user.email }}</td>
               <td style="font-size:12px;color:var(--text-3);">{{ user.city ?? '—' }}</td>
               <td>
@@ -248,7 +263,7 @@
                     type="checkbox"
                     [checked]="user.isActive"
                     [disabled]="actingId() === user.id"
-                    (change)="toggleActive(user)"
+                    (change)="toggleActive(user, $event)"
                   />
                   <span class="toggle-slider"></span>
                 </label>
@@ -258,8 +273,7 @@
                   <button type="button" class="btn btn-secondary btn-sm" (click)="openDetail(user)">View</button>
                   <button
                     type="button"
-                    class="btn btn-sm"
-                    style="background:#ef4444;color:#fff;border:none;"
+                    class="btn btn-sm btn-danger-solid"
                     [disabled]="deletingId() === user.id || actingId() === user.id"
                     title="Delete user"
                     (click)="deleteUser(user)"

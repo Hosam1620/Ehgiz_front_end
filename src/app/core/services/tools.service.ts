@@ -67,6 +67,10 @@ export class ToolsService {
     return this.http.delete<void>(`${this.base}/images/${imageId}`);
   }
 
+  setPrimaryImage(imageId: number): Observable<void> {
+    return this.http.put<void>(`${this.base}/images/${imageId}/primary`, {});
+  }
+
   private buildParams(params: ToolFilterParams): HttpParams {
     let httpParams = new HttpParams();
 
@@ -87,6 +91,9 @@ export class ToolsService {
     }
     if (params.searchTerm) {
       httpParams = httpParams.set('SearchTerm', params.searchTerm);
+    }
+    if (params.condition) {
+      httpParams = httpParams.set('Condition', params.condition);
     }
     if (params.page != null) {
       httpParams = httpParams.set('Page', params.page);

@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { ToolFilterParams } from '../../core/models/tool.model';
+import { ToolCondition, ToolFilterParams } from '../../core/models/tool.model';
 
 export interface BrowseFilterState {
   searchTerm: string;
@@ -8,7 +8,8 @@ export interface BrowseFilterState {
   minPrice: number | null;
   maxPrice: number | null;
   isAvailable: boolean | null;
-  conditions: string[];
+  /** Backend enum name, or null for "All conditions" (param omitted). */
+  condition: ToolCondition | null;
   insuredOnly: boolean;
   page: number;
   pageSize: number;
@@ -21,7 +22,7 @@ const DEFAULT_STATE: BrowseFilterState = {
   minPrice: null,
   maxPrice: null,
   isAvailable: null,
-  conditions: [],
+  condition: null,
   insuredOnly: false,
   page: 1,
   pageSize: 12,
@@ -37,7 +38,7 @@ export class BrowseFilterStore {
   readonly minPrice = computed(() => this.state().minPrice);
   readonly maxPrice = computed(() => this.state().maxPrice);
   readonly isAvailable = computed(() => this.state().isAvailable);
-  readonly conditions = computed(() => this.state().conditions);
+  readonly condition = computed(() => this.state().condition);
   readonly insuredOnly = computed(() => this.state().insuredOnly);
   readonly page = computed(() => this.state().page);
   readonly pageSize = computed(() => this.state().pageSize);
@@ -52,6 +53,7 @@ export class BrowseFilterStore {
       minPrice: s.minPrice ?? undefined,
       maxPrice: s.maxPrice ?? undefined,
       isAvailable: s.isAvailable ?? undefined,
+      condition: s.condition ?? undefined,
       page: s.page,
       pageSize: s.pageSize,
     };

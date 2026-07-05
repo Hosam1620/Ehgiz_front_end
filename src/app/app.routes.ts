@@ -5,8 +5,8 @@ import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
 
-  // Default redirect
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  // Public landing page (default route)
+  { path: '', loadComponent: () => import('./features/home/landing.component').then(m => m.LandingComponent), pathMatch: 'full', data: { layout: 'full' } },
 
   // Auth (public)
   { path: 'login',        loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),               canActivate: [guestGuard] },

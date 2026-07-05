@@ -1,7 +1,9 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // ~5 MB
 
 @Component({
   selector: 'app-register',
@@ -29,6 +31,64 @@ export class RegisterComponent {
   validationErrors: string[] = [];
   isSubmitting = false;
 
+  // Optional uploads
+  protected readonly profileImage = signal<File | null>(null);
+  protected readonly profileImagePreview = signal<string | null>(null);
+  protected readonly profileImageError = signal<string | null>(null);
+  protected readonly nationalIdImage = signal<File | null>(null);
+  protected readonly nationalIdPreview = signal<string | null>(null);
+  protected readonly nationalIdError = signal<string | null>(null);
+
+  onProfileImageSelected(event: Event): void {
+    this.pickImage(event, this.profileImage, this.profileImagePreview, this.profileImageError);
+  }
+
+  removeProfileImage(): void {
+    this.profileImage.set(null);
+    this.profileImagePreview.set(null);
+    this.profileImageError.set(null);
+  }
+
+  onNationalIdSelected(event: Event): void {
+    this.pickImage(event, this.nationalIdImage, this.nationalIdPreview, this.nationalIdError);
+  }
+
+  removeNationalIdImage(): void {
+    this.nationalIdImage.set(null);
+    this.nationalIdPreview.set(null);
+    this.nationalIdError.set(null);
+  }
+
+  private pickImage(
+    event: Event,
+    file: ReturnType<typeof signal<File | null>>,
+    preview: ReturnType<typeof signal<string | null>>,
+    error: ReturnType<typeof signal<string | null>>
+  ): void {
+    const input = event.target as HTMLInputElement;
+    const selected = input.files?.[0];
+    input.value = '';
+    error.set(null);
+    if (!selected) return;
+
+    if (!selected.type.startsWith('image/')) {
+      error.set('Only image files are allowed.');
+      return;
+    }
+    if (selected.size > MAX_IMAGE_BYTES) {
+      error.set('Image is too large — maximum size is 5 MB.');
+      return;
+    }
+
+    file.set(selected);
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.set(String(reader.result));
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(selected);
+  }
+
   onSubmit() {
     if (this.registerForm.invalid) return;
 
@@ -36,7 +96,13 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.validationErrors = [];
 
-    const { termsAccepted: _, ...payload } = this.registerForm.getRawValue();
+    const { termsAccepted: _, ...fields } = this.registerForm.getRawValue();
+    const payload = {
+      ...fields,
+      profileImage: this.profileImage(),
+      nationalIdImage: this.nationalIdImage(),
+    };
+
     this.authService.register(payload).subscribe({
       next: (res) => {
         setTimeout(() => {
@@ -55,7 +121,7 @@ export class RegisterComponent {
       error: (err) => {
         setTimeout(() => {
           this.isSubmitting = false;
-          
+
           try {
             // Handle ASP.NET Core default ValidationProblemDetails
             if (err.error && err.error.errors && !Array.isArray(err.error.errors)) {
@@ -69,7 +135,7 @@ export class RegisterComponent {
           } catch (e) {
             this.errorMessage = 'An unexpected error occurred parsing the response.';
           }
-          
+
           this.cdr.detectChanges();
         });
       }

@@ -3,11 +3,12 @@ import { DecimalPipe } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
 import { AdminDashboardStats } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { AdminChartsComponent } from './admin-charts.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DecimalPipe, LoadingSpinnerComponent],
+  imports: [DecimalPipe, LoadingSpinnerComponent, AdminChartsComponent],
   templateUrl: './admin-dashboard.component.html',
 })
 export class AdminDashboardComponent implements OnInit {

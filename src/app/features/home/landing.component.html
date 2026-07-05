@@ -1,0 +1,129 @@
+<!-- Hero -->
+<section class="landing-hero">
+  <div>
+    <div class="hero-eyebrow">Peer-to-peer tool rental · Egypt</div>
+    <h1 class="landing-hero-title">Rent the tools you need, <em>from people nearby</em></h1>
+    <p class="hero-sub">
+      Why buy a drill you'll use twice? Ehgiz connects you with neighbours who own the tools
+      you need — insured, escrow-protected, and a fraction of the retail price.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" routerLink="/browse">
+        <i class="fas fa-search"></i> Find a tool
+      </a>
+      @if (auth.isLoggedIn()) {
+        <a class="btn btn-secondary btn-lg" routerLink="/tools/create">
+          <i class="fas fa-plus"></i> List your tool
+        </a>
+      } @else {
+        <a class="btn btn-secondary btn-lg" routerLink="/register">
+          <i class="fas fa-user-plus"></i> Join free
+        </a>
+      }
+    </div>
+    <div class="hero-trust">
+      <div class="trust-avatars">
+        <span class="trust-avatar">A</span>
+        <span class="trust-avatar">M</span>
+        <span class="trust-avatar">S</span>
+        <span class="trust-avatar">+</span>
+      </div>
+      Trusted by renters and owners across Egypt
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-card-stack">
+      <div class="hero-main-card">
+        <div class="tool-emoji">🛠️</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:4px;">Bosch Impact Drill</div>
+        <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Nasr City, Cairo · Like new</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span class="tool-price">120 EGP <span>/ day</span></span>
+          <span class="chip chip-green">Available</span>
+        </div>
+      </div>
+      <div class="hero-float-card hero-float-1">
+        <i class="fas fa-shield-halved"></i> Escrow protected
+      </div>
+      <div class="hero-float-card hero-float-2">
+        <i class="fas fa-bolt"></i> Book in under a minute
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="landing-section">
+  <h2 class="landing-section-title">Browse by category</h2>
+  <p class="landing-section-sub">From power tools to party gear — find it nearby.</p>
+  <div class="cat-grid">
+    @for (category of categories(); track category.id) {
+      <button type="button" class="cat-item" (click)="browseCategory(category)">
+        <div class="cat-emoji">{{ categoryEmoji(category.name) }}</div>
+        <div class="cat-name">{{ category.name }}</div>
+      </button>
+    }
+    <a class="cat-item" routerLink="/browse" style="display:block;">
+      <div class="cat-emoji">🔎</div>
+      <div class="cat-name">View all</div>
+    </a>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="landing-section landing-section-alt">
+  <h2 class="landing-section-title">How Ehgiz works</h2>
+  <p class="landing-section-sub">List → Book → Handover → Return. Simple and safe.</p>
+  <div class="how-grid how-grid-4">
+    @for (step of steps; track step.title; let i = $index) {
+      <div class="how-card">
+        <div class="how-num">{{ i + 1 }}</div>
+        <div class="how-icon">{{ step.icon }}</div>
+        <div class="how-title">{{ step.title }}</div>
+        <div class="how-desc">{{ step.description }}</div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Featured tools -->
+<section class="landing-section">
+  <h2 class="landing-section-title">Featured tools</h2>
+  <p class="landing-section-sub">Recently listed and ready to rent today.</p>
+  @if (toolsLoading()) {
+    <div style="text-align:center;padding:40px;color:var(--text-3);">
+      <span class="spinner-border" style="color:var(--green);"></span>
+    </div>
+  } @else if (featuredTools().length) {
+    <div class="landing-tools-grid">
+      @for (tool of featuredTools(); track tool.id) {
+        <app-tool-card [tool]="tool" />
+      }
+    </div>
+    <div style="text-align:center;margin-top:28px;">
+      <a class="btn btn-secondary" routerLink="/browse">
+        Browse all tools <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  } @else {
+    <div class="card" style="padding:40px;text-align:center;color:var(--text-3);margin-top:24px;">
+      No tools listed yet — be the first to <a routerLink="/tools/create" class="auth-link">list one</a>.
+    </div>
+  }
+</section>
+
+<!-- CTA band -->
+<section class="landing-cta-band">
+  <h2>Your tools could be earning for you</h2>
+  <p>The average power tool sits unused 350 days a year. Put yours to work on Ehgiz.</p>
+  @if (auth.isLoggedIn()) {
+    <a class="btn btn-orange btn-lg" routerLink="/tools/create">
+      <i class="fas fa-plus"></i> List a tool now
+    </a>
+  } @else {
+    <a class="btn btn-orange btn-lg" routerLink="/register">
+      <i class="fas fa-user-plus"></i> Create your free account
+    </a>
+  }
+</section>

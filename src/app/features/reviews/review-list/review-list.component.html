@@ -11,7 +11,7 @@
   }
 
   @if (pendingBookingIds().length) {
-    <div class="card-elevated" style="padding:16px 20px;margin-bottom:20px;background:var(--amber-light);border:1px solid #FAC775;">
+    <div class="card-elevated" style="padding:16px 20px;margin-bottom:20px;background:var(--amber-light);border:1px solid var(--amber-border);">
       <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Pending reviews</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         @for (id of pendingBookingIds(); track id) {

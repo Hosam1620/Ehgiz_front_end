@@ -21,12 +21,12 @@
         border-radius:12px;
         overflow:hidden;
         box-shadow:0 8px 32px rgba(0,0,0,.15);
-        background:var(--surface0, #fff);
+        background:var(--white);
         border:1px solid var(--border, #e2e8f0);
       ">
     <!-- Header -->
     <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom"
-      style="background:var(--surface1, #f8fafc);">
+      style="background:var(--surface);">
       <div class="d-flex align-items-center gap-2">
         <span class="fw-bold" style="font-size:15px;">Notifications</span>
         @if (unreadCount() > 0) {
@@ -64,7 +64,7 @@
       <div class="d-flex align-items-start gap-2 px-3 py-2"
         [style.background]="!notif.isRead ? 'var(--blue-light, #eff6ff)' : 'transparent'" style="
                   cursor:pointer;
-                  border-bottom:1px solid var(--border-light, #f1f5f9);
+                  border-bottom:1px solid var(--border);
                   transition:background .15s;
                 " (click)="handleClick(notif)">
         <!-- Icon -->
@@ -103,7 +103,7 @@
     }
 
     <!-- Footer -->
-    <div class="border-top text-center py-2" style="background:var(--surface1, #f8fafc);">
+    <div class="border-top text-center py-2" style="background:var(--surface);">
       <a routerLink="/notifications" class="btn btn-link btn-sm text-success text-decoration-none fw-semibold"
         style="font-size:13px;" (click)="close()">
         View all notifications <i class="fas fa-arrow-right ms-1" style="font-size:11px;"></i>

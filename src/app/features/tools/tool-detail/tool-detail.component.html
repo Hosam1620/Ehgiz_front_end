@@ -67,7 +67,7 @@
       </div>
 
       <div class="owner-row">
-        <div class="owner-avatar">{{ ownerInitials(item.ownerName) }}</div>
+        <app-avatar [src]="item.ownerProfileImageUrl" [name]="item.ownerName ?? 'Owner'" [size]="42" />
         <div style="flex:1;">
           <div style="font-weight:600;font-size:14px;">{{ item.ownerName ?? 'Owner' }}</div>
           <div style="font-size:12px;color:var(--text-2);">Tool owner · Member since {{ memberSince(item.createdAt) }}</div>
@@ -295,7 +295,7 @@
           @for (review of reviews(); track review.id) {
             <div class="review-card">
               <div class="review-card-header">
-                <div class="review-avatar">{{ review.renterName ? review.renterName[0].toUpperCase() : 'U' }}</div>
+                <app-avatar [src]="review.renterProfileImageUrl" [name]="review.renterName || 'User'" [size]="36" />
                 <div style="flex:1;">
                   <strong style="font-size:13px;display:block;">{{ review.renterName }}</strong>
                   <span style="font-size:11px;color:var(--text-3);">{{ review.createdAt | date:'mediumDate' }}</span>

@@ -62,6 +62,9 @@ export interface AdminUser {
   email: string;
   fullName: string;
   phoneNumber: string | null;
+  profileImageUrl: string | null;
+  /** Only returned by the user-details endpoint. */
+  nationalIdImageUrl?: string | null;
   city: string | null;
   address: string | null;
   isActive: boolean;
@@ -162,20 +165,6 @@ export const TRANSACTION_TYPES = [
 
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
-// Transaction types that can be safely reversed at the wallet level; the rest return a 400 if attempted.
-const REVERSIBLE_TRANSACTION_TYPES: readonly string[] = [
-  'EarningCredit',
-  'InsuranceRefund',
-  'BookingRefund',
-  'LateFeeCredit',
-  'PartialRefund',
-  'DisputeCredit',
-];
-
-export function isReversibleTransactionType(type: string): boolean {
-  return REVERSIBLE_TRANSACTION_TYPES.includes(type);
-}
-
 const TRANSACTION_TYPE_CLASSES: Record<string, string> = {
   TopUp: 'chip-green',
   BookingDebit: 'chip-red',
@@ -192,19 +181,4 @@ const TRANSACTION_TYPE_CLASSES: Record<string, string> = {
 
 export function walletTransactionTypeClass(type: string): string {
   return TRANSACTION_TYPE_CLASSES[type] ?? 'chip-gray';
-}
-
-// ── Transaction list/rollback ─────────────────────────
-
-export interface RollbackTransactionRequest {
-  reason: string;
-}
-
-export interface RollbackTransactionResponse {
-  originalTransactionId: number;
-  senderUserId: number;
-  receiverUserId: number;
-  amount: number;
-  reason: string;
-  createdAt: string;
 }

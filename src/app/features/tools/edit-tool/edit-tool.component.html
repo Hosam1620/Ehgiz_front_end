@@ -20,6 +20,7 @@
         submitLabel="Save & publish"
         (submitted)="onSubmit($event)"
         (cancelled)="onCancel()"
+        (imagesChanged)="onImagesChanged($event)"
       />
 
       @if (tool(); as item) {

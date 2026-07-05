@@ -9,6 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { BookingDetail, BookingStatus, RespondHandoverRequest } from '../../../core/models/booking.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
+import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 import { resolveMediaUrl } from '../../../core/utils/media-url';
 
 type ModalType = 'delivery' | 'return' | 'respond-delivery' | 'respond-return' | 'issue' | null;
@@ -26,6 +27,7 @@ export class BookingDetailComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
+  private readonly confirmService = inject(ConfirmService);
 
   protected readonly booking = signal<BookingDetail | null>(null);
   protected readonly isLoading = signal(true);
@@ -110,13 +112,26 @@ export class BookingDetailComponent implements OnInit {
     this.runAction(id => this.bookingService.accept(id), 'Booking accepted.');
   }
 
-  rejectBooking(): void {
-    if (!confirm('Reject this booking? The renter will be refunded.')) return;
+  async rejectBooking(): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Reject booking',
+      message: 'Reject this booking? The renter will be refunded.',
+      confirmLabel: 'Reject booking',
+      danger: true,
+    });
+    if (!confirmed) return;
     this.runAction(id => this.bookingService.reject(id), 'Booking rejected.');
   }
 
-  cancelBooking(): void {
-    if (!confirm('Cancel this booking? Funds will be refunded to the renter wallet.')) return;
+  async cancelBooking(): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Cancel booking',
+      message: 'Cancel this booking? Funds will be refunded to the renter wallet.',
+      confirmLabel: 'Cancel booking',
+      cancelLabel: 'Keep booking',
+      danger: true,
+    });
+    if (!confirmed) return;
     this.runAction(id => this.bookingService.cancel(id), 'Booking cancelled.');
   }
 

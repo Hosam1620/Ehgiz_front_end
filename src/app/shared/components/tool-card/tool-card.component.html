@@ -22,6 +22,12 @@
   </div>
   <div class="tool-card-body">
     <div class="tool-card-name">{{ tool().name ?? 'Untitled tool' }}</div>
+    @if (tool().ownerName) {
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <app-avatar [src]="tool().ownerProfileImageUrl" [name]="tool().ownerName" [size]="20" />
+        <span style="font-size:11px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ tool().ownerName }}</span>
+      </div>
+    }
     <div class="tool-card-meta">
       @if (tool().location) {
         <i class="fas fa-map-marker-alt" style="font-size:10px;color:var(--text-3);margin-right:3px;"></i>{{ tool().location }}

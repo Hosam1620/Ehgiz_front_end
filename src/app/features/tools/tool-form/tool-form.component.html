@@ -6,17 +6,50 @@
     <div class="edit-section-body">
       @if (existingImages().length || previewUrls().length) {
         <div class="photo-grid" style="margin-bottom:16px;">
-          @for (url of existingImages(); track url) {
-            <div class="photo-slot">
-              <img [src]="url" alt="Existing tool photo" />
+          @for (image of existingImages(); track image.imageUrl) {
+            <div class="photo-slot" [class.primary]="image.isPrimary">
+              <img [src]="resolveMediaUrl(image.imageUrl)" alt="Tool photo" />
+              @if (image.isPrimary) {
+                <span class="photo-primary-badge"><i class="fas fa-star"></i> Primary</span>
+              }
+              @if (canManageImage(image)) {
+                <div class="photo-slot-actions">
+                  @if (!image.isPrimary) {
+                    <button
+                      type="button"
+                      class="photo-action-btn star"
+                      title="Set as primary photo"
+                      [disabled]="imageActionId() !== null"
+                      (click)="setPrimaryImage(image)"
+                    >
+                      @if (imageActionId() === image.id) {
+                        <span class="spinner-border spinner-border-sm"></span>
+                      } @else {
+                        <i class="fas fa-star"></i>
+                      }
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="photo-action-btn delete"
+                    title="Delete photo"
+                    [disabled]="imageActionId() !== null"
+                    (click)="deleteExistingImage(image)"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              }
             </div>
           }
           @for (url of previewUrls(); track url; let i = $index) {
             <div class="photo-slot">
               <img [src]="url" alt="New tool photo preview" />
-              <button type="button" class="btn btn-danger btn-sm" style="position:absolute;top:6px;right:6px;" (click)="removeNewImage(i)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="photo-slot-actions" style="opacity:1;">
+                <button type="button" class="photo-action-btn delete" title="Remove" (click)="removeNewImage(i)">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
             </div>
           }
         </div>
@@ -48,7 +81,7 @@
             Analyze images and suggest
           </button>
           @if (suggestionSuccess()) {
-            <div style="font-size:12px;color:var(--success,#198754);">{{ suggestionSuccess() }}</div>
+            <div style="font-size:12px;color:var(--green);">{{ suggestionSuccess() }}</div>
           }
           @if (suggestionError()) {
             <div class="invalid-feedback" style="display:block;">{{ suggestionError() }}</div>
@@ -104,6 +137,21 @@
       <div class="edit-section-title"><i class="fas fa-tag"></i> Pricing</div>
     </div>
     <div class="edit-section-body">
+      @if (feePercent() !== null) {
+        <div class="fee-banner">
+          <i class="fas fa-circle-info"></i>
+          <div class="fee-banner-text">
+            <div class="fee-banner-line-ar">المنصة هتاخد عمولة {{ feePercent() }}٪ من قيمة الإيجار</div>
+            <div class="fee-banner-line-en">The platform takes a {{ feePercent() }}% commission from the rental price.</div>
+            @if (feeAmount(); as amount) {
+              <div class="fee-banner-calc">
+                <i class="fas fa-calculator" style="font-size:11px;margin-left:4px;"></i>
+                ≈ {{ amount | number:'1.0-2' }} EGP per day deducted — you receive {{ priceAfterFee() | number:'1.0-2' }} EGP/day
+              </div>
+            }
+          </div>
+        </div>
+      }
       <div class="input-row">
         <div class="form-group">
           <label class="form-label">Price per day</label>
