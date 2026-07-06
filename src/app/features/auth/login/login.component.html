@@ -1,70 +1,107 @@
-<div class="auth-page">
-  <div class="auth-card card-elevated">
+<div class="auth-split">
 
-    <div class="auth-brand">
-      <span class="nav-logo-dot"></span> Ehgiz
+  <!-- Brand / value panel -->
+  <aside class="auth-hero-panel">
+    <div class="auth-hero-content">
+      <div class="auth-hero-brand"><span class="nav-logo-dot"></span> Ehgiz</div>
+      <h1 class="auth-hero-headline">Rent the tools you need, from people nearby.</h1>
+      <p class="auth-hero-text">
+        Egypt's trusted peer-to-peer tool rental platform. Insured, escrow-protected,
+        and a fraction of retail price.
+      </p>
+      <ul class="auth-hero-features">
+        <li><i class="fas fa-shield-halved"></i> Escrow-protected payments, every rental</li>
+        <li><i class="fas fa-location-dot"></i> Thousands of tools available near you</li>
+        <li><i class="fas fa-bolt"></i> Book in under a minute</li>
+      </ul>
     </div>
-    <h2 class="auth-title">Welcome back</h2>
-    <p class="auth-sub">Sign in to your account</p>
 
-    @if (errorMessage) {
-      <div class="auth-error">
-        <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+    <div class="auth-hero-card">
+      <div class="auth-hero-card-thumb"><i class="fas fa-screwdriver-wrench"></i></div>
+      <div style="min-width:0;">
+        <div style="font-weight:700;">Bosch Impact Drill</div>
+        <div class="auth-hero-card-sub">Nasr City, Cairo · Like new</div>
       </div>
-    }
+      <div class="auth-hero-card-price">120 <span>EGP/day</span></div>
+    </div>
+  </aside>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label class="form-label" for="login-email">Email address</label>
-        <input
-          id="login-email"
-          type="email"
-          autocomplete="email"
-          class="form-input"
-          [class.is-invalid]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
-          formControlName="email"
-          placeholder="you@example.com"
-        />
-        @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
-          <div class="invalid-feedback">A valid email is required.</div>
-        }
+  <!-- Form panel -->
+  <div class="auth-form-panel">
+    <div class="auth-form-inner">
+      <div class="auth-brand auth-brand-mobile">
+        <span class="nav-logo-dot"></span> Ehgiz
       </div>
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-sub">Sign in to continue to your dashboard.</p>
 
-      <div class="form-group">
-        <label class="form-label" for="login-password" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>Password</span>
-          <a class="auth-forgot" routerLink="/forgot-password">Forgot password?</a>
-        </label>
-        <input
-          id="login-password"
-          type="password"
-          autocomplete="current-password"
-          class="form-input"
-          [class.is-invalid]="loginForm.controls.password.invalid && loginForm.controls.password.touched"
-          formControlName="password"
-          placeholder="••••••••"
-        />
-        @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
-          <div class="invalid-feedback">Password is required.</div>
-        }
+      @if (errorMessage) {
+        <div class="auth-error">
+          <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email address</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              id="login-email"
+              type="email"
+              autocomplete="email"
+              class="form-input"
+              style="padding-left:38px;"
+              [class.is-invalid]="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+              formControlName="email"
+              placeholder="you@example.com"
+            />
+          </div>
+          @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+            <div class="invalid-feedback">A valid email is required.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Password</span>
+            <a class="auth-forgot" routerLink="/forgot-password">Forgot password?</a>
+          </label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              id="login-password"
+              type="password"
+              autocomplete="current-password"
+              class="form-input"
+              style="padding-left:38px;"
+              [class.is-invalid]="loginForm.controls.password.invalid && loginForm.controls.password.touched"
+              formControlName="password"
+              placeholder="••••••••"
+            />
+          </div>
+          @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+            <div class="invalid-feedback">Password is required.</div>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary btn-block"
+          [disabled]="loginForm.invalid || isSubmitting"
+        >
+          @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm"></span> Signing in…
+          } @else {
+            <i class="fas fa-right-to-bracket"></i> Sign in
+          }
+        </button>
+      </form>
+
+      <div class="auth-footer-text">
+        Don't have an account?
+        <a routerLink="/register" class="auth-link">Register free</a>
       </div>
-
-      <button
-        type="submit"
-        class="btn btn-primary btn-block"
-        [disabled]="loginForm.invalid || isSubmitting"
-      >
-        @if (isSubmitting) {
-          <span class="spinner-border spinner-border-sm"></span> Signing in…
-        } @else {
-          Sign in
-        }
-      </button>
-    </form>
-
-    <div class="auth-footer-text">
-      Don't have an account?
-      <a routerLink="/register" class="auth-link">Register free</a>
     </div>
   </div>
 </div>

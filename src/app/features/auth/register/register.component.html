@@ -1,7 +1,35 @@
-<div class="auth-page">
-  <div class="auth-card card-elevated">
+<div class="auth-split">
 
-    <div class="auth-brand">
+  <!-- Brand / value panel -->
+  <aside class="auth-hero-panel">
+    <div class="auth-hero-content">
+      <div class="auth-hero-brand"><span class="nav-logo-dot"></span> Ehgiz</div>
+      <h1 class="auth-hero-headline">Join Egypt's tool-sharing community.</h1>
+      <p class="auth-hero-text">
+        Rent what you need, earn from what you own. Creating an account is free, and
+        every rental is insured and escrow-protected.
+      </p>
+      <ul class="auth-hero-features">
+        <li><i class="fas fa-coins"></i> Earn from tools sitting idle</li>
+        <li><i class="fas fa-shield-halved"></i> Escrow-protected, insured rentals</li>
+        <li><i class="fas fa-people-group"></i> Trusted by renters and owners across Egypt</li>
+      </ul>
+    </div>
+
+    <div class="auth-hero-card">
+      <div class="auth-hero-card-thumb"><i class="fas fa-screwdriver-wrench"></i></div>
+      <div style="min-width:0;">
+        <div style="font-weight:700;">Your tools could earn</div>
+        <div class="auth-hero-card-sub">The average drill sits unused 350 days a year</div>
+      </div>
+      <div class="auth-hero-card-price"><i class="fas fa-arrow-trend-up"></i></div>
+    </div>
+  </aside>
+
+  <!-- Form panel -->
+  <div class="auth-form-panel">
+    <div class="auth-form-inner" style="max-width:480px;">
+    <div class="auth-brand auth-brand-mobile">
       <span class="nav-logo-dot"></span> Ehgiz
     </div>
     <h2 class="auth-title">Create your account</h2>
@@ -186,6 +214,7 @@
     <div class="auth-footer-text">
       Already have an account?
       <a routerLink="/login" class="auth-link">Sign in</a>
+    </div>
     </div>
   </div>
 </div>

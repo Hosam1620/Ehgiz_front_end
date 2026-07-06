@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AdminService } from '../../../core/services/admin.service';
+import { CategoriesService } from '../../../core/services/categories.service';
 import { AdminCategory } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
@@ -14,6 +15,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 })
 export class AdminCategoriesComponent implements OnInit {
   private readonly adminService = inject(AdminService);
+  private readonly categoriesService = inject(CategoriesService);
   private readonly toast = inject(ToastService);
 
   protected readonly categories = signal<AdminCategory[]>([]);
@@ -74,6 +76,7 @@ export class AdminCategoriesComponent implements OnInit {
           } else {
             this.load();
           }
+          this.categoriesService.invalidate();
           this.toast.show('Created', `Category "${name}" added.`, 'success');
           this.showCreateForm.set(false);
         },
@@ -113,6 +116,7 @@ export class AdminCategoriesComponent implements OnInit {
                 : c
             )
           );
+          this.categoriesService.invalidate();
           this.toast.show('Updated', `Category updated.`, 'success');
           this.editId.set(null);
         },
@@ -128,6 +132,7 @@ export class AdminCategoriesComponent implements OnInit {
       .subscribe({
         next: () => {
           this.categories.update(list => list.filter(c => c.id !== category.id));
+          this.categoriesService.invalidate();
           this.toast.show('Deleted', 'Category removed.', 'success');
         },
         error: err => this.toast.show('Error', err.error?.message ?? 'Delete failed. The category may still have tools assigned.', 'error'),

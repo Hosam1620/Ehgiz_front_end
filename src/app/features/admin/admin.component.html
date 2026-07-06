@@ -68,6 +68,10 @@
           <div style="font-size:10px;color:rgba(255,255,255,.45);">Administrator</div>
         </div>
       </div>
+      <button type="button" class="admin-sidebar-item" style="padding:8px 10px;border-radius:6px;" (click)="theme.toggle()">
+        <i class="fas" [class.fa-moon]="!theme.isDark()" [class.fa-sun]="theme.isDark()" style="width:16px;"></i>
+        {{ theme.isDark() ? 'Light mode' : 'Dark mode' }}
+      </button>
       <button type="button" class="admin-sidebar-item" style="padding:8px 10px;border-radius:6px;color:rgba(255,100,100,.85);" (click)="logout()">
         <i class="fas fa-sign-out-alt" style="width:16px;"></i> Sign out
       </button>

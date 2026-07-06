@@ -10,20 +10,41 @@
         <h2 class="section-title" style="margin-top:8px;">{{ b.toolName }}</h2>
         <p class="section-sub">Booking #{{ b.id }} · {{ b.days }} day(s)</p>
       </div>
-      <span class="chip" [ngClass]="statusClass(b.status)">{{ b.status }}</span>
+      <span class="chip" [ngClass]="statusClass(b.status)">
+        <span class="status-dot" [style.background]="statusAccent(b.status)"></span>
+        {{ statusLabel(b.status) }}
+      </span>
     </div>
 
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+    <div class="booking-detail-grid">
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div class="card-elevated" style="padding:20px;">
           <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Rental details</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
-            <div><span style="color:var(--text-3);">Start</span><div>{{ b.startDate | date:'mediumDate' }}</div></div>
-            <div><span style="color:var(--text-3);">End</span><div>{{ b.endDate | date:'mediumDate' }}</div></div>
-            <div><span style="color:var(--text-3);">Owner</span><div>{{ b.ownerName }}</div></div>
-            <div><span style="color:var(--text-3);">Renter</span><div>{{ b.renterName }}</div></div>
-            <div><span style="color:var(--text-3);">Payment</span><div>{{ b.paymentStatus ?? '—' }}</div></div>
-            <div><span style="color:var(--text-3);">Escrow</span><div>{{ b.escrowStatus ?? '—' }}</div></div>
+          <div class="info-tile-grid">
+            <div class="info-tile">
+              <div class="info-tile-ico"><i class="fas fa-calendar-day"></i></div>
+              <div style="min-width:0;"><div class="info-tile-label">Start</div><div class="info-tile-value">{{ b.startDate | date:'mediumDate' }}</div></div>
+            </div>
+            <div class="info-tile">
+              <div class="info-tile-ico"><i class="fas fa-calendar-check"></i></div>
+              <div style="min-width:0;"><div class="info-tile-label">End</div><div class="info-tile-value">{{ b.endDate | date:'mediumDate' }}</div></div>
+            </div>
+            <div class="info-tile">
+              <div class="info-tile-ico"><i class="fas fa-user"></i></div>
+              <div style="min-width:0;"><div class="info-tile-label">Owner</div><div class="info-tile-value">{{ b.ownerName }}</div></div>
+            </div>
+            <div class="info-tile">
+              <div class="info-tile-ico"><i class="fas fa-user-tag"></i></div>
+              <div style="min-width:0;"><div class="info-tile-label">Renter</div><div class="info-tile-value">{{ b.renterName }}</div></div>
+            </div>
+            <div class="info-tile">
+              <div class="info-tile-ico"><i class="fas fa-credit-card"></i></div>
+              <div style="min-width:0;"><div class="info-tile-label">Payment</div><div class="info-tile-value">{{ b.paymentStatus ?? '—' }}</div></div>
+            </div>
+            <div class="info-tile">
+              <div class="info-tile-ico"><i class="fas fa-shield-halved"></i></div>
+              <div style="min-width:0;"><div class="info-tile-label">Escrow</div><div class="info-tile-value">{{ b.escrowStatus ?? '—' }}</div></div>
+            </div>
           </div>
 
           @if (b.adminResolutionNotes) {
@@ -39,9 +60,9 @@
             @for (h of b.handovers!; track h.id) {
               <div style="border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;">
                 <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                  <strong style="font-size:13px;">{{ h.type }} handover</strong>
-                  <span class="chip chip-gray" style="font-size:11px;">
-                    {{ h.isAccepted === true ? 'Accepted' : h.isAccepted === false ? 'Rejected' : 'Pending' }}
+                  <strong style="font-size:13px;text-transform:capitalize;">{{ h.type }} handover</strong>
+                  <span class="chip" [class]="handoverChipClass(h.isAccepted)" style="font-size:11px;">
+                    {{ handoverLabel(h.isAccepted) }}
                   </span>
                 </div>
                 <div style="font-size:12px;color:var(--text-2);margin-bottom:6px;">
@@ -122,8 +143,8 @@
   </div>
 
   @if (activeModal()) {
-    <div style="position:fixed;inset:0;background:var(--overlay);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;" (click)="closeModal()">
-      <div class="card-elevated" style="width:100%;max-width:480px;padding:24px;" (click)="$event.stopPropagation()">
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-dialog anim-fade" style="max-width:480px;padding:24px;" (click)="$event.stopPropagation()">
         @switch (activeModal()) {
           @case ('delivery') {
             <h3 style="font-size:18px;margin-bottom:16px;">Submit delivery handover</h3>

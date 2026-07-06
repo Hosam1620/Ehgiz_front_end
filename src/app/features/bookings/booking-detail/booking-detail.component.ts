@@ -82,6 +82,48 @@ export class BookingDetailComponent implements OnInit {
     return map[status] ?? 'chip-gray';
   }
 
+  statusLabel(status: BookingStatus): string {
+    const map: Record<BookingStatus, string> = {
+      Pending: 'Pending approval',
+      Accepted: 'Accepted',
+      DeliveryHandover: 'Delivery handover',
+      Active: 'Active rental',
+      ReturnHandover: 'Return handover',
+      Completed: 'Completed',
+      Rejected: 'Rejected',
+      Cancelled: 'Cancelled',
+      Disputed: 'Disputed',
+    };
+    return map[status] ?? status;
+  }
+
+  statusAccent(status: BookingStatus): string {
+    const map: Record<BookingStatus, string> = {
+      Pending: 'var(--amber)',
+      Accepted: 'var(--blue)',
+      DeliveryHandover: 'var(--blue)',
+      Active: 'var(--green)',
+      ReturnHandover: 'var(--blue)',
+      Completed: 'var(--text-3)',
+      Rejected: 'var(--red)',
+      Cancelled: 'var(--text-3)',
+      Disputed: 'var(--red)',
+    };
+    return map[status] ?? 'var(--border-2)';
+  }
+
+  handoverChipClass(isAccepted: boolean | null): string {
+    if (isAccepted === true) return 'chip-green';
+    if (isAccepted === false) return 'chip-red';
+    return 'chip-amber';
+  }
+
+  handoverLabel(isAccepted: boolean | null): string {
+    if (isAccepted === true) return 'Accepted';
+    if (isAccepted === false) return 'Rejected';
+    return 'Pending';
+  }
+
   reload(): void {
     const b = this.booking();
     if (b) this.loadBooking(b.id);

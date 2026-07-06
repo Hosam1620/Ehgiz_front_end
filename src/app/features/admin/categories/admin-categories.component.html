@@ -72,14 +72,15 @@
               <td style="font-size:13px;color:var(--text-2);">{{ cat.description ?? '—' }}</td>
               <td><span class="chip chip-gray">{{ cat.toolCount }}</span></td>
               <td style="display:flex;gap:6px;">
-                <button type="button" class="btn btn-secondary btn-sm" (click)="startEdit(cat)">
+                <button type="button" class="btn btn-secondary btn-sm icon-btn" (click)="startEdit(cat)" title="Edit category" aria-label="Edit category">
                   <i class="fas fa-pen-to-square"></i>
                 </button>
                 <button
                   type="button"
-                  class="btn btn-danger btn-sm"
+                  class="btn btn-danger btn-sm icon-btn"
                   [disabled]="cat.toolCount > 0"
                   [title]="cat.toolCount > 0 ? 'Cannot delete: ' + cat.toolCount + ' tools still assigned' : 'Delete category'"
+                  aria-label="Delete category"
                   (click)="deleteCategory(cat)"
                 >
                   <i class="fas fa-trash"></i>

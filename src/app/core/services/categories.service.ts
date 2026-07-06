@@ -28,4 +28,11 @@ export class CategoriesService {
       );
     return this.categories$;
   }
+
+  /** Drop the cached list so the next getCategories() refetches. Call after an
+   *  admin creates, renames, or deletes a category, otherwise the add/edit-tool
+   *  and browse dropdowns keep showing the stale list for the app's lifetime. */
+  invalidate(): void {
+    this.categories$ = undefined;
+  }
 }

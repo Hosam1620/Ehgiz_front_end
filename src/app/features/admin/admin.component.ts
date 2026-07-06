@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AdminService } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { BookingDetail, BookingStatus, Handover } from '../../core/models/booking.model';
 import { AdminWallet, DisputeDetails, IssueReport, IssueReportStatus } from '../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -40,6 +41,7 @@ export class AdminComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
   protected readonly auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
 
   protected readonly userInitials = computed(() => {
     const name = this.auth.currentUser()?.fullName ?? '';

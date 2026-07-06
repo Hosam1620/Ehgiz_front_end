@@ -153,10 +153,15 @@ export class AuthService {
   }
 
   logout(): void {
-    // Attempt backend logout, but clean up client regardless
+    // Clear the client session first so the app is unauthenticated immediately:
+    // this navigates away and unmounts authenticated pages, so no in-flight or
+    // late request can 401 and surface an "Unauthorized" error toast. The
+    // backend logout (which revokes the refresh token via the httpOnly cookie)
+    // is then fire-and-forget and no longer needs the access token.
+    this.clearSession();
     this.http.post(`${environment.apiUrl}/api/auth/logout`, {}, { withCredentials: true }).subscribe({
-      next: () => this.clearSession(),
-      error: () => this.clearSession()
+      next: () => {},
+      error: () => {},
     });
   }
 

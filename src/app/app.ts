@@ -1,7 +1,6 @@
 import { Component, inject, computed, effect, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd, NavigationStart } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { NotificationService } from './core/services/notification.service';
 import { NotificationHubService } from './core/services/notification-hub.service';
@@ -53,9 +52,20 @@ export class App {
     this.updateLayout();
 
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
-      .subscribe(() => {
-        this.updateLayout();
+      .pipe(takeUntilDestroyed())
+      .subscribe(event => {
+        // Flip the admin-isolated layout as soon as navigation *starts*, based on
+        // the target URL. Waiting until NavigationEnd lets the admin component
+        // render for a frame inside the normal user shell (sidebar + navbar),
+        // which is the "user page flashes before the admin dashboard" glitch.
+        if (event instanceof NavigationStart) {
+          if (event.url.startsWith('/admin')) {
+            this.isAdminRoute.set(true);
+            this.showSidebar.set(false);
+          }
+        } else if (event instanceof NavigationEnd) {
+          this.updateLayout();
+        }
       });
 
     this.chatHubService.messageReceived$
