@@ -5,150 +5,185 @@
 
 @if (selectedUser(); as user) {
   <!-- ── Detail view ── -->
-  <div class="card-elevated" style="padding:24px;">
-    <button type="button" class="btn btn-sm btn-secondary" style="margin-bottom:20px;" (click)="closeDetail()">← Back to list</button>
+  <div>
+    <button type="button" class="btn btn-sm btn-secondary" style="margin-bottom:18px;" (click)="closeDetail()">
+      <i class="fas fa-arrow-left" style="margin-right:5px;"></i>Back to list
+    </button>
 
-    <!-- Header row -->
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
-      <app-avatar [src]="user.profileImageUrl" [name]="user.fullName" [size]="52" />
+    <!-- Hero -->
+    <div class="user-detail-hero">
+      <app-avatar [src]="user.profileImageUrl" [name]="user.fullName" [size]="64" />
       <div style="flex:1;min-width:0;">
-        <div style="font-size:20px;font-weight:700;margin-bottom:4px;">{{ user.fullName }}</div>
-        <div style="font-size:13px;color:var(--text-2);">{{ user.email }}</div>
+        <div class="user-detail-hero-name">{{ user.fullName }}</div>
+        <div class="user-detail-hero-email">{{ user.email }}</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <span class="chip" [ngClass]="roleClass(primaryRole(user))">{{ primaryRole(user) }}</span>
+        <span class="chip" [ngClass]="roleClass(primaryRole(user))"><i class="fas fa-user-shield" style="font-size:10px;"></i> {{ primaryRole(user) }}</span>
         @if (user.isActive) {
-          <span class="chip chip-green">Active</span>
+          <span class="chip chip-green"><i class="fas fa-circle-check" style="font-size:10px;"></i> Active</span>
         } @else {
-          <span class="chip chip-red">Inactive</span>
+          <span class="chip chip-red"><i class="fas fa-ban" style="font-size:10px;"></i> Inactive</span>
         }
       </div>
     </div>
 
-    <!-- Info grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px;">
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">User ID</div>
-        <div class="detail-spec-value">#{{ user.id }}</div>
-      </div>
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">Phone</div>
-        <div class="detail-spec-value">{{ user.phoneNumber ?? '—' }}</div>
-      </div>
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">City</div>
-        <div class="detail-spec-value">{{ user.city ?? '—' }}</div>
-      </div>
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">Address</div>
-        <div class="detail-spec-value">{{ user.address ?? '—' }}</div>
-      </div>
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">Joined</div>
-        <div class="detail-spec-value">{{ user.createdAt | date:'mediumDate' }}</div>
-      </div>
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">Total Listings</div>
-        <div class="detail-spec-value">{{ user.totalListings }}</div>
-      </div>
-      <div class="detail-spec-card">
-        <div class="detail-spec-label">Total Bookings</div>
-        <div class="detail-spec-value">{{ user.totalBookings }}</div>
-      </div>
-    </div>
-
-    <!-- Identity document -->
-    <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px;">
-      <div style="font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">National ID</div>
-      @if (user.nationalIdImageUrl) {
-        <a [href]="resolveMediaUrl(user.nationalIdImageUrl)!" target="_blank" rel="noopener" class="handover-thumb" style="width:180px;height:110px;" title="Open full size">
-          <img [src]="resolveMediaUrl(user.nationalIdImageUrl)!" alt="National ID document" />
-        </a>
-      } @else {
-        <div style="font-size:13px;color:var(--text-3);">No ID document uploaded.</div>
-      }
-    </div>
-
-    <!-- Stripe section (only when at least one ID is present) -->
-    @if (user.stripeCustomerId || user.stripeAccountId) {
-      <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px;">
-        <div style="font-size:12px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Stripe</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">
-          @if (user.stripeCustomerId) {
-            <div class="detail-spec-card">
-              <div class="detail-spec-label">Customer ID</div>
-              <div class="detail-spec-value" style="font-family:monospace;font-size:12px;word-break:break-all;">{{ user.stripeCustomerId }}</div>
-            </div>
-          }
-          @if (user.stripeAccountId) {
-            <div class="detail-spec-card">
-              <div class="detail-spec-label">Account ID</div>
-              <div class="detail-spec-value" style="font-family:monospace;font-size:12px;word-break:break-all;">{{ user.stripeAccountId }}</div>
-            </div>
-          }
+    <div class="card-elevated" style="padding:24px;">
+      <!-- Account details -->
+      <div class="user-detail-section-label">Account details</div>
+      <div class="user-stat-grid">
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-hashtag"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">User ID</div>
+            <div class="user-stat-value">#{{ user.id }}</div>
+          </div>
+        </div>
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-phone"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">Phone</div>
+            <div class="user-stat-value">{{ user.phoneNumber ?? '—' }}</div>
+          </div>
+        </div>
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-location-dot"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">City</div>
+            <div class="user-stat-value">{{ user.city ?? '—' }}</div>
+          </div>
+        </div>
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-map"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">Address</div>
+            <div class="user-stat-value">{{ user.address ?? '—' }}</div>
+          </div>
+        </div>
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-calendar-alt"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">Joined</div>
+            <div class="user-stat-value">{{ user.createdAt | date:'mediumDate' }}</div>
+          </div>
+        </div>
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-toolbox"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">Total listings</div>
+            <div class="user-stat-value">{{ user.totalListings }}</div>
+          </div>
+        </div>
+        <div class="user-stat-tile">
+          <div class="user-stat-ico"><i class="fas fa-calendar-check"></i></div>
+          <div style="min-width:0;">
+            <div class="user-stat-label">Total bookings</div>
+            <div class="user-stat-value">{{ user.totalBookings }}</div>
+          </div>
         </div>
       </div>
-    }
 
-    <!-- Actions -->
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:20px;">
-      <!-- Role picker -->
-      @if (rolePickerId() === user.id) {
-        <div style="display:flex;gap:6px;align-items:center;">
-          <select
-            class="form-input form-select"
-            style="width:auto;font-size:13px;"
-            [ngModel]="roleInput()"
-            (ngModelChange)="roleInput.set($event)"
-          >
-            <option value="user">user</option>
-            <option value="admin">admin</option>
-          </select>
+      <!-- Identity document -->
+      <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:22px;">
+        <div class="user-detail-section-label">National ID</div>
+        @if (user.nationalIdImageUrl) {
+          <a [href]="resolveMediaUrl(user.nationalIdImageUrl)!" target="_blank" rel="noopener" class="id-preview" style="width:260px;max-width:100%;text-decoration:none;" title="Open full size">
+            <img [src]="resolveMediaUrl(user.nationalIdImageUrl)!" alt="National ID document" />
+          </a>
+        } @else {
+          <div class="id-preview" style="width:260px;max-width:100%;">
+            <div class="id-preview-empty">
+              <i class="fas fa-id-card"></i>
+              <span>No ID document uploaded</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Stripe section (only when at least one ID is present) -->
+      @if (user.stripeCustomerId || user.stripeAccountId) {
+        <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:22px;">
+          <div class="user-detail-section-label">Stripe</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">
+            @if (user.stripeCustomerId) {
+              <div class="detail-spec-card" style="text-align:left;">
+                <div class="detail-spec-label">Customer ID</div>
+                <div class="detail-spec-value" style="font-family:monospace;font-size:12px;word-break:break-all;">{{ user.stripeCustomerId }}</div>
+              </div>
+            }
+            @if (user.stripeAccountId) {
+              <div class="detail-spec-card" style="text-align:left;">
+                <div class="detail-spec-label">Account ID</div>
+                <div class="detail-spec-value" style="font-family:monospace;font-size:12px;word-break:break-all;">{{ user.stripeAccountId }}</div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="user-detail-actions">
+        <!-- Role picker -->
+        @if (rolePickerId() === user.id) {
+          <div style="display:flex;gap:6px;align-items:center;">
+            <select
+              class="form-input form-select"
+              style="width:auto;font-size:13px;"
+              [ngModel]="roleInput()"
+              (ngModelChange)="roleInput.set($event)"
+            >
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              [disabled]="actingId() === user.id"
+              (click)="saveRole(user)"
+            >Save</button>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()" aria-label="Cancel"><i class="fas fa-xmark"></i></button>
+          </div>
+        } @else {
           <button
             type="button"
-            class="btn btn-primary btn-sm"
+            class="btn btn-secondary btn-sm"
             [disabled]="actingId() === user.id"
-            (click)="saveRole(user)"
-          >Save</button>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="closeRolePicker()" aria-label="Cancel"><i class="fas fa-xmark"></i></button>
+            (click)="openRolePicker(user)"
+          >
+            <i class="fas fa-pen-to-square" style="margin-right:5px;"></i>Change role
+          </button>
+        }
+
+        <!-- Active toggle: slider and its label are siblings so they never overlap -->
+        <div class="user-toggle-field">
+          <label class="toggle" [title]="user.isActive ? 'Deactivate user' : 'Activate user'">
+            <input
+              type="checkbox"
+              [checked]="user.isActive"
+              [disabled]="actingId() === user.id"
+              (change)="toggleActive(user, $event)"
+            />
+            <span class="toggle-slider"></span>
+          </label>
+          <span style="font-size:13px;font-weight:500;color:var(--text-2);">
+            {{ user.isActive ? 'Account active' : 'Account inactive' }}
+          </span>
         </div>
-      } @else {
+
+        <!-- Delete -->
         <button
           type="button"
-          class="btn btn-secondary btn-sm"
-          [disabled]="actingId() === user.id"
-          (click)="openRolePicker(user)"
+          class="btn btn-sm btn-danger-solid"
+          style="margin-left:auto;"
+          [disabled]="deletingId() === user.id || actingId() === user.id"
+          (click)="deleteUser(user)"
         >
-          <i class="fas fa-pen-to-square" style="margin-right:5px;"></i>Change Role
+          @if (deletingId() === user.id) {
+            <span class="spinner-border spinner-border-sm"></span> Deleting…
+          } @else {
+            <i class="fas fa-trash" style="margin-right:5px;"></i>Delete user
+          }
         </button>
-      }
-
-      <!-- Active toggle -->
-      <label class="toggle" style="display:flex;align-items:center;gap:8px;cursor:pointer;" [title]="user.isActive ? 'Deactivate user' : 'Activate user'">
-        <input
-          type="checkbox"
-          [checked]="user.isActive"
-          [disabled]="actingId() === user.id"
-          (change)="toggleActive(user, $event)"
-        />
-        <span class="toggle-slider"></span>
-        <span style="font-size:13px;color:var(--text-2);">{{ user.isActive ? 'Active' : 'Inactive' }}</span>
-      </label>
-
-      <!-- Delete -->
-      <button
-        type="button"
-        class="btn btn-sm btn-danger-solid"
-        style="margin-left:auto;"
-        [disabled]="deletingId() === user.id || actingId() === user.id"
-        (click)="deleteUser(user)"
-      >
-        @if (deletingId() === user.id) {
-          Deleting...
-        } @else {
-          <i class="fas fa-trash" style="margin-right:5px;"></i>Delete User
-        }
-      </button>
+      </div>
     </div>
   </div>
 
