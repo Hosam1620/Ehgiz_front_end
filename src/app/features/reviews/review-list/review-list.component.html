@@ -10,13 +10,36 @@
     <div class="alert alert-danger">{{ error() }}</div>
   }
 
+  @if (!isLoading() && reviews().length) {
+    <div class="summary-strip">
+      <div class="summary-strip-item">
+        <div class="summary-strip-value">{{ reviews().length }}</div>
+        <div class="summary-strip-label">Reviews given</div>
+      </div>
+      <div class="summary-strip-sep"></div>
+      <div class="summary-strip-item">
+        <div class="summary-strip-value" style="color:var(--amber-text);">{{ averageRating() | number:'1.1-1' }} <span style="font-size:15px;">★</span></div>
+        <div class="summary-strip-label">Average rating</div>
+      </div>
+      @if (pendingBookingIds().length) {
+        <div class="summary-strip-sep"></div>
+        <div class="summary-strip-item">
+          <div class="summary-strip-value" style="color:var(--green);">{{ pendingBookingIds().length }}</div>
+          <div class="summary-strip-label">Awaiting review</div>
+        </div>
+      }
+    </div>
+  }
+
   @if (pendingBookingIds().length) {
     <div class="card-elevated" style="padding:16px 20px;margin-bottom:20px;background:var(--amber-light);border:1px solid var(--amber-border);">
-      <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Pending reviews</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-pen" style="color:var(--amber-text);"></i> Pending reviews
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         @for (id of pendingBookingIds(); track id) {
           <a class="btn btn-sm btn-primary" [routerLink]="['/reviews/create']" [queryParams]="{ bookingId: id }">
-            Review booking #{{ id }}
+            <i class="fas fa-star"></i> Review booking #{{ id }}
           </a>
         }
       </div>
@@ -32,29 +55,44 @@
       <p style="font-size:13px;color:var(--text-2);">Complete a rental and leave your first review.</p>
     </div>
   } @else {
-    <div style="display:flex;flex-direction:column;gap:16px;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
       @for (review of reviews(); track review.id) {
-        <div class="card-elevated" style="padding:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-            <div>
-              <div style="font-size:15px;font-weight:700;margin-bottom:4px;">{{ review.toolName }}</div>
-              <div style="font-size:12px;color:var(--text-3);margin-bottom:8px;">
-                Booking #{{ review.bookingId }} · {{ review.createdAt | date:'mediumDate' }}
-              </div>
-              <div style="margin-bottom:8px;">
-                @for (s of stars(review.rating); track s) {
-                  <span style="color:var(--amber);">★</span>
-                }
-                @for (s of emptyStars(review.rating); track s) {
-                  <span style="color:var(--border);">★</span>
-                }
-              </div>
-              @if (review.comment) {
-                <p style="font-size:14px;color:var(--text-2);">{{ review.comment }}</p>
+        <div class="review-row-card">
+          <div class="review-rating-badge">
+            <span class="review-rating-badge-num">{{ review.rating }}</span>
+            <span class="review-rating-badge-star">★</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <a [routerLink]="['/tools', review.toolId]" class="review-tool-link">{{ review.toolName }}</a>
+            <div style="font-size:12px;color:var(--text-3);margin:4px 0 8px;">
+              Booking #{{ review.bookingId }} · {{ review.createdAt | date:'mediumDate' }}
+            </div>
+            <div style="margin-bottom:8px;letter-spacing:1px;">
+              @for (s of stars(review.rating); track s) {
+                <span style="color:var(--amber);">★</span>
+              }
+              @for (s of emptyStars(review.rating); track s) {
+                <span style="color:var(--border-2);">★</span>
               }
             </div>
-            <button type="button" class="btn btn-sm btn-danger" (click)="deleteReview(review.id)">Delete</button>
+            @if (review.comment) {
+              <p style="font-size:14px;color:var(--text-2);line-height:1.6;margin:0;">{{ review.comment }}</p>
+            }
           </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-danger icon-btn"
+            [disabled]="deletingId() === review.id"
+            (click)="deleteReview(review.id)"
+            title="Delete review"
+            aria-label="Delete review"
+          >
+            @if (deletingId() === review.id) {
+              <span class="spinner-border spinner-border-sm"></span>
+            } @else {
+              <i class="fas fa-trash-alt"></i>
+            }
+          </button>
         </div>
       }
     </div>

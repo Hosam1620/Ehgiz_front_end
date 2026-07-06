@@ -16,21 +16,30 @@
   @if (isLoading()) {
     <app-loading-spinner message="Loading wallet..." />
   } @else if (wallet(); as w) {
-    <div class="stat-grid" style="margin-bottom:24px;">
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
       <div class="stat-card">
-        <div class="stat-label">Available balance</div>
-        <div class="stat-value" style="color:var(--green);">{{ w.balance | number:'1.2-2' }}</div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+          <div class="stat-label">Available balance</div>
+          <div class="stat-icon" style="background:var(--green-light);color:var(--green);"><i class="fas fa-wallet"></i></div>
+        </div>
+        <div class="stat-value" style="color:var(--green);">{{ w.balance | number:'1.2-2' }} <span style="font-size:13px;font-weight:600;">EGP</span></div>
         <div class="stat-delta">Ready to spend or withdraw</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Held in escrow</div>
-        <div class="stat-value">{{ w.heldBalance | number:'1.2-2' }}</div>
-        <div class="stat-delta">Active booking deposits</div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+          <div class="stat-label">Held in escrow</div>
+          <div class="stat-icon" style="background:var(--amber-light);color:var(--amber-text);"><i class="fas fa-lock"></i></div>
+        </div>
+        <div class="stat-value">{{ w.heldBalance | number:'1.2-2' }} <span style="font-size:13px;font-weight:600;color:var(--text-3);">EGP</span></div>
+        <div class="stat-delta" style="color:var(--text-3);">Active booking deposits</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Total balance</div>
-        <div class="stat-value">{{ w.totalBalance | number:'1.2-2' }}</div>
-        <div class="stat-delta">Available + held</div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+          <div class="stat-label">Total balance</div>
+          <div class="stat-icon" style="background:var(--blue-light);color:var(--blue);"><i class="fas fa-coins"></i></div>
+        </div>
+        <div class="stat-value">{{ w.totalBalance | number:'1.2-2' }} <span style="font-size:13px;font-weight:600;color:var(--text-3);">EGP</span></div>
+        <div class="stat-delta" style="color:var(--text-3);">Available + held</div>
       </div>
     </div>
 
@@ -175,11 +184,12 @@
           <tbody>
             @for (tx of transactions(); track tx.id) {
               <tr>
-                <td style="font-size:12px;color:var(--text-3);">{{ tx.createdAt | date:'medium' }}</td>
-                <td><span class="chip chip-gray" style="font-size:11px;">{{ tx.type }}</span></td>
+                <td style="font-size:12px;color:var(--text-3);white-space:nowrap;">{{ tx.createdAt | date:'medium' }}</td>
+                <td><span class="chip" [class]="transactionTypeClass(tx.type)" style="font-size:11px;">{{ tx.type }}</span></td>
                 <td style="font-size:13px;">{{ tx.description ?? '—' }}</td>
-                <td [style]="transactionClass(tx.amount)">
-                  <strong>{{ transactionSign(tx.amount) }}{{ tx.amount | number:'1.2-2' }}</strong>
+                <td [style]="transactionClass(tx.amount)" style="white-space:nowrap;">
+                  <i class="fas" [class.fa-arrow-down]="tx.amount >= 0" [class.fa-arrow-up]="tx.amount < 0" style="font-size:9px;margin-right:5px;"></i>
+                  <strong>{{ transactionSign(tx.amount) }}{{ tx.amount | number:'1.2-2' }} EGP</strong>
                 </td>
               </tr>
             }

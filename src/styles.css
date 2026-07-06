@@ -380,7 +380,8 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
 }
-.tool-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.tool-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.tool-card:hover .tool-card-img img { transform: scale(1.05); }
 .tool-image-placeholder {
   width: 100%; height: 100%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -903,6 +904,38 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 @media (max-width: 620px) {
   .booking-cta { align-self: flex-start; }
 }
+
+/* ── SAVED SEARCHES ── */
+.saved-search-card {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px 20px;
+  transition: box-shadow .18s, border-color .18s;
+}
+.saved-search-card:hover { box-shadow: var(--shadow); border-color: var(--border-2); }
+.saved-search-badge {
+  width: 40px; height: 40px; border-radius: var(--radius); flex-shrink: 0;
+  background: var(--green-light); color: var(--green);
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+
+/* ── REVIEWS LIST ── */
+.review-row-card {
+  display: flex; align-items: flex-start; gap: 16px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  transition: box-shadow .18s, border-color .18s;
+}
+.review-row-card:hover { box-shadow: var(--shadow); }
+.review-rating-badge {
+  width: 48px; height: 48px; border-radius: var(--radius); flex-shrink: 0;
+  background: var(--amber-light); color: var(--amber-text);
+  display: flex; align-items: center; justify-content: center; gap: 1px;
+}
+.review-rating-badge-num { font-size: 18px; font-weight: 800; font-family: 'Fraunces', serif; }
+.review-rating-badge-star { font-size: 12px; }
+.review-tool-link { font-size: 15px; font-weight: 700; color: var(--text); text-decoration: none; }
+.review-tool-link:hover { color: var(--green-dark); text-decoration: underline; }
 
 /* ── ADMIN USER DETAIL ── */
 .user-detail-hero {

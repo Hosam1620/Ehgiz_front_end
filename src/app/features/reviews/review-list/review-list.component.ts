@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { ReviewService } from '../../../core/services/review.service';
 import { BookingService } from '../../../core/services/booking.service';
@@ -11,7 +11,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 @Component({
   standalone: true,
   selector: 'app-review-list',
-  imports: [RouterLink, DatePipe, LoadingSpinnerComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, LoadingSpinnerComponent],
   templateUrl: './review-list.component.html',
 })
 export class ReviewListComponent implements OnInit {
@@ -23,18 +23,30 @@ export class ReviewListComponent implements OnInit {
   protected readonly pendingBookingIds = signal<number[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly error = signal<string | null>(null);
+  protected readonly deletingId = signal<number | null>(null);
+
+  protected readonly averageRating = computed(() => {
+    const list = this.reviews();
+    if (!list.length) return 0;
+    return list.reduce((sum, r) => sum + r.rating, 0) / list.length;
+  });
 
   ngOnInit(): void {
     this.load();
   }
 
   deleteReview(id: number): void {
+    this.deletingId.set(id);
     this.reviewService.delete(id).subscribe({
       next: () => {
         this.toast.show('Deleted', 'Review removed.', 'success');
+        this.deletingId.set(null);
         this.load();
       },
-      error: err => this.toast.show('Error', err.error?.message ?? 'Could not delete review.', 'error'),
+      error: err => {
+        this.deletingId.set(null);
+        this.toast.show('Error', err.error?.message ?? 'Could not delete review.', 'error');
+      },
     });
   }
 

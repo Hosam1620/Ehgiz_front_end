@@ -213,4 +213,13 @@ export class WalletComponent implements OnInit, OnDestroy {
   transactionClass(amount: number): string {
     return amount >= 0 ? 'color:var(--green);' : 'color:var(--red);';
   }
+
+  /** Colour the transaction-type chip by whether it credits or debits the wallet. */
+  transactionTypeClass(type: string): string {
+    const credits = ['TopUp', 'EarningCredit', 'InsuranceRefund', 'BookingRefund', 'LateFeeCredit', 'DisputeCredit'];
+    const debits = ['BookingDebit', 'Withdrawal', 'LateFeeDebit', 'PartialRefund', 'AdminReversal'];
+    if (credits.includes(type)) return 'chip-green';
+    if (debits.includes(type)) return 'chip-red';
+    return 'chip-gray';
+  }
 }
