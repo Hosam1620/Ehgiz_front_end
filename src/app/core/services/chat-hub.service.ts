@@ -58,11 +58,14 @@ export class ChatHubService implements OnDestroy {
       .configureLogging(LogLevel.Warning)
       .build();
 
-    this.connection.on('NewMessage', (message: MessageDto) => {
+    // Event names must match exactly what the server's MessageBroadcaster emits
+    // ("ReceiveMessage" / "MessagesRead"). A mismatch silently drops every push,
+    // which is why messages only appeared after a manual refresh.
+    this.connection.on('ReceiveMessage', (message: MessageDto) => {
       this.ngZone.run(() => this.messageReceived$.next(message));
     });
 
-    this.connection.on('MessageRead', (data: MessagesReadEvent) => {
+    this.connection.on('MessagesRead', (data: MessagesReadEvent) => {
       this.ngZone.run(() => this.messagesRead$.next(data));
     });
 

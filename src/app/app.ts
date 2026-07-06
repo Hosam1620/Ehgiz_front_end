@@ -12,14 +12,13 @@ import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
 import { ToastContainerComponent } from './shared/components/toast/toast.component';
 import { AiChatWidgetComponent } from './shared/components/ai-chat-widget/ai-chat-widget.component';
-import { AvatarComponent } from './shared/components/avatar/avatar.component';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { ConfirmService } from './shared/components/confirm-dialog/confirm.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer, ToastContainerComponent, AiChatWidgetComponent, AvatarComponent, ConfirmDialogComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer, ToastContainerComponent, AiChatWidgetComponent, ConfirmDialogComponent],
   templateUrl: './app.html',
 })
 export class App {
@@ -34,10 +33,6 @@ export class App {
   private readonly router = inject(Router);
 
   readonly userName = computed(() => this.auth.currentUser()?.fullName ?? '');
-  readonly userInitials = computed(() => {
-    const name = this.auth.currentUser()?.fullName ?? '';
-    return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('') || '?';
-  });
   readonly unreadCount = this.notifService.unreadCount;
   readonly unreadMessageCount = this.messageService.unreadCount;
   showSidebar = signal(true);

@@ -1138,7 +1138,10 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   position: fixed;
   inset: 0;
   background: var(--overlay);
-  z-index: 400;
+  /* Must sit above the AI chat FAB/panel (z-index 1000) and every sticky page
+     chrome; otherwise those layers intercept clicks and the dialog buttons
+     (e.g. "Sign out") appear but never fire. */
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1265,8 +1268,8 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 
 .ai-chat-panel {
   position: fixed; bottom: 96px; right: 24px;
-  width: 380px; max-width: calc(100vw - 48px);
-  height: 560px; max-height: calc(100vh - 140px);
+  width: 460px; max-width: calc(100vw - 48px);
+  height: 620px; max-height: calc(100vh - 140px);
   background: var(--white); border-radius: var(--radius-lg);
   box-shadow: 0 10px 40px rgba(0,0,0,0.15);
   display: flex; flex-direction: column; z-index: 1000;
@@ -1322,8 +1325,9 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 
 .ai-chat-msg { display: flex; gap: 10px; max-width: 88%; }
 .ai-chat-msg-user { align-self: flex-end; flex-direction: row-reverse; }
-.ai-chat-msg-bot { align-self: flex-start; }
-.ai-chat-msg-col { display: flex; flex-direction: column; min-width: 0; }
+/* Bot replies often carry a tool grid, so let them use more of the wider panel. */
+.ai-chat-msg-bot { align-self: flex-start; max-width: 96%; }
+.ai-chat-msg-col { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 .ai-chat-msg-user .ai-chat-msg-col { align-items: flex-end; }
 
 .ai-chat-msg-avatar {
@@ -1366,18 +1370,22 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   color: var(--text-3); margin-bottom: 8px; letter-spacing: 0.5px;
 }
 .ai-chat-tools-row {
-  display: flex; gap: 8px; overflow-x: auto; margin: 0 -14px; padding: 0 14px 4px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px; margin: 0; padding: 0;
 }
 .ai-chat-tool-card {
-  flex: 0 0 auto; width: 140px; text-decoration: none; color: inherit;
+  text-decoration: none; color: inherit;
   border: 1px solid var(--border); border-radius: var(--radius);
-  overflow: hidden; background: var(--white); transition: border-color .15s, transform .15s;
+  overflow: hidden; background: var(--white); transition: border-color .15s, transform .15s, box-shadow .15s;
 }
-.ai-chat-tool-card:hover { border-color: var(--green); transform: translateY(-1px); }
+.ai-chat-tool-card:hover { border-color: var(--green); transform: translateY(-1px); box-shadow: var(--shadow); }
 .ai-chat-tool-thumb {
-  width: 100%; height: 80px; background: var(--green-light);
+  width: 100%; height: 92px; background: var(--green-light);
   display: flex; align-items: center; justify-content: center;
-  color: var(--green-dark); font-size: 20px; overflow: hidden;
+  color: var(--green-dark); font-size: 22px; overflow: hidden;
+}
+@media (max-width: 520px) {
+  .ai-chat-tools-row { grid-template-columns: minmax(0, 1fr); }
 }
 .ai-chat-tool-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .ai-chat-tool-info { padding: 8px; }
@@ -1511,6 +1519,62 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 }
 .confirm-dialog-icon.danger { background: var(--red-light); color: var(--red); }
 
+/* ── PROFILE PAGE ── */
+.profile-hero {
+  display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+  padding: 30px 32px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--green-light) 0%, var(--surface) 70%);
+}
+.profile-avatar-edit { position: relative; flex-shrink: 0; }
+.profile-avatar-cam {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--green); color: #fff; border: 2px solid var(--white);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 12px; transition: background .15s, transform .15s;
+}
+.profile-avatar-cam:hover { background: var(--green-mid); transform: scale(1.06); }
+.profile-avatar-busy {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: var(--overlay); display: flex; align-items: center; justify-content: center;
+}
+.profile-hero-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 22px; color: var(--text); }
+.profile-hero-meta {
+  font-size: 12px; color: var(--text-3);
+  display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;
+}
+.profile-hero-meta i { margin-right: 5px; }
+.profile-section { padding: 28px 32px; }
+.profile-section + .profile-section { border-top: 1px solid var(--border); }
+.profile-section-title {
+  font-size: 11px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.profile-section-title i { color: var(--green); font-size: 12px; }
+.id-verify-grid { display: grid; grid-template-columns: 240px 1fr; gap: 26px; align-items: start; }
+@media (max-width: 680px) { .id-verify-grid { grid-template-columns: 1fr; } }
+.id-preview {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; background: var(--surface); aspect-ratio: 16 / 10;
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.id-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.id-preview-empty { color: var(--text-3); text-align: center; padding: 20px; }
+.id-preview-empty i { font-size: 30px; display: block; margin-bottom: 10px; opacity: .8; }
+.id-preview-empty span { font-size: 12px; }
+.id-preview-busy {
+  position: absolute; inset: 0; background: var(--overlay);
+  display: flex; align-items: center; justify-content: center;
+}
+.id-info-title { font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 6px; }
+.id-info-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 14px; }
+.id-secure-note {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-3); margin-top: 14px;
+}
+.id-secure-note i { color: var(--green); }
+
 /* ── PLATFORM FEE BANNER ── */
 .fee-banner {
   display: flex; align-items: flex-start; gap: 12px;
@@ -1618,7 +1682,6 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 }
 
 /* ── PROFILE AVATAR EDIT / UPLOAD PREVIEWS ── */
-.profile-avatar-edit { position: relative; width: 84px; height: 84px; flex-shrink: 0; }
 .profile-avatar-edit .app-avatar { box-shadow: var(--shadow); }
 .avatar-picker-input { display: none; }
 .avatar-preview-ring {

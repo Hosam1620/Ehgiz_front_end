@@ -130,6 +130,18 @@ export class AuthService {
       }));
   }
 
+  uploadNationalId(file: File): Observable<ApiResponse<UserProfile>> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http
+      .post<ApiResponse<UserProfile>>(`${environment.apiUrl}/api/auth/me/national-id`, formData)
+      .pipe(tap(res => {
+        if (res.succeeded && res.data) {
+          this.currentUser.set(res.data);
+        }
+      }));
+  }
+
   refresh(): Observable<ApiResponse<LoginResponse>> {
     return this.http
       .post<ApiResponse<LoginResponse>>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })

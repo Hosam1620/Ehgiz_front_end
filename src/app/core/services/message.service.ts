@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
+import { AuthService } from './auth.service';
 import {
   ConversationDto,
   MessageDto,
@@ -13,6 +14,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class MessageService {
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
   private readonly base = `${environment.apiUrl}/api/messages`;
 
   readonly conversations = signal<ConversationDto[]>([]);
@@ -68,6 +70,9 @@ export class MessageService {
   }
 
   applyIncomingMessage(message: MessageDto): void {
+    // The server echoes each message to the sender too, so don't count our own
+    // messages as unread. Recipients' messages still bump the badge.
+    const isOwnMessage = message.senderId === this.auth.currentUser()?.id;
     this.conversations.update(list => {
       const conversation = list.find(item => item.id === message.conversationId);
       if (!conversation) {
@@ -80,7 +85,7 @@ export class MessageService {
               ...item,
               lastMessage: message,
               updatedAt: message.createdAt,
-              unreadCount: item.unreadCount + 1,
+              unreadCount: isOwnMessage ? item.unreadCount : item.unreadCount + 1,
             }
           : item
       );
