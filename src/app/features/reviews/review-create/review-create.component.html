@@ -15,17 +15,21 @@
     } @else {
       <div class="card-elevated" style="padding:24px;">
         <label class="form-label">Rating</label>
-        <div style="display:flex;gap:8px;margin-bottom:20px;">
-          @for (star of [1,2,3,4,5]; track star) {
-            <button
-              type="button"
-              (click)="setRating(star)"
-              style="background:none;border:none;font-size:28px;cursor:pointer;padding:0;"
-              [style.color]="star <= rating ? 'var(--amber)' : 'var(--border)'"
-            >
-              ★
-            </button>
-          }
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+          <div style="display:flex;gap:6px;" (mouseleave)="hoverRating.set(0)">
+            @for (star of [1,2,3,4,5]; track star) {
+              <button
+                type="button"
+                (click)="setRating(star)"
+                (mouseenter)="hoverRating.set(star)"
+                [attr.aria-label]="star + ' star'"
+                style="background:none;border:none;font-size:30px;line-height:1;cursor:pointer;padding:0;transition:transform .1s,color .1s;"
+                [style.transform]="star <= (hoverRating() || rating) ? 'scale(1.1)' : 'none'"
+                [style.color]="star <= (hoverRating() || rating) ? 'var(--amber)' : 'var(--border-2)'"
+              >★</button>
+            }
+          </div>
+          <span style="font-size:13px;font-weight:600;color:var(--amber-text);">{{ ratingWords[hoverRating() || rating] }}</span>
         </div>
 
         <label class="form-label">Comment (optional)</label>

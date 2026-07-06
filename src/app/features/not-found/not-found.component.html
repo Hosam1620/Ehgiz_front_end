@@ -1,8 +1,14 @@
-<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 24px;">
-  <div style="font-size:96px;font-weight:800;color:var(--green);line-height:1;margin-bottom:16px;">404</div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:64vh;text-align:center;padding:40px 24px;">
+  <div style="width:88px;height:88px;border-radius:50%;background:var(--green-light);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:20px;">
+    <i class="fas fa-compass"></i>
+  </div>
+  <div style="font-family:'Fraunces',serif;font-size:64px;font-weight:800;color:var(--green);line-height:1;margin-bottom:10px;">404</div>
   <h1 style="font-size:24px;font-weight:700;margin-bottom:8px;">Page not found</h1>
-  <p style="font-size:14px;color:var(--text-3);max-width:340px;margin-bottom:32px;">
-    The page you're looking for doesn't exist or has been moved.
+  <p style="font-size:14px;color:var(--text-3);max-width:360px;margin-bottom:28px;line-height:1.6;">
+    The page you're looking for doesn't exist or has been moved. Let's get you back on track.
   </p>
-  <a routerLink="/dashboard" class="btn btn-primary" style="font-size:14px;">Go to Dashboard</a>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <a routerLink="/dashboard" class="btn btn-primary"><i class="fas fa-gauge-high"></i> Go to dashboard</a>
+    <a routerLink="/browse" class="btn btn-secondary"><i class="fas fa-search"></i> Browse tools</a>
+  </div>
 </div>

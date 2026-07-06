@@ -88,6 +88,17 @@
   --chart-net:   #34A472;
   --chart-fees:  #5B8DEF;
   color-scheme: dark;
+
+  /* Map Bootstrap's theme tokens onto our palette so its cards/forms on the
+     static content pages match the app instead of Bootstrap's default grays. */
+  --bs-body-bg:       var(--surface);
+  --bs-body-color:    var(--text);
+  --bs-card-bg:       var(--white);
+  --bs-card-color:    var(--text);
+  --bs-border-color:  var(--border);
+  --bs-secondary-color: var(--text-2);
+  --bs-tertiary-bg:   var(--surface2);
+  --bs-emphasis-color: var(--text);
 }
 
 /* ── RESET ── */

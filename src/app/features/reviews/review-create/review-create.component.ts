@@ -28,6 +28,8 @@ export class ReviewCreateComponent implements OnInit {
   protected bookingId = 0;
   protected rating = 5;
   protected comment = '';
+  protected readonly hoverRating = signal(0);
+  protected readonly ratingWords = ['', 'Poor', 'Fair', 'Good', 'Very good', 'Excellent'];
 
   ngOnInit(): void {
     this.bookingId = Number(this.route.snapshot.queryParamMap.get('bookingId'));

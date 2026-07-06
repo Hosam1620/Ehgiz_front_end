@@ -18,6 +18,10 @@ export class ThemeService {
     effect(() => {
       const theme = this.theme();
       document.documentElement.setAttribute('data-theme', theme);
+      // Bootstrap 5.3 components (cards, forms, dropdowns on the static content
+      // pages) key off data-bs-theme, not our data-theme. Keep them in sync so
+      // Bootstrap cards don't stay white-on-dark in dark mode.
+      document.documentElement.setAttribute('data-bs-theme', theme);
       localStorage.setItem(STORAGE_KEY, theme);
     });
   }
