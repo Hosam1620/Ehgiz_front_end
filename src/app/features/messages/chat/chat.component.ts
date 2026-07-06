@@ -164,8 +164,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     // New message pushed by the server (could be from us or the other user)
     this.chatHub.messageReceived$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(msg => {
       if (msg.conversationId !== this.conversationId()) return;
-      // Skip if already in the list (e.g. our own message added via optimistic update)
+      // Already have the confirmed message (e.g. the HTTP response landed first).
       if (this.messages().some(m => m.id === msg.id)) return;
+
+      // The server echoes our own sends back to us. If this echo arrives before
+      // the send() HTTP response, reconcile it with the optimistic copy instead
+      // of appending a duplicate (which otherwise flashes for a moment).
+      if (msg.senderId === this.currentUserId() && this.replaceOptimistic(msg)) {
+        this.markRead();
+        return;
+      }
+
       this.messages.update(list => [...list, msg]);
       this.shouldScrollToBottom = true;
       this.markRead();
@@ -188,6 +197,25 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.isOtherTyping.set(isTyping);
       if (isTyping) this.shouldScrollToBottom = true;
     });
+  }
+
+  /** Swap a still-pending optimistic message (negative temp id) for the server's
+   *  confirmed copy. Returns true when a match was found and replaced. Only one
+   *  send is ever in flight (send() blocks while isSending), so matching on the
+   *  temp id + sender + content is unambiguous. */
+  private replaceOptimistic(confirmed: MessageDto): boolean {
+    let didReplace = false;
+    this.messages.update(list => {
+      const index = list.findIndex(
+        m => m.id < 0 && m.senderId === confirmed.senderId && m.content === confirmed.content
+      );
+      if (index === -1) return list;
+      const next = [...list];
+      next[index] = confirmed;
+      didReplace = true;
+      return next;
+    });
+    return didReplace;
   }
 
   // ─── Sending ─────────────────────────────────────────────────────────────────
