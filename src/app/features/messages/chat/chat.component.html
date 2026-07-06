@@ -56,23 +56,28 @@
       <div class="alert alert-danger" style="margin:0;">{{ error() }}</div>
     }
 
+    <!-- Empty conversation -->
+    @if (!isLoading() && !error() && !messages().length) {
+      <div class="chat-empty">
+        <div class="chat-empty-icon"><i class="fas fa-comments"></i></div>
+        <div class="chat-empty-title">No messages yet</div>
+        <div class="chat-empty-sub">Say hello to start the conversation.</div>
+      </div>
+    }
+
     <!-- Message list -->
     @for (msg of messages(); track msg.id) {
-      <div class="chat-msg-group" [style.align-items]="isMe(msg) ? 'flex-end' : 'flex-start'">
-        <div style="display:flex;align-items:flex-end;gap:8px;" [style.flex-direction]="isMe(msg) ? 'row-reverse' : 'row'">
-          @if (!isMe(msg)) {
-            <app-avatar [src]="msg.senderAvatarUrl" [name]="msg.senderName" [size]="28" />
-          }
-          <div>
-            <div class="msg-bubble" [class.sent]="isMe(msg)" [class.recv]="!isMe(msg)">
-              {{ msg.content }}
-            </div>
-            <div class="msg-time" [class.sent]="isMe(msg)">
-              {{ msg.createdAt | timeAgo }}
-              @if (isMe(msg)) {
-                <i [class]="statusIcon(msg.status)" style="margin-left:4px;font-size:9px;" [style.color]="msg.status === 'Read' ? 'var(--blue)' : 'var(--text-3)'"></i>
-              }
-            </div>
+      <div class="chat-row" [class.me]="isMe(msg)">
+        @if (!isMe(msg)) {
+          <app-avatar [src]="msg.senderAvatarUrl" [name]="msg.senderName" [size]="28" />
+        }
+        <div class="chat-bubble-col">
+          <div class="msg-bubble" [class.sent]="isMe(msg)" [class.recv]="!isMe(msg)">{{ msg.content }}</div>
+          <div class="msg-time" [class.sent]="isMe(msg)">
+            {{ msg.createdAt | timeAgo }}
+            @if (isMe(msg)) {
+              <i [class]="statusIcon(msg.status)" style="margin-left:4px;font-size:9px;" [style.color]="msg.status === 'Read' ? 'var(--blue)' : 'var(--text-3)'"></i>
+            }
           </div>
         </div>
       </div>
@@ -80,10 +85,10 @@
 
     <!-- Typing bubble -->
     @if (isOtherTyping()) {
-      <div class="chat-msg-group" style="align-items:flex-start;">
-        <div style="display:flex;align-items:flex-end;gap:8px;">
-          <app-avatar [src]="conversation()?.otherUserAvatarUrl" [name]="conversation()?.otherUserName ?? '?'" [size]="28" />
-          <div class="msg-bubble recv" style="padding:10px 14px;">
+      <div class="chat-row">
+        <app-avatar [src]="conversation()?.otherUserAvatarUrl" [name]="conversation()?.otherUserName ?? '?'" [size]="28" />
+        <div class="chat-bubble-col">
+          <div class="msg-bubble recv msg-bubble-typing">
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>
@@ -118,9 +123,9 @@
     <button
       type="button"
       class="btn btn-primary"
-      style="flex-shrink:0;padding:10px 16px;"
       [disabled]="!messageInput().trim() || isSending()"
       (click)="send()"
+      aria-label="Send message"
     >
       @if (isSending()) {
         <span class="spinner-border spinner-border-sm" role="status"></span>
