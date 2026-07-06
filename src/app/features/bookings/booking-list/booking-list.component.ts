@@ -3,15 +3,16 @@ import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of, catchError } from 'rxjs';
 import { BookingService } from '../../../core/services/booking.service';
-import { BookingCard, BookingStatus } from '../../../core/models/booking.model';
+import { BookingCard, BookingStatus, HandoverSummary } from '../../../core/models/booking.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 
 type BookingTab = 'my' | 'received';
 
 @Component({
   standalone: true,
   selector: 'app-booking-list',
-  imports: [RouterLink, DecimalPipe, DatePipe, NgClass, LoadingSpinnerComponent],
+  imports: [RouterLink, DecimalPipe, DatePipe, NgClass, LoadingSpinnerComponent, AvatarComponent],
   templateUrl: './booking-list.component.html',
 })
 export class BookingListComponent implements OnInit {
@@ -72,6 +73,47 @@ export class BookingListComponent implements OnInit {
   otherPartyLabel(): string {
     return this.activeTab() === 'my' ? 'Owner' : 'Renter';
   }
+
+  /** Accent colour used on the card's left edge and status dot. */
+  statusAccent(status: BookingStatus): string {
+    const map: Record<BookingStatus, string> = {
+      Pending: 'var(--amber)',
+      Accepted: 'var(--blue)',
+      DeliveryHandover: 'var(--blue)',
+      Active: 'var(--green)',
+      ReturnHandover: 'var(--blue)',
+      Completed: 'var(--text-3)',
+      Rejected: 'var(--red)',
+      Cancelled: 'var(--text-3)',
+      Disputed: 'var(--red)',
+    };
+    return map[status] ?? 'var(--border-2)';
+  }
+
+  handoverChipClass(handover: HandoverSummary): string {
+    if (handover.isAccepted === true) return 'chip-green';
+    if (handover.isAccepted === false) return 'chip-red';
+    if (handover.isSubmitted) return 'chip-amber';
+    return 'chip-gray';
+  }
+
+  handoverLabel(handover: HandoverSummary): string {
+    if (handover.isAccepted === true) return 'Accepted';
+    if (handover.isAccepted === false) return 'Rejected';
+    if (handover.isSubmitted) return 'Awaiting response';
+    return 'Pending';
+  }
+
+  /** Count summary for the tab currently shown, used in the header strip. */
+  protected readonly summary = computed(() => {
+    const list = this.displayedBookings();
+    const active = list.filter(b =>
+      ['Accepted', 'DeliveryHandover', 'Active', 'ReturnHandover'].includes(b.status)
+    ).length;
+    const pending = list.filter(b => b.status === 'Pending').length;
+    const completed = list.filter(b => b.status === 'Completed').length;
+    return { total: list.length, active, pending, completed };
+  });
 
   private loadBookings(): void {
     this.isLoading.set(true);

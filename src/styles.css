@@ -831,6 +831,79 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .detail-spec-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; font-weight: 600; }
 .detail-spec-value { font-size: 13px; font-weight: 700; color: var(--text); }
 
+/* ── SUMMARY STRIP (shared: bookings, my tools, …) ── */
+.summary-strip {
+  display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px 22px; margin-bottom: 18px;
+}
+.summary-strip-item { text-align: center; }
+.summary-strip-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.1; }
+.summary-strip-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); font-weight: 600; margin-top: 3px; }
+.summary-strip-sep { width: 1px; align-self: stretch; background: var(--border); }
+
+/* Generic status dot for chips; colour set inline per state. */
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+
+/* ── MY TOOLS TABLE ── */
+.tool-thumb {
+  width: 46px; height: 46px; border-radius: var(--radius); flex-shrink: 0;
+  background: var(--surface2); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text-3);
+}
+.tool-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.tool-name-link {
+  font-weight: 600; color: var(--text); text-decoration: none;
+  display: inline-block; transition: color .12s;
+}
+.tool-name-link:hover { color: var(--green-dark); text-decoration: underline; }
+.icon-btn {
+  width: 34px; padding: 0 !important; display: inline-flex;
+  align-items: center; justify-content: center;
+}
+
+/* ── BOOKINGS LIST ── */
+
+.booking-card {
+  display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;
+  background: var(--white); border: 1px solid var(--border);
+  border-left: 3px solid var(--border-2);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  text-decoration: none; color: inherit;
+  transition: box-shadow .18s, transform .18s, border-color .18s;
+}
+.booking-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.booking-thumb {
+  width: 72px; height: 72px; border-radius: var(--radius); flex-shrink: 0;
+  background: var(--surface2); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: var(--text-3);
+}
+.booking-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.booking-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.booking-card:hover .booking-title { color: var(--green-dark); }
+.booking-meta { display: flex; gap: 14px; font-size: 12px; color: var(--text-3); margin-top: 5px; }
+.booking-meta i { margin-right: 4px; }
+.booking-status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.booking-facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px; margin-top: 14px;
+}
+.booking-fact-label { font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
+.booking-fact-label i { margin-right: 4px; }
+.booking-fact-value { font-size: 13px; color: var(--text); }
+.booking-cta {
+  align-self: center; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--green-dark);
+  white-space: nowrap;
+}
+.booking-card:hover .booking-cta i { transform: translateX(3px); }
+.booking-cta i { transition: transform .18s; }
+@media (max-width: 620px) {
+  .booking-cta { align-self: flex-start; }
+}
+
 /* ── ADMIN USER DETAIL ── */
 .user-detail-hero {
   display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
@@ -845,20 +918,22 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
   color: var(--text-3); margin-bottom: 14px;
 }
-.user-stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
-.user-stat-tile {
+/* Shared info-tile component (icon + label + value). Used on the admin user
+   detail page, tool detail specs, and anywhere a compact fact row fits. */
+.info-tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.info-tile {
   display: flex; align-items: center; gap: 12px;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 13px 15px; transition: border-color .15s;
 }
-.user-stat-tile:hover { border-color: var(--border-2); }
-.user-stat-ico {
+.info-tile:hover { border-color: var(--border-2); }
+.info-tile-ico {
   width: 36px; height: 36px; border-radius: var(--radius); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: var(--green-light); color: var(--green); font-size: 14px;
 }
-.user-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); font-weight: 600; }
-.user-stat-value { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 2px; word-break: break-word; }
+.info-tile-label { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); font-weight: 600; }
+.info-tile-value { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 2px; word-break: break-word; }
 .user-detail-actions {
   display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
   border-top: 1px solid var(--border); padding-top: 20px; margin-top: 22px;

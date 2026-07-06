@@ -82,6 +82,9 @@
             Message owner
           </button>
         } @else {
+          <a [routerLink]="['/tools', item.id, 'edit']" class="btn btn-primary btn-sm">
+            <i class="fas fa-pen"></i> Edit listing
+          </a>
           <a routerLink="/tools" class="btn btn-secondary btn-sm">
             <i class="fas fa-list"></i> My tools
           </a>
@@ -95,23 +98,42 @@
       <h3 class="detail-section-title">About this tool</h3>
       <p class="detail-description">{{ item.description }}</p>
 
-      <div class="detail-specs-grid">
-        <div class="detail-spec-card">
-          <div class="detail-spec-label">Category</div>
-          <div class="detail-spec-value">{{ item.categoryName ?? '—' }}</div>
+      <div class="info-tile-grid" style="margin-bottom:24px;">
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-tag"></i></div>
+          <div style="min-width:0;">
+            <div class="info-tile-label">Category</div>
+            <div class="info-tile-value">{{ item.categoryName ?? '—' }}</div>
+          </div>
         </div>
-        <div class="detail-spec-card">
-          <div class="detail-spec-label">Condition</div>
-          <div class="detail-spec-value">{{ conditionLabel(item.condition) ?? '—' }}</div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-award"></i></div>
+          <div style="min-width:0;">
+            <div class="info-tile-label">Condition</div>
+            <div class="info-tile-value">{{ conditionLabel(item.condition) ?? '—' }}</div>
+          </div>
         </div>
-        <div class="detail-spec-card">
-          <div class="detail-spec-label">Location</div>
-          <div class="detail-spec-value">{{ item.location ?? '—' }}</div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-location-dot"></i></div>
+          <div style="min-width:0;">
+            <div class="info-tile-label">Location</div>
+            <div class="info-tile-value">{{ item.location ?? '—' }}</div>
+          </div>
         </div>
-        @if (!isOwnTool(item)) {
-          <div class="detail-spec-card">
-            <div class="detail-spec-label">Price</div>
-            <div class="detail-spec-value" style="color:var(--green);">{{ item.pricePerDay | number:'1.0-0' }} EGP/day</div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-coins"></i></div>
+          <div style="min-width:0;">
+            <div class="info-tile-label">Price / day</div>
+            <div class="info-tile-value" style="color:var(--green);">{{ item.pricePerDay | number:'1.0-0' }} EGP</div>
+          </div>
+        </div>
+        @if (item.insurancePrice > 0) {
+          <div class="info-tile">
+            <div class="info-tile-ico"><i class="fas fa-shield-halved"></i></div>
+            <div style="min-width:0;">
+              <div class="info-tile-label">Insurance</div>
+              <div class="info-tile-value">{{ item.insurancePrice | number:'1.0-0' }} EGP</div>
+            </div>
           </div>
         }
       </div>

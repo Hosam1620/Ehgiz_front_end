@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ToolsService } from '../../../core/services/tools.service';
-import { Tool } from '../../../core/models/tool.model';
+import { Tool, toolConditionLabel } from '../../../core/models/tool.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 type ToolTab = 'all' | 'available' | 'booked' | 'inactive';
@@ -45,6 +45,23 @@ export class MyToolsComponent implements OnInit {
       inactive: 0,
     };
   });
+
+  /** Owner-facing summary: how many listings and the combined daily earning
+   *  potential if every available tool were rented. */
+  protected readonly summary = computed(() => {
+    const items = this.tools();
+    const available = items.filter(t => t.isAvailable);
+    return {
+      total: items.length,
+      available: available.length,
+      booked: items.filter(t => !t.isAvailable).length,
+      potentialPerDay: available.reduce((sum, t) => sum + (t.pricePerDay ?? 0), 0),
+    };
+  });
+
+  protected conditionLabel(tool: Tool): string | null {
+    return toolConditionLabel(tool.condition);
+  }
 
   ngOnInit(): void {
     this.loadTools();

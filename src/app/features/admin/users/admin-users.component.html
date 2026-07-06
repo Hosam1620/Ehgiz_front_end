@@ -30,54 +30,54 @@
     <div class="card-elevated" style="padding:24px;">
       <!-- Account details -->
       <div class="user-detail-section-label">Account details</div>
-      <div class="user-stat-grid">
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-hashtag"></i></div>
+      <div class="info-tile-grid">
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-hashtag"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">User ID</div>
-            <div class="user-stat-value">#{{ user.id }}</div>
+            <div class="info-tile-label">User ID</div>
+            <div class="info-tile-value">#{{ user.id }}</div>
           </div>
         </div>
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-phone"></i></div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-phone"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">Phone</div>
-            <div class="user-stat-value">{{ user.phoneNumber ?? '—' }}</div>
+            <div class="info-tile-label">Phone</div>
+            <div class="info-tile-value">{{ user.phoneNumber ?? '—' }}</div>
           </div>
         </div>
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-location-dot"></i></div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-location-dot"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">City</div>
-            <div class="user-stat-value">{{ user.city ?? '—' }}</div>
+            <div class="info-tile-label">City</div>
+            <div class="info-tile-value">{{ user.city ?? '—' }}</div>
           </div>
         </div>
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-map"></i></div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-map"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">Address</div>
-            <div class="user-stat-value">{{ user.address ?? '—' }}</div>
+            <div class="info-tile-label">Address</div>
+            <div class="info-tile-value">{{ user.address ?? '—' }}</div>
           </div>
         </div>
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-calendar-alt"></i></div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-calendar-alt"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">Joined</div>
-            <div class="user-stat-value">{{ user.createdAt | date:'mediumDate' }}</div>
+            <div class="info-tile-label">Joined</div>
+            <div class="info-tile-value">{{ user.createdAt | date:'mediumDate' }}</div>
           </div>
         </div>
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-toolbox"></i></div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-toolbox"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">Total listings</div>
-            <div class="user-stat-value">{{ user.totalListings }}</div>
+            <div class="info-tile-label">Total listings</div>
+            <div class="info-tile-value">{{ user.totalListings }}</div>
           </div>
         </div>
-        <div class="user-stat-tile">
-          <div class="user-stat-ico"><i class="fas fa-calendar-check"></i></div>
+        <div class="info-tile">
+          <div class="info-tile-ico"><i class="fas fa-calendar-check"></i></div>
           <div style="min-width:0;">
-            <div class="user-stat-label">Total bookings</div>
-            <div class="user-stat-value">{{ user.totalBookings }}</div>
+            <div class="info-tile-label">Total bookings</div>
+            <div class="info-tile-value">{{ user.totalBookings }}</div>
           </div>
         </div>
       </div>
