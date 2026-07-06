@@ -491,6 +491,14 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .data-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: var(--surface); }
+.data-table tr.row-clickable { cursor: pointer; }
+.data-table tr.row-clickable:hover td { background: var(--green-light); }
+.tx-filter-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; padding: 12px 16px; margin-bottom: 16px;
+  background: var(--green-light); border: 1px solid var(--green-border);
+  border-radius: var(--radius); font-size: 13px; color: var(--text);
+}
 
 /* ── TABS ── */
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
@@ -1509,15 +1517,6 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .nav-user-menu-item.danger i { color: var(--red); }
 .nav-user-menu-item.danger:hover { background: var(--red-light); color: var(--red); }
 .nav-user-menu-divider { height: 1px; background: var(--border); margin: 6px 4px; }
-
-/* ── CONFIRM DIALOG ── */
-.confirm-dialog { max-width: 400px; }
-.confirm-dialog-icon {
-  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: var(--green-light); color: var(--green); font-size: 14px;
-}
-.confirm-dialog-icon.danger { background: var(--red-light); color: var(--red); }
 
 /* ── PROFILE PAGE ── */
 .profile-hero {

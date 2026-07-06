@@ -12,18 +12,15 @@ import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
 import { ToastContainerComponent } from './shared/components/toast/toast.component';
 import { AiChatWidgetComponent } from './shared/components/ai-chat-widget/ai-chat-widget.component';
-import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
-import { ConfirmService } from './shared/components/confirm-dialog/confirm.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer, ToastContainerComponent, AiChatWidgetComponent, ConfirmDialogComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Navbar, Footer, ToastContainerComponent, AiChatWidgetComponent],
   templateUrl: './app.html',
 })
 export class App {
   protected readonly auth = inject(AuthService);
-  private readonly confirmService = inject(ConfirmService);
   // Injected for its side effect: applies the persisted theme on startup.
   private readonly themeService = inject(ThemeService);
   private readonly notifService = inject(NotificationService);
@@ -68,16 +65,8 @@ export class App {
       });
   }
 
-  async confirmLogout(): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Sign out',
-      message: 'Are you sure you want to sign out of your account?',
-      confirmLabel: 'Sign out',
-      danger: true,
-    });
-    if (confirmed) {
-      this.auth.logout();
-    }
+  logout(): void {
+    this.auth.logout();
   }
 
   private updateLayout(): void {

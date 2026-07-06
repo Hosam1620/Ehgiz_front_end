@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, output, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
 import { AdminWallet } from '../../../core/models/admin.model';
@@ -14,6 +14,9 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 export class AdminWalletsComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
+
+  /** Emitted when an admin clicks a wallet row, to open that wallet's transactions. */
+  readonly walletSelected = output<AdminWallet>();
 
   protected readonly wallets = signal<AdminWallet[]>([]);
   protected readonly isLoading = signal(true);

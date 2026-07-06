@@ -6,7 +6,6 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AdminUser } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
-import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { resolveMediaUrl } from '../../../core/utils/media-url';
 
@@ -21,7 +20,6 @@ type StatusFilter = 'all' | 'active' | 'inactive';
 export class AdminUsersComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
-  private readonly confirmService = inject(ConfirmService);
 
   protected readonly resolveMediaUrl = resolveMediaUrl;
 
@@ -88,21 +86,8 @@ export class AdminUsersComponent implements OnInit {
     this.closeRolePicker();
   }
 
-  async toggleActive(user: AdminUser, event?: Event): Promise<void> {
-    if (user.isActive) {
-      const confirmed = await this.confirmService.confirm({
-        title: 'Deactivate user',
-        message: `"${user.fullName}" will no longer be able to sign in until reactivated.`,
-        confirmLabel: 'Deactivate',
-        danger: true,
-      });
-      if (!confirmed) {
-        // Revert the natively-toggled checkbox back to the actual state.
-        const input = event?.target as HTMLInputElement | undefined;
-        if (input) input.checked = user.isActive;
-        return;
-      }
-    }
+  toggleActive(user: AdminUser, event?: Event): void {
+    void event;
     this.actingId.set(user.id);
     this.adminService
       .setUserActive(user.id, { isActive: !user.isActive })
@@ -154,14 +139,7 @@ export class AdminUsersComponent implements OnInit {
     return role === 'admin' ? 'chip-orange' : 'chip-blue';
   }
 
-  async deleteUser(user: AdminUser): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete user',
-      message: `Permanently delete "${user.fullName}"? This cannot be undone.`,
-      confirmLabel: 'Delete user',
-      danger: true,
-    });
-    if (!confirmed) return;
+  deleteUser(user: AdminUser): void {
     this.deletingId.set(user.id);
     this.adminService
       .deleteUser(user.id)

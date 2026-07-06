@@ -7,7 +7,6 @@ import { BookingService } from '../../../core/services/booking.service';
 import { Review } from '../../../core/models/review.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
-import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 
 @Component({
   standalone: true,
@@ -19,7 +18,6 @@ export class ReviewListComponent implements OnInit {
   private readonly reviewService = inject(ReviewService);
   private readonly bookingService = inject(BookingService);
   private readonly toast = inject(ToastService);
-  private readonly confirmService = inject(ConfirmService);
 
   protected readonly reviews = signal<Review[]>([]);
   protected readonly pendingBookingIds = signal<number[]>([]);
@@ -30,14 +28,7 @@ export class ReviewListComponent implements OnInit {
     this.load();
   }
 
-  async deleteReview(id: number): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete review',
-      message: 'This review will be permanently removed.',
-      confirmLabel: 'Delete review',
-      danger: true,
-    });
-    if (!confirmed) return;
+  deleteReview(id: number): void {
     this.reviewService.delete(id).subscribe({
       next: () => {
         this.toast.show('Deleted', 'Review removed.', 'success');

@@ -3,10 +3,29 @@
   <p style="font-size:13px;color:var(--text-2);">All platform wallet movements, newest first</p>
 </div>
 
+@if (walletFilter(); as w) {
+  <div class="tx-filter-banner">
+    <div>
+      <i class="fas fa-filter" style="color:var(--green);margin-right:8px;"></i>
+      Showing transactions for <strong>{{ w.userFullName }}</strong>
+      <span style="color:var(--text-3);">· {{ w.userEmail }} · wallet #{{ w.id }}</span>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm" (click)="clearFilter.emit()">
+      <i class="fas fa-xmark"></i> Show all
+    </button>
+  </div>
+}
+
 @if (isLoading()) {
   <app-loading-spinner message="Loading transactions..." />
-} @else if (!transactions().length) {
-  <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">No transactions found.</div>
+} @else if (!visibleTransactions().length) {
+  <div class="card" style="padding:32px;text-align:center;color:var(--text-3);">
+    @if (walletFilter()) {
+      No transactions for this wallet yet.
+    } @else {
+      No transactions found.
+    }
+  </div>
 } @else {
   <div class="card-elevated" style="padding:0;overflow:hidden;">
     <table class="data-table">
@@ -22,7 +41,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (tx of transactions(); track tx.id) {
+        @for (tx of visibleTransactions(); track tx.id) {
           <tr>
             <td style="color:var(--text-3);font-size:12px;">#{{ tx.id }}</td>
             <td style="font-size:13px;">{{ tx.userFullName }}</td>

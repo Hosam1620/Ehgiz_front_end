@@ -1,6 +1,6 @@
 <div style="margin-bottom:24px;">
   <h2 style="font-size:22px;margin-bottom:4px;">Wallets</h2>
-  <p style="font-size:13px;color:var(--text-2);">User wallet balances across the platform</p>
+  <p style="font-size:13px;color:var(--text-2);">User wallet balances across the platform. Select a wallet to view its transactions.</p>
 </div>
 
 @if (isLoading()) {
@@ -19,11 +19,12 @@
           <th>Held</th>
           <th>Available</th>
           <th>Last updated</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         @for (w of wallets(); track w.id) {
-          <tr>
+          <tr class="row-clickable" (click)="walletSelected.emit(w)" [title]="'View transactions for ' + w.userFullName">
             <td style="color:var(--text-3);font-size:12px;">#{{ w.id }}</td>
             <td style="font-weight:600;">{{ w.userFullName }}</td>
             <td style="font-size:12px;color:var(--text-2);">{{ w.userEmail }}</td>
@@ -31,6 +32,7 @@
             <td style="color:var(--orange-text);">{{ w.heldBalance | number:'1.2-2' }} EGP</td>
             <td style="color:var(--green-dark);font-weight:600;">{{ (w.balance - w.heldBalance) | number:'1.2-2' }} EGP</td>
             <td style="font-size:12px;color:var(--text-3);">{{ w.updatedAt | date:'medium' }}</td>
+            <td style="text-align:right;color:var(--text-3);"><i class="fas fa-chevron-right" style="font-size:11px;"></i></td>
           </tr>
         }
       </tbody>

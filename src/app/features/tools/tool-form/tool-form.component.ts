@@ -13,7 +13,6 @@ import {
 import { BrowseService } from '../browse.service';
 import { ToolsService } from '../../../core/services/tools.service';
 import { SettingsService } from '../../../core/services/settings.service';
-import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 import { ToastService } from '../../../shared/components/toast/toast.service';
 import { resolveMediaUrl } from '../../../core/utils/media-url';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -33,7 +32,6 @@ export class ToolFormComponent implements OnInit {
   private readonly browseService = inject(BrowseService);
   private readonly toolsService = inject(ToolsService);
   private readonly settingsService = inject(SettingsService);
-  private readonly confirmService = inject(ConfirmService);
   private readonly toast = inject(ToastService);
 
   tool = input<Tool | null>(null);
@@ -168,15 +166,7 @@ export class ToolFormComponent implements OnInit {
     this.previewUrls.update(urls => urls.filter((_, i) => i !== index));
   }
 
-  async deleteExistingImage(image: ToolImage): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete photo',
-      message: 'This photo will be permanently removed from the listing.',
-      confirmLabel: 'Delete photo',
-      danger: true,
-    });
-    if (!confirmed) return;
-
+  deleteExistingImage(image: ToolImage): void {
     this.imageActionId.set(image.id);
     this.toolsService.deleteImage(image.id).subscribe({
       next: () => {

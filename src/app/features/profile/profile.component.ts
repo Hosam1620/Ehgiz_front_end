@@ -6,7 +6,6 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { UserProfile } from '../../core/models/user.model';
 import { ToastService } from '../../shared/components/toast/toast.service';
-import { ConfirmService } from '../../shared/components/confirm-dialog/confirm.service';
 import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 import { resolveMediaUrl } from '../../core/utils/media-url';
 
@@ -22,7 +21,6 @@ export class ProfileComponent {
   protected readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly toast = inject(ToastService);
-  private readonly confirmService = inject(ConfirmService);
 
   protected readonly isSaving = signal(false);
   protected readonly isUploadingAvatar = signal(false);
@@ -132,15 +130,7 @@ export class ProfileComponent {
       });
   }
 
-  async removeAvatar(): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Remove profile photo',
-      message: 'Your profile photo will be removed and replaced with your initials.',
-      confirmLabel: 'Remove photo',
-      danger: true,
-    });
-    if (!confirmed) return;
-
+  removeAvatar(): void {
     this.isUploadingAvatar.set(true);
     this.auth
       .deleteProfileImage()

@@ -5,7 +5,6 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AdminCategory } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
-import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 
 @Component({
   selector: 'app-admin-categories',
@@ -16,7 +15,6 @@ import { ConfirmService } from '../../../shared/components/confirm-dialog/confir
 export class AdminCategoriesComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
-  private readonly confirmService = inject(ConfirmService);
 
   protected readonly categories = signal<AdminCategory[]>([]);
   protected readonly isLoading = signal(true);
@@ -122,15 +120,7 @@ export class AdminCategoriesComponent implements OnInit {
       });
   }
 
-  async deleteCategory(category: AdminCategory): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete category',
-      message: `Permanently delete "${category.name}"? This will fail if any tools are still assigned to it.`,
-      confirmLabel: 'Delete category',
-      danger: true,
-    });
-    if (!confirmed) return;
-
+  deleteCategory(category: AdminCategory): void {
     this.isSaving.set(true);
     this.adminService
       .deleteCategory(category.id)

@@ -5,7 +5,6 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AdminListing } from '../../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../../shared/components/toast/toast.service';
-import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 
 @Component({
   selector: 'app-admin-listings',
@@ -16,7 +15,6 @@ import { ConfirmService } from '../../../shared/components/confirm-dialog/confir
 export class AdminListingsComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
-  private readonly confirmService = inject(ConfirmService);
 
   protected readonly listings = signal<AdminListing[]>([]);
   protected readonly isLoading = signal(true);
@@ -56,15 +54,7 @@ export class AdminListingsComponent implements OnInit {
       });
   }
 
-  async deleteListing(listing: AdminListing): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete listing',
-      message: `Permanently delete "${listing.name ?? 'this listing'}"? This cannot be undone. Listings with active or pending bookings cannot be deleted.`,
-      confirmLabel: 'Delete listing',
-      danger: true,
-    });
-    if (!confirmed) return;
-
+  deleteListing(listing: AdminListing): void {
     const id = listing.id;
     this.actingId.set(id);
     this.adminService

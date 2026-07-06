@@ -4,7 +4,6 @@ import { DecimalPipe } from '@angular/common';
 import { ToolsService } from '../../../core/services/tools.service';
 import { Tool } from '../../../core/models/tool.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { ConfirmService } from '../../../shared/components/confirm-dialog/confirm.service';
 
 type ToolTab = 'all' | 'available' | 'booked' | 'inactive';
 
@@ -15,7 +14,6 @@ type ToolTab = 'all' | 'available' | 'booked' | 'inactive';
 })
 export class MyToolsComponent implements OnInit {
   private readonly toolsService = inject(ToolsService);
-  private readonly confirmService = inject(ConfirmService);
 
   protected readonly tools = signal<Tool[]>([]);
   protected readonly isLoading = signal(true);
@@ -56,22 +54,8 @@ export class MyToolsComponent implements OnInit {
     this.activeTab.set(tab);
   }
 
-  async confirmDelete(tool: Tool): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete tool',
-      message: `Are you sure you want to delete "${tool.name ?? 'this listing'}"? This action cannot be undone.`,
-      confirmLabel: 'Delete',
-      danger: true,
-    });
-    if (!confirmed) return;
+  confirmDelete(tool: Tool): void {
     this.toolToDelete.set(tool);
-    this.onDeleteConfirmed();
-  }
-
-  private onDeleteConfirmed(): void {
-    const tool = this.toolToDelete();
-    if (!tool) return;
-
     this.toolsService.delete(tool.id).subscribe({
       next: () => {
         this.tools.update(items => items.filter(t => t.id !== tool.id));

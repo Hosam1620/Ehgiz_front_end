@@ -5,10 +5,9 @@ import { finalize } from 'rxjs';
 import { AdminService } from '../../core/services/admin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BookingDetail, BookingStatus, Handover } from '../../core/models/booking.model';
-import { DisputeDetails, IssueReport, IssueReportStatus } from '../../core/models/admin.model';
+import { AdminWallet, DisputeDetails, IssueReport, IssueReportStatus } from '../../core/models/admin.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../shared/components/toast/toast.service';
-import { ConfirmService } from '../../shared/components/confirm-dialog/confirm.service';
 import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 import { resolveMediaUrl } from '../../core/utils/media-url';
 import { AdminDashboardComponent } from './dashboard/admin-dashboard.component';
@@ -40,7 +39,6 @@ type AdminTab = 'dashboard' | 'disputes' | 'issues' | 'settings' | 'users' | 'li
 export class AdminComponent implements OnInit {
   private readonly adminService = inject(AdminService);
   private readonly toast = inject(ToastService);
-  private readonly confirmService = inject(ConfirmService);
   protected readonly auth = inject(AuthService);
 
   protected readonly userInitials = computed(() => {
@@ -63,6 +61,9 @@ export class AdminComponent implements OnInit {
   protected readonly showPartialRefundModal = signal(false);
   protected readonly partialRefundPercent = signal(50);
 
+  /** When set, the Transactions tab shows only this wallet's movements. */
+  protected readonly selectedWallet = signal<AdminWallet | null>(null);
+
   protected readonly resolveMediaUrl = resolveMediaUrl;
 
   private feeLoaded = false;
@@ -74,16 +75,18 @@ export class AdminComponent implements OnInit {
     // Platform fee has no sidebar badge; defer to first settings open.
   }
 
-  async confirmLogout(): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Sign out',
-      message: 'Are you sure you want to sign out of the admin panel?',
-      confirmLabel: 'Sign out',
-      danger: true,
-    });
-    if (confirmed) {
-      this.auth.logout();
-    }
+  logout(): void {
+    this.auth.logout();
+  }
+
+  /** Wallet row clicked: switch to the Transactions tab scoped to that wallet. */
+  openWalletTransactions(wallet: AdminWallet): void {
+    this.setTab('transactions');
+    this.selectedWallet.set(wallet);
+  }
+
+  clearWalletFilter(): void {
+    this.selectedWallet.set(null);
   }
 
   setTab(tab: AdminTab): void {
@@ -91,6 +94,8 @@ export class AdminComponent implements OnInit {
     this.selectedDispute.set(null);
     this.selectedIssue.set(null);
     this.showPartialRefundModal.set(false);
+    // Navigating via the sidebar clears any wallet-scoped transaction view.
+    this.selectedWallet.set(null);
     if (tab === 'settings' && !this.feeLoaded) {
       this.feeLoaded = true;
       this.adminService.getPlatformFee().subscribe({

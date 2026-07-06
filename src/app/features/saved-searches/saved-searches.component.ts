@@ -5,7 +5,6 @@ import { SavedSearch } from '../../core/models/saved-search.model';
 import { SavedSearchService } from '../../core/services/saved-search.service';
 import { ToolCondition, toolConditionLabel } from '../../core/models/tool.model';
 import { BrowseFilterStore } from '../tools/browse-filter.store';
-import { ConfirmService } from '../../shared/components/confirm-dialog/confirm.service';
 import { ToastService } from '../../shared/components/toast/toast.service';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
@@ -18,7 +17,6 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 export class SavedSearchesComponent implements OnInit {
   private readonly savedSearchService = inject(SavedSearchService);
   private readonly filterStore = inject(BrowseFilterStore);
-  private readonly confirmService = inject(ConfirmService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
 
@@ -63,15 +61,7 @@ export class SavedSearchesComponent implements OnInit {
     void this.router.navigate(['/browse']);
   }
 
-  protected async deleteSearch(search: SavedSearch): Promise<void> {
-    const confirmed = await this.confirmService.confirm({
-      title: 'Delete saved search',
-      message: 'You will stop receiving alerts for new tools matching this search.',
-      confirmLabel: 'Delete',
-      danger: true,
-    });
-    if (!confirmed) return;
-
+  protected deleteSearch(search: SavedSearch): void {
     this.deletingId.set(search.id);
     this.savedSearchService.delete(search.id).subscribe({
       next: () => {

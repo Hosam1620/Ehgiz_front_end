@@ -68,7 +68,7 @@
           <div style="font-size:10px;color:rgba(255,255,255,.45);">Administrator</div>
         </div>
       </div>
-      <button type="button" class="admin-sidebar-item" style="padding:8px 10px;border-radius:6px;color:rgba(255,100,100,.85);" (click)="confirmLogout()">
+      <button type="button" class="admin-sidebar-item" style="padding:8px 10px;border-radius:6px;color:rgba(255,100,100,.85);" (click)="logout()">
         <i class="fas fa-sign-out-alt" style="width:16px;"></i> Sign out
       </button>
     </div>
@@ -94,11 +94,11 @@
       }
 
       @case ('wallets') {
-        <app-admin-wallets />
+        <app-admin-wallets (walletSelected)="openWalletTransactions($event)" />
       }
 
       @case ('transactions') {
-        <app-admin-transactions />
+        <app-admin-transactions [walletFilter]="selectedWallet()" (clearFilter)="clearWalletFilter()" />
       }
 
       @case ('disputes') {
