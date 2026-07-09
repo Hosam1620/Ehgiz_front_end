@@ -82,22 +82,6 @@
         </div>
       </div>
 
-      <!-- Identity document -->
-      <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:22px;">
-        <div class="user-detail-section-label">National ID</div>
-        @if (user.nationalIdImageUrl) {
-          <a [href]="resolveMediaUrl(user.nationalIdImageUrl)!" target="_blank" rel="noopener" class="id-preview" style="width:260px;max-width:100%;text-decoration:none;" title="Open full size">
-            <img [src]="resolveMediaUrl(user.nationalIdImageUrl)!" alt="National ID document" />
-          </a>
-        } @else {
-          <div class="id-preview" style="width:260px;max-width:100%;">
-            <div class="id-preview-empty">
-              <i class="fas fa-id-card"></i>
-              <span>No ID document uploaded</span>
-            </div>
-          </div>
-        }
-      </div>
 
       <!-- Stripe section (only when at least one ID is present) -->
       @if (user.stripeCustomerId || user.stripeAccountId) {

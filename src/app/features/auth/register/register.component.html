@@ -162,28 +162,6 @@
         }
       </div>
 
-      <!-- National ID image (optional) -->
-      <div class="form-group">
-        <label class="form-label">National ID image (optional)</label>
-        @if (nationalIdPreview(); as preview) {
-          <div class="id-upload-preview" style="margin-bottom:8px;">
-            <img [src]="preview" alt="National ID preview" />
-          </div>
-          <button type="button" class="btn btn-secondary btn-sm" (click)="removeNationalIdImage()">
-            <i class="fas fa-times"></i> Remove image
-          </button>
-        } @else {
-          <label class="photo-drop" style="padding:20px;">
-            <input type="file" accept="image/*" hidden (change)="onNationalIdSelected($event)" />
-            <div><i class="fas fa-id-card" style="font-size:22px;margin-bottom:6px;"></i></div>
-            <div style="font-size:13px;font-weight:600;">Upload your national ID</div>
-            <div style="font-size:11px;margin-top:4px;">JPG or PNG · max 5 MB · speeds up verification</div>
-          </label>
-        }
-        @if (nationalIdError()) {
-          <div class="invalid-feedback" style="display:block;margin-top:6px;">{{ nationalIdError() }}</div>
-        }
-      </div>
 
       <div class="auth-terms">
         <input type="checkbox" formControlName="termsAccepted" />

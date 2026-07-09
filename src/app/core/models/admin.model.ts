@@ -63,8 +63,6 @@ export interface AdminUser {
   fullName: string;
   phoneNumber: string | null;
   profileImageUrl: string | null;
-  /** Only returned by the user-details endpoint. */
-  nationalIdImageUrl?: string | null;
   city: string | null;
   address: string | null;
   isActive: boolean;

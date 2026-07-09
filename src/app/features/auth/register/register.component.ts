@@ -35,9 +35,7 @@ export class RegisterComponent {
   protected readonly profileImage = signal<File | null>(null);
   protected readonly profileImagePreview = signal<string | null>(null);
   protected readonly profileImageError = signal<string | null>(null);
-  protected readonly nationalIdImage = signal<File | null>(null);
-  protected readonly nationalIdPreview = signal<string | null>(null);
-  protected readonly nationalIdError = signal<string | null>(null);
+
 
   onProfileImageSelected(event: Event): void {
     this.pickImage(event, this.profileImage, this.profileImagePreview, this.profileImageError);
@@ -49,15 +47,7 @@ export class RegisterComponent {
     this.profileImageError.set(null);
   }
 
-  onNationalIdSelected(event: Event): void {
-    this.pickImage(event, this.nationalIdImage, this.nationalIdPreview, this.nationalIdError);
-  }
 
-  removeNationalIdImage(): void {
-    this.nationalIdImage.set(null);
-    this.nationalIdPreview.set(null);
-    this.nationalIdError.set(null);
-  }
 
   private pickImage(
     event: Event,
@@ -100,7 +90,6 @@ export class RegisterComponent {
     const payload = {
       ...fields,
       profileImage: this.profileImage(),
-      nationalIdImage: this.nationalIdImage(),
     };
 
     this.authService.register(payload).subscribe({

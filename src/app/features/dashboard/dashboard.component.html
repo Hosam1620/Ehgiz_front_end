@@ -23,6 +23,9 @@
     <button type="button" class="btn btn-ai" (click)="openAssistant()">
       <i class="fas fa-robot"></i> Ask AI assistant
     </button>
+    <a class="btn btn-ai" routerLink="/ai/image-search">
+      <i class="fas fa-camera"></i> Try image search
+    </a>
   </div>
 
   <!-- Stats -->
@@ -133,12 +136,5 @@
     </div>
   </div>
 
-  <!-- AI tip -->
-  <div class="ai-suggest" style="margin-top:20px;">
-    <i class="fas fa-robot ai-suggest-icon"></i>
-    <div class="ai-suggest-text">
-      <strong>AI tip:</strong> Upload a photo of any tool to search for it instantly, no need to type its name.
-      <a routerLink="/ai/image-search" style="color:var(--green);font-weight:600;margin-left:6px;">Try image search →</a>
-    </div>
-  </div>
+
 </div>

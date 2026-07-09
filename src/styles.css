@@ -305,8 +305,8 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   white-space: nowrap; letter-spacing: .1px;
 }
 .btn:active:not(:disabled) { transform: scale(.98); }
-.btn-primary { background: var(--green); color: white; }
-.btn-primary:hover:not(:disabled) { background: var(--green-mid); box-shadow: 0 3px 10px rgba(26,107,74,.28); }
+.btn-primary { background: var(--green) !important; border-color: var(--green) !important; color: white !important; }
+.btn-primary:hover:not(:disabled) { background: var(--green-mid) !important; border-color: var(--green-mid) !important; box-shadow: 0 3px 10px rgba(26,107,74,.28) !important; }
 .btn-secondary { background: var(--white); color: var(--text); border: 1px solid var(--border-2); }
 .btn-secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-2); }
 .btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }

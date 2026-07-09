@@ -30,15 +30,7 @@
               <span><i class="fas fa-envelope"></i>{{ profile.email }}</span>
             }
           </div>
-          <div style="margin-top:12px;">
-            @if (profile.nationalIdImageUrl && profile.isActive) {
-              <span class="chip chip-green"><i class="fas fa-circle-check" style="font-size:10px;"></i> Verified account</span>
-            } @else if (profile.nationalIdImageUrl) {
-              <span class="chip chip-amber"><i class="fas fa-clock" style="font-size:10px;"></i> Verification under review</span>
-            } @else {
-              <span class="chip chip-gray"><i class="fas fa-id-card" style="font-size:10px;"></i> Identity not verified</span>
-            }
-          </div>
+
         </div>
 
         <div style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;">
@@ -102,62 +94,6 @@
         </div>
       </form>
 
-      <!-- Identity verification (upload / replace ID image) -->
-      <div class="profile-section">
-        <h3 class="profile-section-title"><i class="fas fa-id-card"></i> Identity verification</h3>
-
-        <div class="id-verify-grid">
-          <!-- Preview -->
-          <div class="id-preview">
-            @if (profile.nationalIdImageUrl) {
-              <img [src]="resolveMediaUrl(profile.nationalIdImageUrl)!" alt="National ID document" />
-            } @else {
-              <div class="id-preview-empty">
-                <i class="fas fa-id-card"></i>
-                <span>No ID document uploaded</span>
-              </div>
-            }
-            @if (isUploadingId()) {
-              <div class="id-preview-busy"><span class="spinner-border" style="color:#fff;"></span></div>
-            }
-          </div>
-
-          <!-- Info + actions -->
-          <div>
-            <div class="id-info-title">National ID document</div>
-            <div class="id-info-desc">
-              @if (profile.nationalIdImageUrl && profile.isActive) {
-                Your identity is verified. You can replace your document if it has changed.
-              } @else if (profile.nationalIdImageUrl) {
-                Your document has been submitted and is being reviewed by our team. You can upload a clearer copy if needed.
-              } @else {
-                Upload a clear photo of your national ID to verify your identity. Verified members earn more trust and can unlock higher rental limits.
-              }
-            </div>
-
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <label class="btn btn-secondary btn-sm" style="cursor:pointer;">
-                <input type="file" accept="image/*" hidden (change)="onNationalIdSelected($event)" [disabled]="isUploadingId()" />
-                <i class="fas fa-upload"></i> {{ profile.nationalIdImageUrl ? 'Replace document' : 'Upload document' }}
-              </label>
-              @if (profile.nationalIdImageUrl) {
-                <a [href]="resolveMediaUrl(profile.nationalIdImageUrl)!" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
-                  <i class="fas fa-arrow-up-right-from-square"></i> View full size
-                </a>
-              }
-            </div>
-
-            @if (idError()) {
-              <div class="invalid-feedback" style="display:block;margin-top:10px;">{{ idError() }}</div>
-            }
-
-            <div class="id-secure-note">
-              <i class="fas fa-shield-halved"></i>
-              Your document is stored securely and only used for verification.
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div>
   </div>

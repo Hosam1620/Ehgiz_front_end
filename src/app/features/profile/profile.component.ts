@@ -25,8 +25,7 @@ export class ProfileComponent {
   protected readonly isSaving = signal(false);
   protected readonly isUploadingAvatar = signal(false);
   protected readonly avatarError = signal<string | null>(null);
-  protected readonly isUploadingId = signal(false);
-  protected readonly idError = signal<string | null>(null);
+
 
   protected readonly resolveMediaUrl = resolveMediaUrl;
 
@@ -104,31 +103,7 @@ export class ProfileComponent {
       });
   }
 
-  onNationalIdSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    input.value = '';
-    this.idError.set(null);
-    if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      this.idError.set('Only image files are allowed.');
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      this.idError.set('Image is too large (max 5 MB).');
-      return;
-    }
-
-    this.isUploadingId.set(true);
-    this.auth
-      .uploadNationalId(file)
-      .pipe(finalize(() => this.isUploadingId.set(false)))
-      .subscribe({
-        next: () => this.toast.show('Uploaded', 'Your ID document was submitted for verification.', 'success'),
-        error: err => this.toast.show('Error', err.error?.message ?? 'Could not upload your ID.', 'error'),
-      });
-  }
 
   removeAvatar(): void {
     this.isUploadingAvatar.set(true);

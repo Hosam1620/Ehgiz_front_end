@@ -97,7 +97,6 @@ describe('AuthService', () => {
     const form = req.request.body as FormData;
     expect(form.get('fullName')).toBe('A');
     expect(form.get('profileImage')).toBe(profileImage);
-    expect(form.get('nationalIdImage')).toBeNull();
     req.flush({ succeeded: true, message: '', data: null, errors: [] });
   });
 

@@ -6,8 +6,6 @@ export interface RegisterRequest {
   password: string;
   /** Optional profile picture uploaded at signup. */
   profileImage?: File | null;
-  /** Optional national ID image uploaded at signup. */
-  nationalIdImage?: File | null;
 }
 
 export interface LoginRequest {
@@ -31,7 +29,6 @@ export interface UserProfile {
   fullName: string;
   phoneNumber: string | null;
   profileImageUrl: string | null;
-  nationalIdImageUrl: string | null;
   address: string | null;
   city: string | null;
   createdAt: string; // ISO 8601
