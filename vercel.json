@@ -1,0 +1,9 @@
+{
+    "outputDirectory": "dist/Ehgiz_front_end/browser",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
