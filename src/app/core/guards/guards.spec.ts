@@ -29,42 +29,42 @@ describe('route guards', () => {
     auth.roles.set(roles);
   }
 
-  function run(guard: typeof authGuard): boolean | UrlTree {
-    return TestBed.runInInjectionContext(() => guard(route, state)) as boolean | UrlTree;
+  function run(guard: typeof authGuard): Promise<boolean | UrlTree> {
+    return TestBed.runInInjectionContext(() => guard(route, state)) as Promise<boolean | UrlTree>;
   }
 
   describe('authGuard', () => {
-    it('allows logged-in users', () => {
+    it('allows logged-in users', async () => {
       fakeLogin(['user']);
-      expect(run(authGuard)).toBe(true);
+      await expect(run(authGuard)).resolves.toBe(true);
     });
 
-    it('redirects anonymous users to /login', () => {
-      const result = run(authGuard);
+    it('redirects anonymous users to /login', async () => {
+      const result = await run(authGuard);
       expect(result).toEqual(router.createUrlTree(['/login']));
     });
   });
 
   describe('adminGuard', () => {
-    it('allows admins', () => {
+    it('allows admins', async () => {
       fakeLogin(['Admin']);
-      expect(run(adminGuard)).toBe(true);
+      await expect(run(adminGuard)).resolves.toBe(true);
     });
 
-    it('redirects non-admin users to /dashboard', () => {
+    it('redirects non-admin users to /dashboard', async () => {
       fakeLogin(['user']);
-      expect(run(adminGuard)).toEqual(router.createUrlTree(['/dashboard']));
+      await expect(run(adminGuard)).resolves.toEqual(router.createUrlTree(['/dashboard']));
     });
   });
 
   describe('guestGuard', () => {
-    it('allows anonymous users', () => {
-      expect(run(guestGuard)).toBe(true);
+    it('allows anonymous users', async () => {
+      await expect(run(guestGuard)).resolves.toBe(true);
     });
 
-    it('redirects logged-in users to /dashboard', () => {
+    it('redirects logged-in users to /dashboard', async () => {
       fakeLogin(['user']);
-      expect(run(guestGuard)).toEqual(router.createUrlTree(['/dashboard']));
+      await expect(run(guestGuard)).resolves.toEqual(router.createUrlTree(['/dashboard']));
     });
   });
 });

@@ -9,7 +9,7 @@ const refreshToken$ = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.token();
+  const token = authService.getToken();
 
   const isAuthEndpoint =
     req.url.includes('/api/auth/login') ||
