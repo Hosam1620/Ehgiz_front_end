@@ -308,7 +308,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .btn-primary { background: var(--green) !important; border-color: var(--green) !important; color: white !important; }
 .btn-primary:hover:not(:disabled) { background: var(--green-mid) !important; border-color: var(--green-mid) !important; box-shadow: 0 3px 10px rgba(26,107,74,.28) !important; }
 .btn-secondary { background: var(--white); color: var(--text); border: 1px solid var(--border-2); }
-.btn-secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-2); }
+.btn-secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-2); color: var(--text); }
 .btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 .btn-orange { background: var(--orange); color: white; }
 .btn-orange:hover:not(:disabled) { background: #d4723a; box-shadow: 0 3px 10px rgba(232,129,58,.3); }
