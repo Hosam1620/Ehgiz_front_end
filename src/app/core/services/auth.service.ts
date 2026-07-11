@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, firstValueFrom, of, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
 import { LoginRequest, RegisterRequest, LoginResponse, UserProfile, UpdateProfileRequest } from '../models/user.model';
 import { environment } from '../../../environments/environment';
@@ -20,18 +20,19 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  // Set on login so we know a refresh cookie probably exists. Never holds the
-  // token itself, it just tells the app initializer whether a silent refresh
-  // is worth attempting (visitors who never logged in skip it).
   private readonly SESSION_HINT = 'ehgiz_session_hint';
+  private readonly ACCESS_TOKEN_KEY = 'ehgiz_access_token';
+  private readonly ROLES_KEY = 'ehgiz_roles';
+  private readonly EXPIRES_AT_KEY = 'ehgiz_expires_at';
 
-  private readonly _token = signal<string | null>(null);
+  private readonly _token = signal<string | null>(this.readStoredToken());
   
   readonly isLoggedIn = computed(() => !!this._token());
   readonly token = computed(() => this._token());
 
   currentUser = signal<UserProfile | null>(null);
-  roles = signal<string[]>([]);
+  roles = signal<string[]>(this.readStoredRoles());
+  private authInitPromise: Promise<void> | null = null;
   isAdmin = computed(() => this.roles().some(r => r.toLowerCase() === 'admin'));
   isUser = computed(() => this.roles().some(r => r.toLowerCase() === 'user'));
 
@@ -151,11 +152,49 @@ export class AuthService {
     });
   }
 
+  getToken(): string | null {
+    return this._token();
+  }
+
+  /** Restores the session from storage and optionally refreshes an expired token. */
+  initializeAuth(): Promise<void> {
+    if (!this.authInitPromise) {
+      this.authInitPromise = this.runAuthInitialization();
+    }
+    return this.authInitPromise;
+  }
+
+  private async runAuthInitialization(): Promise<void> {
+    if (!this.isLoggedIn()) {
+      return;
+    }
+
+    if (this.isTokenExpired()) {
+      await firstValueFrom(this.refresh().pipe(catchError(() => of(null))));
+      if (!this.isLoggedIn()) {
+        return;
+      }
+    }
+
+    await firstValueFrom(this.fetchMe().pipe(catchError(() => of(null))));
+  }
+
+  private isTokenExpired(): boolean {
+    const expiresAt = localStorage.getItem(this.EXPIRES_AT_KEY);
+    if (!expiresAt) {
+      return false;
+    }
+    return new Date(expiresAt) <= new Date();
+  }
+
   clearSession(): void {
     this._token.set(null);
     this.currentUser.set(null);
     this.roles.set([]);
     localStorage.removeItem(this.SESSION_HINT);
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    localStorage.removeItem(this.ROLES_KEY);
+    localStorage.removeItem(this.EXPIRES_AT_KEY);
     // Only redirect once the router has done its initial navigation. A failed
     // silent refresh on startup shouldn't bounce visitors off public pages;
     // protected routes are already covered by authGuard.
@@ -164,15 +203,35 @@ export class AuthService {
     }
   }
 
-  /** Returns true if the user previously authenticated in this browser, so the
-   *  app initializer knows to attempt a silent refresh via the httpOnly cookie. */
+  /** Returns true if persisted auth data exists in this browser. */
   hasSessionHint(): boolean {
-    return !!localStorage.getItem(this.SESSION_HINT);
+    return !!localStorage.getItem(this.ACCESS_TOKEN_KEY) || !!localStorage.getItem(this.SESSION_HINT);
+  }
+
+  private readStoredToken(): string | null {
+    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+  }
+
+  private readStoredRoles(): string[] {
+    const raw = localStorage.getItem(this.ROLES_KEY);
+    if (!raw) {
+      return [];
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   }
 
   private setSession(data: LoginResponse): void {
+    const roles = data.roles?.length ? data.roles : data.role ? [data.role] : [];
     this._token.set(data.accessToken);
-    this.roles.set(data.roles?.length ? data.roles : data.role ? [data.role] : []);
+    this.roles.set(roles);
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, data.accessToken);
+    localStorage.setItem(this.ROLES_KEY, JSON.stringify(roles));
+    localStorage.setItem(this.EXPIRES_AT_KEY, data.expiresAt);
     localStorage.setItem(this.SESSION_HINT, '1');
   }
 }

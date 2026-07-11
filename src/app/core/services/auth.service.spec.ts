@@ -51,10 +51,24 @@ describe('AuthService', () => {
     req.flush({ succeeded: true, message: '', data: loginResponse(), errors: [] });
 
     expect(service.isLoggedIn()).toBe(true);
-    expect(service.token()).toBe('jwt-token');
+    expect(service.getToken()).toBe('jwt-token');
     expect(service.isUser()).toBe(true);
     expect(service.isAdmin()).toBe(false);
     expect(service.hasSessionHint()).toBe(true);
+    expect(localStorage.getItem('ehgiz_access_token')).toBe('jwt-token');
+    expect(localStorage.getItem('ehgiz_roles')).toBe(JSON.stringify(['user']));
+  });
+
+  it('restores authentication state from localStorage on reload', () => {
+    localStorage.setItem('ehgiz_access_token', 'stored-token');
+    localStorage.setItem('ehgiz_roles', JSON.stringify(['user']));
+    localStorage.setItem('ehgiz_expires_at', new Date(Date.now() + 900_000).toISOString());
+
+    const reloaded = TestBed.inject(AuthService);
+
+    expect(reloaded.isLoggedIn()).toBe(true);
+    expect(reloaded.getToken()).toBe('stored-token');
+    expect(reloaded.isUser()).toBe(true);
   });
 
   it('login does not create a session when the response failed', () => {
@@ -65,6 +79,7 @@ describe('AuthService', () => {
 
     expect(service.isLoggedIn()).toBe(false);
     expect(service.hasSessionHint()).toBe(false);
+    expect(localStorage.getItem('ehgiz_access_token')).toBeNull();
   });
 
   it('falls back to the single "role" field when roles array is missing', () => {
@@ -135,6 +150,7 @@ describe('AuthService', () => {
     expect(service.currentUser()).toBeNull();
     expect(service.roles()).toEqual([]);
     expect(service.hasSessionHint()).toBe(false);
+    expect(localStorage.getItem('ehgiz_access_token')).toBeNull();
     expect(navigate).toHaveBeenCalledWith(['/login']);
   });
 

@@ -26,6 +26,8 @@
   --amber-border:#f0c442;
   --blue:        #2563EB;
   --blue-light:  #EFF6FF;
+  --info:        #0D9488;
+  --info-light:  #EFFDF9;
   --radius-sm:   4px;
   --radius:      8px;
   --radius-lg:   12px;
@@ -76,6 +78,8 @@
   --amber-border:#5C4A1A;
   --blue:        #6C9EF8;
   --blue-light:  #16233D;
+  --info:        #2DD4BF;
+  --info-light:  #112927;
   --shadow-sm:   0 1px 3px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.4);
   --shadow:      0 4px 12px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.35);
   --shadow-lg:   0 12px 32px rgba(0,0,0,.6), 0 4px 8px rgba(0,0,0,.4);
@@ -308,7 +312,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .btn-primary { background: var(--green) !important; border-color: var(--green) !important; color: white !important; }
 .btn-primary:hover:not(:disabled) { background: var(--green-mid) !important; border-color: var(--green-mid) !important; box-shadow: 0 3px 10px rgba(26,107,74,.28) !important; }
 .btn-secondary { background: var(--white); color: var(--text); border: 1px solid var(--border-2); }
-.btn-secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-2); }
+.btn-secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-2); color: var(--text); }
 .btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 .btn-orange { background: var(--orange); color: white; }
 .btn-orange:hover:not(:disabled) { background: #d4723a; box-shadow: 0 3px 10px rgba(232,129,58,.3); }
@@ -1411,18 +1415,23 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .cal-dot-selected { background: var(--green); }
 
 /* ── MODAL ── */
-.modal-overlay {
+.modal-backdrop {
   position: fixed;
   inset: 0;
   background: var(--overlay);
-  /* Must sit above the AI chat FAB/panel (z-index 1000) and every sticky page
-     chrome; otherwise those layers intercept clicks and the dialog buttons
-     (e.g. "Sign out") appear but never fire. */
   z-index: 2000;
+  cursor: pointer;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  /* No background: .modal-backdrop handles the dark tint */
+  z-index: 2001;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  pointer-events: none;
 }
 .modal-dialog {
   background: var(--white);
@@ -1430,7 +1439,7 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   width: 100%;
   max-width: 440px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  pointer-events: auto;
 }
 .modal-header {
   display: flex;
@@ -1926,7 +1935,7 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .landing-section-alt { background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .landing-section-title { font-size: 28px; margin-bottom: 8px; text-align: center; }
 .landing-section-sub { font-size: 14px; color: var(--text-2); text-align: center; margin-bottom: 8px; }
-.landing-tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 36px; }
+.landing-tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
 .landing-cta-band {
   margin: 0 64px 64px; border-radius: var(--radius-xl);
   background: linear-gradient(135deg, #1A6B4A 0%, #124D36 100%);
@@ -2058,8 +2067,8 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .app-toast--error .app-toast-icon { color: var(--red); }
 .app-toast--warning { border-left-color: var(--amber); }
 .app-toast--warning .app-toast-icon { color: var(--amber); }
-.app-toast--info { border-left-color: var(--blue); }
-.app-toast--info .app-toast-icon { color: var(--blue); }
+.app-toast--info { border-left-color: var(--info); }
+.app-toast--info .app-toast-icon { color: var(--info); }
 .app-toast-content { flex: 1; min-width: 0; }
 .app-toast-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; }
 .app-toast-body { font-size: 12px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }

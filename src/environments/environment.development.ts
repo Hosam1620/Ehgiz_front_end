@@ -2,7 +2,8 @@
 // fileReplacements entry in angular.json.
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5257', // https://ehgez.runasp.net
+  apiUrl: 'https://localhost:7103', // localhost  API
+  // apiUrl: 'https://ehgez.runasp.net', // deployed API
   stripePublishableKey:
     'pk_test_51TggY5DeeiVGEI2yVGALQRYcbkqsVdpsDmdla02teEYwTQpIJv3JkManOU3O1fzHQeiQIlOOQYEjTQkkdTIMLXcc00713WxKcy',
 };

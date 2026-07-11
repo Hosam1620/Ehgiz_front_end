@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 import { NotificationService } from './notification.service';
 import { ToastService } from '../../shared/components/toast/toast.service';
-import { Notification } from '../models/notification.model';
+import { Notification, NotificationHubEvent } from '../models/notification.model';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationHubService implements OnDestroy {
@@ -38,8 +38,12 @@ export class NotificationHubService implements OnDestroy {
       .configureLogging(LogLevel.Warning)
       .build();
 
-    this.connection.on('NewNotification', (notification: Notification) => {
+    // Event name must match exactly what the server's notification broadcaster emits
+    // ("ReceiveNotification"). A mismatch silently drops every push, which is why
+    // notifications only appeared after a manual refresh.
+    this.connection.on('ReceiveNotification', (payload: Notification | NotificationHubEvent) => {
       this.ngZone.run(() => {
+        const notification = this.unwrapNotification(payload);
         this.notifService.prependNotification(notification);
         this.toastService.show(notification.title, notification.message, 'info');
       });
@@ -81,6 +85,13 @@ export class NotificationHubService implements OnDestroy {
       console.error('[NotifHub] Failed to start connection:', err);
       this.retryTimer = setTimeout(() => this.startConnection(), 5_000);
     }
+  }
+
+  private unwrapNotification(payload: Notification | NotificationHubEvent): Notification {
+    if (payload && typeof payload === 'object' && 'notification' in payload && payload.notification) {
+      return payload.notification;
+    }
+    return payload as Notification;
   }
 
   async stopConnection(): Promise<void> {
