@@ -141,8 +141,24 @@ export class ToolDetailComponent implements OnInit {
     });
   }
 
-  selectImage(index: number): void {
+  protected selectImage(index: number): void {
     this.selectedImageIndex.set(index);
+  }
+
+  protected prevImage(): void {
+    const images = this.tool()?.imageUrls;
+    if (!images?.length) return;
+    const current = this.selectedImageIndex();
+    const next = current === 0 ? images.length - 1 : current - 1;
+    this.selectedImageIndex.set(next);
+  }
+
+  protected nextImage(): void {
+    const images = this.tool()?.imageUrls;
+    if (!images?.length) return;
+    const current = this.selectedImageIndex();
+    const next = current === images.length - 1 ? 0 : current + 1;
+    this.selectedImageIndex.set(next);
   }
 
   prevMonth(): void {

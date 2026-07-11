@@ -16,16 +16,24 @@
 
   <div class="detail-layout anim-fade" [class.detail-layout-owner]="isOwnTool(item)">
     <div class="detail-main-col">
-      <div class="detail-main-img" [style.background]="currentImage(item) ? '' : cardBg(item)">
+      <div class="detail-main-img">
         @if (currentImage(item)) {
+          @if (item.imageUrls && item.imageUrls.length > 1) {
+            <button type="button" class="image-nav-btn image-nav-left" (click)="prevImage()" title="Previous image" aria-label="Previous image">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button type="button" class="image-nav-btn image-nav-right" (click)="nextImage()" title="Next image" aria-label="Next image">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          }
           <img
             [src]="currentImage(item)!"
             [alt]="item.name ?? 'Tool'"
             (error)="onImageError(currentImage(item)!)"
-            style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-xl);"
+            style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:var(--radius-xl);background:var(--surface2);"
           />
         } @else {
-          <div class="detail-image-placeholder">
+          <div class="detail-image-placeholder" [style.background]="cardBg(item)" style="border-radius:var(--radius-xl);">
             <i [class]="placeholderIcon(item)"></i>
             <strong>{{ item.categoryName ?? 'Tool photo' }}</strong>
             <span>{{ item.name ?? 'Image coming soon' }}</span>
