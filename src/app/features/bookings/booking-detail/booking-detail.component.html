@@ -143,8 +143,9 @@
   </div>
 
   @if (activeModal()) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-dialog anim-fade" style="max-width:480px;padding:24px;" (click)="$event.stopPropagation()">
+    <div class="modal-backdrop" (click)="closeModal()"></div>
+    <div class="modal-overlay">
+      <div class="modal-dialog anim-fade" style="max-width:480px;padding:24px;">
         @switch (activeModal()) {
           @case ('delivery') {
             <h3 style="font-size:18px;margin-bottom:16px;">Submit delivery handover</h3>
@@ -158,7 +159,7 @@
             <label class="form-label">Notes (optional)</label>
             <textarea class="form-input" rows="3" [(ngModel)]="handoverNotes"></textarea>
             <label class="form-label" style="margin-top:12px;">Photos</label>
-            <input type="file" class="form-input" accept="image/*" multiple (change)="onImagesSelected($event)" />
+            <input type="file" class="form-input" accept="image/*" multiple (change)="onImagesSelected($event)" (click)="$event.stopPropagation()" />
           }
           @case ('respond-delivery') {
             <h3 style="font-size:18px;margin-bottom:16px;">Respond to delivery</h3>

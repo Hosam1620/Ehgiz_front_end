@@ -5,8 +5,8 @@ import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
 
-  // Public landing page (default route). Logged-in users get sent to /dashboard.
-  { path: '', title: 'Rent tools from your neighbors', loadComponent: () => import('./features/home/landing.component').then(m => m.LandingComponent), pathMatch: 'full', canActivate: [guestGuard], data: { layout: 'full' } },
+  // Public landing page (default route). Accessible to all users.
+  { path: '', title: 'Rent tools from your neighbors', loadComponent: () => import('./features/home/landing.component').then(m => m.LandingComponent), pathMatch: 'full', data: { layout: 'full' } },
 
   // Auth (public)
   { path: 'login', title: 'Sign in',        loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),               canActivate: [guestGuard] },

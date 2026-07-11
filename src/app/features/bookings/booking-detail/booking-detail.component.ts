@@ -143,6 +143,13 @@ export class BookingDetailComponent implements OnInit {
     this.activeModal.set(null);
   }
 
+  onOverlayMousedown(event: MouseEvent): void {
+    // Only close if the user clicked directly on the overlay backdrop, not a child element
+    if (event.target === event.currentTarget) {
+      this.closeModal();
+    }
+  }
+
   onImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.handoverImages = input.files ? Array.from(input.files) : [];

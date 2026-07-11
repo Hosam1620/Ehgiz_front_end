@@ -1410,18 +1410,23 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .cal-dot-selected { background: var(--green); }
 
 /* ── MODAL ── */
-.modal-overlay {
+.modal-backdrop {
   position: fixed;
   inset: 0;
   background: var(--overlay);
-  /* Must sit above the AI chat FAB/panel (z-index 1000) and every sticky page
-     chrome; otherwise those layers intercept clicks and the dialog buttons
-     (e.g. "Sign out") appear but never fire. */
   z-index: 2000;
+  cursor: pointer;
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  /* No background: .modal-backdrop handles the dark tint */
+  z-index: 2001;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  pointer-events: none;
 }
 .modal-dialog {
   background: var(--white);
@@ -1429,7 +1434,7 @@ textarea.form-input { resize: vertical; min-height: 96px; }
   width: 100%;
   max-width: 440px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  pointer-events: auto;
 }
 .modal-header {
   display: flex;
