@@ -71,4 +71,10 @@ export class AiChatWidgetComponent implements AfterViewChecked {
   onToolImageError(event: Event) {
     (event.target as HTMLImageElement).style.display = 'none';
   }
+
+  openMap(event: Event, lat: number, lng: number): void {
+    event.stopPropagation();
+    event.preventDefault();
+    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank', 'noopener,noreferrer');
+  }
 }

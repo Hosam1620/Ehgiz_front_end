@@ -9,6 +9,8 @@ export interface ToolRecommendation {
   pricePerDay: number;
   categoryName: string;
   location: string | null;
+  latitude: number | null;
+  longitude: number | null;
   imageUrls: string[];
 }
 

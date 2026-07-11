@@ -114,7 +114,14 @@
               </td>
               <td style="color:var(--text-2);white-space:nowrap;">
                 @if (tool.location) {
-                  <i class="fas fa-location-dot" style="font-size:11px;color:var(--text-3);margin-right:5px;"></i>{{ tool.location }}
+                  <span style="display:inline-flex;align-items:center;gap:3px;">
+                    <i class="fas fa-location-dot" style="font-size:11px;color:var(--text-3);"></i>{{ tool.location }}
+                    @if (tool.latitude != null && tool.longitude != null) {
+                      <a [href]="'https://www.google.com/maps?q=' + tool.latitude + ',' + tool.longitude" target="_blank" rel="noopener noreferrer" style="color:var(--green);text-decoration:none;margin-left:2px;" title="Open in Google Maps">
+                        <i class="fas fa-map-location-dot" style="font-size:11px;"></i>
+                      </a>
+                    }
+                  </span>
                 } @else { — }
               </td>
               <td>

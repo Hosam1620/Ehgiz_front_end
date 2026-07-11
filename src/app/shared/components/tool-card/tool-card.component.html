@@ -30,7 +30,14 @@
     }
     <div class="tool-card-meta">
       @if (tool().location) {
-        <i class="fas fa-map-marker-alt" style="font-size:10px;color:var(--text-3);margin-right:3px;"></i>{{ tool().location }}
+        <span style="display:inline-flex;align-items:center;gap:3px;">
+          <i class="fas fa-map-marker-alt" style="font-size:10px;color:var(--text-3);"></i>{{ tool().location }}
+          @if (tool().latitude != null && tool().longitude != null) {
+            <button type="button" class="icon-btn" style="background:none;border:none;padding:0;color:var(--green);cursor:pointer;margin-left:2px;" (click)="openMap($event, tool().latitude!, tool().longitude!)" title="Open in Google Maps">
+              <i class="fas fa-map-location-dot" style="font-size:10px;"></i>
+            </button>
+          }
+        </span>
       }
       @if (tool().distanceKm != null) {
         @if (tool().location) { <span style="margin:0 3px;">·</span> }

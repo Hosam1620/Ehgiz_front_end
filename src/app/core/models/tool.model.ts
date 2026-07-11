@@ -2,19 +2,20 @@ export type ToolCondition = 'New' | 'LikeNew' | 'Good' | 'Fair' | 'Poor';
 export type ToolConditionValue = 1 | 2 | 3 | 4 | 5;
 
 /** Backend ToolCondition enum: New=1, Good=2, Fair=3, Poor=4, LikeNew=5. */
-export const TOOL_CONDITIONS: { label: string; name: ToolCondition; value: ToolConditionValue }[] = [
-  { label: 'New', name: 'New', value: 1 },
-  { label: 'Like new', name: 'LikeNew', value: 5 },
-  { label: 'Good', name: 'Good', value: 2 },
-  { label: 'Fair', name: 'Fair', value: 3 },
-  { label: 'Poor', name: 'Poor', value: 4 },
-];
+export const TOOL_CONDITIONS: { label: string; name: ToolCondition; value: ToolConditionValue }[] =
+  [
+    { label: 'New', name: 'New', value: 1 },
+    { label: 'Like new', name: 'LikeNew', value: 5 },
+    { label: 'Good', name: 'Good', value: 2 },
+    { label: 'Fair', name: 'Fair', value: 3 },
+    { label: 'Poor', name: 'Poor', value: 4 },
+  ];
 
 export function toolConditionLabel(condition: string | null | undefined): string | null {
   if (!condition) return null;
-  const byValue = TOOL_CONDITIONS.find(c => String(c.value) === condition);
+  const byValue = TOOL_CONDITIONS.find((c) => String(c.value) === condition);
   if (byValue) return byValue.label;
-  const byName = TOOL_CONDITIONS.find(c => c.name.toLowerCase() === condition.toLowerCase());
+  const byName = TOOL_CONDITIONS.find((c) => c.name.toLowerCase() === condition.toLowerCase());
   return byName?.label ?? condition;
 }
 

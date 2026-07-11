@@ -78,4 +78,10 @@ export class ToolCardComponent {
       return next;
     });
   }
+
+  protected openMap(event: Event, lat: number, lng: number): void {
+    event.stopPropagation();
+    event.preventDefault();
+    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank', 'noopener,noreferrer');
+  }
 }
