@@ -3,7 +3,8 @@
 // environment.development.ts (swapped in by angular.json fileReplacements).
 export const environment = {
   production: true,
-  apiUrl: 'https://localhost:7103', // deployed API origin, e.g. https://ehgez.runasp.net
+  apiUrl: 'https://localhost:7103', // localhost  API 
+  // apiUrl: 'https://ehgez.runasp.net', // deployed API 
   stripePublishableKey:
     'pk_test_51TggY5DeeiVGEI2yVGALQRYcbkqsVdpsDmdla02teEYwTQpIJv3JkManOU3O1fzHQeiQIlOOQYEjTQkkdTIMLXcc00713WxKcy', // live pk_live_… key
 };
