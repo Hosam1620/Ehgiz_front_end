@@ -28,6 +28,8 @@ export class AddToolComponent {
       insurancePrice: payload.request.insurancePrice,
       condition: payload.request.condition,
       location: payload.request.location,
+      latitude: payload.request.latitude,
+      longitude: payload.request.longitude,
     };
 
     this.toolsService
