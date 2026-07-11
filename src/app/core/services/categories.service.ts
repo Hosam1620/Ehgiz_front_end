@@ -9,6 +9,7 @@ interface CategoryDto {
   id: number;
   name: string;
   description?: string | null;
+  imageUrl?: string | null;
   toolCount?: number;
 }
 
@@ -23,7 +24,7 @@ export class CategoriesService {
     this.categories$ ??= this.http
       .get<ApiResponse<CategoryDto[]>>(`${environment.apiUrl}/api/categories`)
       .pipe(
-        map(r => (r.data ?? []).map(c => ({ id: c.id, name: c.name }))),
+        map(r => (r.data ?? []).map(c => ({ id: c.id, name: c.name, imageUrl: c.imageUrl }))),
         shareReplay({ bufferSize: 1, refCount: false })
       );
     return this.categories$;

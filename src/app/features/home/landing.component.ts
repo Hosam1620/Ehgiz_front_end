@@ -44,7 +44,7 @@ export class LandingComponent implements OnInit {
 
   ngOnInit(): void {
     this.browseService.loadCategoryOptions().subscribe({
-      next: categories => this.categories.set(categories.slice(0, 6)),
+      next: categories => this.categories.set(categories.slice(0, 5)),
     });
 
     this.toolsService.getAll({ isAvailable: true, page: 1, pageSize: 8 }).subscribe({

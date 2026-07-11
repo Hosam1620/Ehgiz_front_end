@@ -173,6 +173,14 @@ export class AdminService {
     return this.http.delete<ApiResponse<unknown>>(`${this.base}/categories/${id}`);
   }
 
+  uploadCategoryImage(file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<ApiResponse<{ imageUrl: string }>>(`${this.base}/categories/upload-image`, formData)
+      .pipe(map(r => r.data!));
+  }
+
   // ── Wallets ────────────────────────────────────────
 
   getWallets(): Observable<AdminWallet[]> {

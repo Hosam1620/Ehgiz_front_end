@@ -25,10 +25,14 @@ export class AdminCategoriesComponent implements OnInit {
   protected readonly showCreateForm = signal(false);
   protected readonly createName = signal('');
   protected readonly createDescription = signal('');
+  protected readonly createImageUrl = signal<string | null>(null);
 
   protected readonly editId = signal<number | null>(null);
   protected readonly editName = signal('');
   protected readonly editDescription = signal('');
+  protected readonly editImageUrl = signal<string | null>(null);
+
+  protected readonly isUploadingImage = signal(false);
 
   ngOnInit(): void {
     this.load();
@@ -52,11 +56,36 @@ export class AdminCategoriesComponent implements OnInit {
     this.showCreateForm.set(true);
     this.createName.set('');
     this.createDescription.set('');
+    this.createImageUrl.set(null);
     this.editId.set(null);
   }
 
   cancelCreate(): void {
     this.showCreateForm.set(false);
+  }
+
+  onImageSelected(event: Event, isEdit: boolean): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.isUploadingImage.set(true);
+    this.adminService
+      .uploadCategoryImage(file)
+      .pipe(finalize(() => {
+        this.isUploadingImage.set(false);
+        input.value = '';
+      }))
+      .subscribe({
+        next: res => {
+          if (isEdit) {
+            this.editImageUrl.set(res.imageUrl);
+          } else {
+            this.createImageUrl.set(res.imageUrl);
+          }
+        },
+        error: err => this.toast.show('Error', err.error?.message ?? 'Image upload failed.', 'error'),
+      });
   }
 
   submitCreate(): void {
@@ -67,7 +96,11 @@ export class AdminCategoriesComponent implements OnInit {
     }
     this.isSaving.set(true);
     this.adminService
-      .createCategory({ name, description: this.createDescription().trim() || undefined })
+      .createCategory({ 
+        name, 
+        description: this.createDescription().trim() || undefined,
+        imageUrl: this.createImageUrl() || undefined
+      })
       .pipe(finalize(() => this.isSaving.set(false)))
       .subscribe({
         next: res => {
@@ -88,6 +121,7 @@ export class AdminCategoriesComponent implements OnInit {
     this.editId.set(cat.id);
     this.editName.set(cat.name);
     this.editDescription.set(cat.description ?? '');
+    this.editImageUrl.set(cat.imageUrl ?? null);
     this.showCreateForm.set(false);
   }
 
@@ -105,14 +139,18 @@ export class AdminCategoriesComponent implements OnInit {
     }
     this.isSaving.set(true);
     this.adminService
-      .updateCategory(id, { name, description: this.editDescription().trim() || undefined })
+      .updateCategory(id, { 
+        name, 
+        description: this.editDescription().trim() || undefined,
+        imageUrl: this.editImageUrl() || undefined
+      })
       .pipe(finalize(() => this.isSaving.set(false)))
       .subscribe({
         next: () => {
           this.categories.update(list =>
             list.map(c =>
               c.id === id
-                ? { ...c, name, description: this.editDescription().trim() || null }
+                ? { ...c, name, description: this.editDescription().trim() || null, imageUrl: this.editImageUrl() || null }
                 : c
             )
           );

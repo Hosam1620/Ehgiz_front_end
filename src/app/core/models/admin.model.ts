@@ -110,17 +110,20 @@ export interface AdminCategory {
   id: number;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   toolCount: number;
 }
 
 export interface CreateCategoryRequest {
   name: string;
   description?: string;
+  imageUrl?: string;
 }
 
 export interface UpdateCategoryRequest {
   name: string;
   description?: string;
+  imageUrl?: string;
 }
 
 // ── Wallets ───────────────────────────────────────────

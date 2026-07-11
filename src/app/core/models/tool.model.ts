@@ -114,4 +114,5 @@ export interface PhotoSearchResult {
 export interface CategoryOption {
   id: number;
   name: string;
+  imageUrl?: string | null;
 }
