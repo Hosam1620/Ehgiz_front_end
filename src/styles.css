@@ -1930,7 +1930,7 @@ textarea.form-input { resize: vertical; min-height: 96px; }
 .landing-section-alt { background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .landing-section-title { font-size: 28px; margin-bottom: 8px; text-align: center; }
 .landing-section-sub { font-size: 14px; color: var(--text-2); text-align: center; margin-bottom: 8px; }
-.landing-tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 36px; }
+.landing-tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
 .landing-cta-band {
   margin: 0 64px 64px; border-radius: var(--radius-xl);
   background: linear-gradient(135deg, #1A6B4A 0%, #124D36 100%);

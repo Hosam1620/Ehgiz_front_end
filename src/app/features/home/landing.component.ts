@@ -47,9 +47,9 @@ export class LandingComponent implements OnInit {
       next: categories => this.categories.set(categories.slice(0, 6)),
     });
 
-    this.toolsService.getAll({ isAvailable: true, page: 1, pageSize: 8 }).subscribe({
+    this.toolsService.getAll({ isAvailable: true, page: 1, pageSize: 6 }).subscribe({
       next: result => {
-        this.featuredTools.set((result.items ?? []).slice(0, 8));
+        this.featuredTools.set((result.items ?? []).slice(0, 6));
         this.toolsLoading.set(false);
       },
       error: () => this.toolsLoading.set(false),
